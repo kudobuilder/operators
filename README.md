@@ -1,3 +1,3 @@
 # Frameworks
 
-Collection of frameworks for Maestro
+Collection of frameworks for KUDO
