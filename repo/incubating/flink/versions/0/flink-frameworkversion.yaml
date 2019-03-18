@@ -18,7 +18,73 @@ spec:
     - name: FLINK_JOBMANAGER_REPLICAS
       description: Number of job managers to run
       default: "1"
+    - name: ZOOKEEPER_URL
+      description: Connection information for Zookeeper
+      default: "zk:2181"
+    - name: ZOOKEEPER_PATH
+      description: path to store Flink data in Zookeeper
+      defaut: "/flink"
+    - name: HIGH_AVAILABILITY
+      description: Defines high-availability mode used for the cluster execution. To enable high-availability, set this mode to "ZOOKEEPER" or specify FQN of factory class.
+      default: NONE
   templates:
+    storage.yaml: |
+    # snapshots
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: snapshots
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+      ---
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: ha
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
+    # HA PVs
+    configmap.yaml: |
+      apiVersion: v1
+      data:
+        flink.conf: |
+          #==============================================================================
+          # High Availability
+          #==============================================================================
+
+          # The high-availability mode. Possible options are 'NONE' or 'zookeeper'.
+          #
+          high-availability: zookeeper
+
+          # The path where metadata for master recovery is persisted. While ZooKeeper stores
+          # the small ground truth for checkpoint and leader election, this location stores
+          # the larger objects, like persisted dataflow graphs.
+          # 
+          # Must be a durable file system that is accessible from all nodes
+          # (like HDFS, S3, Ceph, nfs, ...) 
+          #
+          high-availability.storageDir: file:///ha/
+
+          state.savepoints.dir: file:///snapshots/
+          state.checkpoints.dir: file:///snapshots/
+
+          # The list of ZooKeeper quorum peers that coordinate the high-availability
+          # setup. This must be a list of the form:
+          # "host1:clientPort,host2:clientPort,..." (default clientPort: 2181)
+          #
+          high-availability.zookeeper.quorum: {{ZOOKEEPER_URL}}
+          high-availability.zookeeper.path.root: {{ZOOKEEPER_PATH}}
+      kind: ConfigMap
+      metadata:
+        name: config
     services.yaml: |
       apiVersion: v1
       kind: Service
@@ -66,6 +132,18 @@ spec:
               env:
               - name: JOB_MANAGER_RPC_ADDRESS
                 value: {{NAME}}-jobmanager
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
+              - name: snapshots
+                mountPath: /snapshots
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{name}}-ha
+            - name: snapshots
+              persistentVolumeClaim:
+                claimName: {{name}}-snapshot
     jobmanager-deployment.yaml: |
       apiVersion: extensions/v1beta1
       kind: Deployment
@@ -96,6 +174,18 @@ spec:
               env:
               - name: JOB_MANAGER_RPC_ADDRESS
                 value: {{NAME}}-jobmanager
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
+              - name: snapshots
+                mountPath: /snapshots
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{name}}-ha
+            - name: snapshots
+              persistentVolumeClaim:
+                claimName: {{name}}-snapshot
   tasks:
     jobmanager:
       resources:
