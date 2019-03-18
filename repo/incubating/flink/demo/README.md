@@ -16,18 +16,18 @@ If you run on Minikube run first:
 
 Install all required frameworks:
 
-- `kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/stable/zookeeper/versions/0/zookeeper-framework.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/stable/zookeeper/versions/0/zookeeper-frameworkversion.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/stable/kafka/versions/0/kafka-framework.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/stable/kafka/versions/0/kafka-frameworkversion.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/incubating/flink/versions/0/flink-framework.yaml`
-- `kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/incubating/flink/versions/0/flink-frameworkversion.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/stable/zookeeper/versions/0/zookeeper-framework.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/stable/zookeeper/versions/0/zookeeper-frameworkversion.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/stable/kafka/versions/0/kafka-framework.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/stable/kafka/versions/0/kafka-frameworkversion.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/flink/versions/0/flink-framework.yaml`
+- `kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/flink/versions/0/flink-frameworkversion.yaml`
 
 ## Getting Started
 
 Install the `flink-financial-demo` via:
 
-`kubectl apply -f https://raw.githubusercontent.com/maestrosdk/frameworks/master/repo/incubating/flink/demo/flink-demo.yaml`
+`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/flink/demo/flink-demo.yaml`
 
 To see if Flink is working properly run:
 
@@ -40,7 +40,7 @@ Once everything is up, start the job:
 
 ```bash
 cat <<EOF | kubectl apply -f -
-apiVersion: maestro.k8s.io/v1alpha1
+apiVersion: kudo.k8s.io/v1alpha1
 kind: PlanExecution
 metadata:
   labels:
