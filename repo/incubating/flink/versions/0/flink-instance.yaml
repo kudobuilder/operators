@@ -10,3 +10,5 @@ spec:
     name: flink-1.7
     namespace: default
     type: FrameworkVersion
+  parameters:
+    HIGH_AVAILABILITY: ZOOKEEPER
