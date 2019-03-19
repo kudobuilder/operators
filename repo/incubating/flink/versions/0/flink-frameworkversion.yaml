@@ -217,6 +217,7 @@ spec:
               - "-Dhigh-availability.jobmanager.port=8082"
               - "-Dmetrics.internal.query-service.port=8083"
               - "-Dlog.file=/logs/jobmanager.log"
+              - "-Dweb.upload.dir=/ha/data"
               ports:
               - containerPort: 6123
                 name: rpc
