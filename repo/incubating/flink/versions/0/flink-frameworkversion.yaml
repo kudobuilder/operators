@@ -88,7 +88,7 @@ spec:
               args:
               - taskmanager
               - "-Dhigh-availability={{HIGH_AVAILABILITY}}"
-              - "-Dhigh-availability.storageDir=file:///ha/"
+              - "-Dhigh-availability.storageDir=file:///ha"
               - "-Dstate.savepoints.dir=file:///snapshots/"
               - "-Dstate.checkpoints.dir=file:///snapshots/"
               - "-Dhigh-availability.zookeeper.quorum={{ZOOKEEPER_URL}}"
@@ -131,14 +131,22 @@ spec:
             containers:
             - name: jobmanager
               image: kudobuilder/flink:1.7.2
+              command: ["/opt/flink/bin/flink-console.sh"]
               args:
-              - jobmanager
+              - "standalonesession"
+              - "-r"
+              - "8081"
+              - "--configDir"
+              - "/opt/flink/conf"
+              - "--executionMode"
+              - "cluster"
               - "-Dhigh-availability={{HIGH_AVAILABILITY}}"
-              - "-Dhigh-availability.storageDir=file:///ha/"
-              - "-Dstate.savepoints.dir=file:///snapshots/"
-              - "-Dstate.checkpoints.dir=file:///snapshots/"
+              - "-Dhigh-availability.storageDir=file:///ha"
               - "-Dhigh-availability.zookeeper.quorum={{ZOOKEEPER_URL}}"
               - "-Dhigh-availability.zookeeper.path.root={{ZOOKEEPER_PATH}}"
+              - "-Dquery.server.port=6125"
+              - "-Dblob.server.port=6124"
+              - "-Djobmanager.rpc.address={{NAME}}-jobmanager"
               ports:
               - containerPort: 6123
                 name: rpc
