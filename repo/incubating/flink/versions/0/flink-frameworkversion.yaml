@@ -73,6 +73,33 @@ spec:
         selector:
           app: {{NAME}}
           component: {{NAME}}-jobmanager
+      ---
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: hs
+        namespace: {{NAMESPACE}}
+        labels:
+          app: flink
+          component: {{NAME}}-jobmanager
+      spec:
+        ports:
+        - name: rpc
+          port: 6123
+        - name: blob
+          port: 6124
+        - name: query
+          port: 6125
+        - name: ui
+          port: 8081
+        - name: ha
+          port: 8082
+        - name: metrics
+          port: 8083
+        selector:
+          app: {{NAME}}
+          component: {{NAME}}-jobmanager
+        clusterIP: None
     taskmanager-deployment.yaml: |
       apiVersion: extensions/v1beta1
       kind: Deployment
@@ -102,6 +129,7 @@ spec:
               - "-Dtaskmanager.data.port=6121"
               - "-Dquery.server.port=6125"
               - "-Dblob.server.port=6124"
+              - "-Dlog.file=/logs/jobmanager.log"
               ports:
               - containerPort: 6121
                 name: data
@@ -117,6 +145,8 @@ spec:
                 mountPath: /ha
               - name: snapshots
                 mountPath: /snapshots
+              - name: logs
+                mountPath: /logs
             volumes:
             - name: ha
               persistentVolumeClaim:
@@ -124,13 +154,38 @@ spec:
             - name: snapshots
               persistentVolumeClaim:
                 claimName: {{NAME}}-snapshots
+            - name: logs
+              emptyDir: {}
     jobmanager-deployment.yaml: |
-      apiVersion: extensions/v1beta1
-      kind: Deployment
+      apiVersion: policy/v1beta1
+      kind: PodDisruptionBudget
+      metadata:
+        name: {{NAME}}-pdb
+        namespace: {{NAMESPACE}}
+        labels:
+          app: flink
+          component: {{NAME}}-jobmanager
+      spec:
+        selector:
+          matchLabels:
+            app: flink
+            zookeeper: {{NAME}}
+      ---
+      apiVersion: apps/v1
+      kind: StatefulSet
       metadata:
         name: jobmanager
       spec:
+        selector:
+          matchLabels:
+            app: {{NAME}}
+            component: {{NAME}}-jobmanager
+        serviceName: {{NAME}}-hs
         replicas: {{FLINK_JOBMANAGER_REPLICAS}}
+        updateStrategy:
+          type: RollingUpdate
+        podManagementPolicy: Parallel
+        volumeClaimTemplates: []
         template:
           metadata:
             labels:
@@ -156,11 +211,12 @@ spec:
               - "-Dhigh-availability.cluster-id={{NAME}}"
               - "-Dquery.server.port=6125"
               - "-Dblob.server.port=6124"
-              - "-Drest.address={{NAME}}-jobmanager"
+              - "-Drest.address=$(HOSTNAME).{{NAME}}-hs"
               - "-Dresourcemanager.rpc.port=2552"
-              - "-Djobmanager.rpc.address={{NAME}}-jobmanager"
+              - "-Djobmanager.rpc.address=$(HOSTNAME).{{NAME}}-hs"
               - "-Dhigh-availability.jobmanager.port=8082"
               - "-Dmetrics.internal.query-service.port=8083"
+              - "-Dlog.file=/logs/jobmanager.log"
               ports:
               - containerPort: 6123
                 name: rpc
@@ -177,11 +233,19 @@ spec:
               env:
               - name: JOB_MANAGER_RPC_ADDRESS
                 value: {{NAME}}-jobmanager
+              - name: log.file
+                value: /logs/jobmanager.log
+              - name: HOSTNAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
               volumeMounts:
               - name: ha
                 mountPath: /ha
               - name: snapshots
                 mountPath: /snapshots
+              - name: logs
+                mountPath: /logs
             volumes:
             - name: ha
               persistentVolumeClaim:
@@ -189,6 +253,8 @@ spec:
             - name: snapshots
               persistentVolumeClaim:
                 claimName: {{NAME}}-snapshots
+            - name: logs
+              emptyDir: {}
   tasks:
     common:
       resources:
