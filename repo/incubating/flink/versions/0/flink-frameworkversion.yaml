@@ -22,7 +22,7 @@ spec:
       description: Connection information for Zookeeper
       default: "zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181"
     - name: ZOOKEEPER_PATH
-      description: path to store Flink data in Zookeeper
+      description: Path to store Flink data in Zookeeper
       default: "/flink"
     - name: HIGH_AVAILABILITY
       description: Defines high-availability mode used for the cluster execution. To enable high-availability, set this mode to "ZOOKEEPER" or specify FQN of factory class.
