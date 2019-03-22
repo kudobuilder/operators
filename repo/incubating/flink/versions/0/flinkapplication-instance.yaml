@@ -1,0 +1,56 @@
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: generator
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: flink-demo-generator
+      labels:
+        app: flink-demo-generator
+    spec:
+      containers:
+      - name: flink-demo-generator
+        image: mesosphere/flink-generator:0.1
+        command: ["/generator-linux"]
+        imagePullPolicy: Always
+        args: ["--broker", "small-kafka-0.small-svc:9093"]
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: actor
+spec:
+  replicas: 1
+  template:
+    metadata:
+      name: flink-demo-actor
+      labels:
+        app: flink-demo-actor
+    spec:
+      containers:
+      - name: actor
+        image: mesosphere/flink-demo-actor:0.2
+        command: ["/fraudDisplay-linux"]
+        imagePullPolicy: Always
+        args: ["--broker", "small-kafka-0.small-svc:9093"]
+---
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: flink
+  name: application # this is the instance label which will lead the pod name
+spec:
+  frameworkVersion:
+    name: flink-1.0
+    namespace: default
+    type: FrameworkVersion
+  parameters:
+    DEPLOY_OWN_CLUSTER: "yes"
+    JAR_URL: ""
+    JAR_PATH: "/opt/flink/examples/streaming/StateMachineExample.jar"
+    JOB_ARGUMENTS: "--error-rate=0.05,--sleep=50"
+    CLASSNAME: org.apache.flink.streaming.examples.statemachine.StateMachineExample

@@ -1,0 +1,127 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: FrameworkVersion
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: flink-1.0
+  namespace: default
+spec:
+  framework:
+    name: flinkapplication
+    kind: Framework
+  parameters:
+    - name: JAR_URL
+      description: Location of JAR to run
+      default: ""
+      required: false
+    - name: JAR_PATH
+      description: Location of Jar inside of Flink submission container
+      default: ""
+      required: false
+    - name: JOB_ARGUMENTS
+      description: Arguments to pass to Job at runtime
+      default: ""
+    - name: DEPLOY_OWN_CLUSTER
+      default: "false"
+    - name: CLUSTER_NAME
+      default: "mycluster"
+    - name: CLASSNAME
+      description: Classname to run inside the Jar.
+      default: ""
+  templates:
+    cluster.yaml: |
+      #need to create a rolebinding for the service account in use
+      {{#DEPLOY_OWN_CLUSTER}}
+      apiVersion: kudo.k8s.io/v1alpha1
+      kind: Instance
+      metadata:
+        name: {{CLUSTER_NAME}}
+      spec:
+        frameworkVersion:
+          name: flinkcluster-1.7
+          namespace: default
+          type: FrameworkVersion
+        parameters:
+          HIGH_AVAILABILITY: ZOOKEEPER
+      {{/DEPLOY_OWN_CLUSTER}}
+    config.yaml: |
+      apiVersion: v1
+      data:
+        jobid: ""
+        snapshot: ""
+      kind: ConfigMap
+      metadata:
+        name: flink
+        namespace: {{NAMESPACE}}
+    start.yaml: |
+      # job to start
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        namespace: default
+        name: submit-flink-job
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            restartPolicy: OnFailure
+             {{#JAR_URL}}
+            initContainers:
+            - name: download
+              # Do some download things here and save to a shared Volume
+              # TODO
+            {{/JAR_URL}}
+            containers:
+            - env:
+              - name: JAR_PATH
+                {{#JAR_URL}}
+                value: /volume/{{NAME}}.jar
+                {{/JAR_URL}}
+                {{#JAR_PATH}}
+                value: {{JAR_PATH}}
+                {{/JAR_PATH}}
+              - name: JOBMANAGER
+                 {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              - name: CONFIGMAP
+                value: {{NAME}}-flink
+              - name: CLASSNAME
+                value: {{CLASSNAME}}
+              - name: PROGRAM_ARGS
+                value: {{JOB_ARGUMENTS}}
+              name: {{PLAN_NAME}}
+              image: kudobuilder/flink-submitter:1.7.2
+              imagePullPolicy: Always
+
+  tasks:
+    dependencies:
+      resources:
+        - cluster.yaml
+        - config.yaml
+    run:
+      resources:
+        - start.yaml
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: dependencies
+          strategy: serial
+          steps:
+            - name: dependencies
+              tasks:
+                - dependencies
+    run:
+      strategy: serial
+      phases:
+        - name: dependencies
+          strategy: serial
+          steps:
+            - name: start
+              tasks:
+                - run

@@ -88,3 +88,89 @@ To get the fraud output from the actor:
 ```bash
 kubectl logs $(kubectl get pod -l step=act -o jsonpath="{.items[0].metadata.name}")
 ```
+
+
+
+
+## Modifications 
+
+### Flink Cluster Framework
+
+Creates a Flink Cluster
+
+### Flink Application
+
+Runs an application on a Flink Cluster
+References a FlinkCluster Instance, or creates one 
+
+
+
+One flink cluster per jar
+
+Spec:
+1) Jar location
+2) Program arguments
+
+### Startup
+
+1) Download jar
+   To do this, we can start a Job that downloads the Jar from the provided URL and stores it in a PV that gets creatd.
+2) Flink job Manager
+   Startup the flink job manager with the jar PV mounted at /data/jars
+   HA PV at /data/ha
+   Snapshots PV at /data/snapshots
+3) Start Task Managers
+4) Start the job (with Arguments!)
+
+
+### Update cluster
+1) Snapshot and stop job
+2) Rollout Jobmanager and Task manager changes
+3) restart job from Snapshot
+
+
+
+
+### Upload Jar
+
+```bash
+# fail if returns an error
+set -e 
+#Download the jar
+wget https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar
+# Upload the jar to the jobmanager
+filename=`curl -s -X POST \
+ -H 'Content-Type: multipart/form-data; boundary=----WebKitFormBoundary' --data-binary $'------WebKitFormBoundary\r\nContent-Disposition: form-data; name="jarfile"; filename="flink-job-1.0.jar"\r\nContent-Type: application/java-archive\r\n\r\n\r\n------WebKitFormBoundary--\r\n' --compressed $JOBMANAGER:8081/jars/upload`
+raw=`echo $filename | jq -r .filename`
+# Jar ID is just the last part of the filename
+jar_id=`basename $raw`
+# 
+```
+
+curl 'http://localhost:30000/jars/upload' -H 'Referer: http://localhost:30000/' -H 'Origin: http://localhost:30000' -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10_14_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36' -H 'Content-Type: multipart/form-data; boundary=----WebKitFormBoundaryWXjfk6ihVHVAvLfs' --data-binary $'------WebKitFormBoundaryWXjfk6ihVHVAvLfs\r\nContent-Disposition: form-data; name="jarfile"; filename="flink-job-1.0.jar"\r\nContent-Type: application/java-archive\r\n\r\n\r\n------WebKitFormBoundaryWXjfk6ihVHVAvLfs--\r\n' --compressed
+
+```
+flink run -m application-mycluster-jobmanager:8081 -d -p 1 flink-job-1.0.jar --kafka_host=small-kafka-0.small-svc:9093
+```
+
+
+curl -X POST \
+-H 'Content-Type: application/java-archive' \
+--data-binary @flink-job-1.0.jar \
+$JOBMANAGER:8081/jars/upload
+
+
+Once the jobs submitted we have to save the jobID so its usable by the restart:
+
+1) add a configmap that'll be used to store the jobid
+2) in the start job we'll patch the object
+K8S=https://$KUBERNETES_SERVICE_HOST:$KUBERNETES_SERVICE_PORT
+TOKEN=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+CACERT=/var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+NAMESPACE=$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace)
+curl -H "Authorization: Bearer $TOKEN" --cacert $CACERT $K8S/healthz
+
+???
+curl  -H "Content-Type: application/merge-patch+json" --cacert $CACERT -H "Authorization: Bearer $TOKEN" -X PATCH $K8S/api/v1/namespaces/$NAMESPACE/configmaps/application -d '{ "data": {"jobid": "NEWVALUE"}}'
+
+3 ) the default SA needs to have admin permission
