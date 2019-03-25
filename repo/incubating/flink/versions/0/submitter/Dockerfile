@@ -5,5 +5,6 @@ COPY --from=bitnami/kubectl:1.13 /opt/bitnami/kubectl/bin/kubectl /usr/local/bin
 RUN apt-get update && apt-get install  -y jq
 
 ADD submit.sh .
+ADD shutdown.sh .
 
 ENTRYPOINT [ "./submit.sh" ]

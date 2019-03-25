@@ -149,10 +149,6 @@ spec:
                 mountPath: /snapshots
               - name: logs
                 mountPath: /logs
-              livenessProbe: 
-                httpGet:
-                  path: /config
-                  port: 8081
             volumes:
             - name: ha
               persistentVolumeClaim:
@@ -252,7 +248,7 @@ spec:
               - name: snapshots
                 mountPath: /snapshots
               - name: logs
-                mountPath: /logs
+                mountPath: /logs        
             volumes:
             - name: ha
               persistentVolumeClaim:

@@ -52,5 +52,5 @@ spec:
     DEPLOY_OWN_CLUSTER: "yes"
     JAR_URL: ""
     JAR_PATH: "/opt/flink/examples/streaming/StateMachineExample.jar"
-    JOB_ARGUMENTS: "--error-rate=0.05,--sleep=50"
+    JOB_ARGUMENTS: "--error-rate 0.05 --sleep 50"
     CLASSNAME: org.apache.flink.streaming.examples.statemachine.StateMachineExample
