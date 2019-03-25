@@ -5,16 +5,6 @@ set -x
 #Requires the following environment variables
 # CONFIGMAP - name fo the configmap that will get patched with the jobid
 
-#DEBUG
-# PARALLELISM=${PARALLELISM:-5}
-# JOBMANAGER="localhost:30000"
-# jar_id="6ead963d-5b81-4de0-9cc7-ac7f281de109_StateMachineExample.jar"
-# PROGRAM_ARGS="--error-rate 0.05 --sleep 50"
-# CLASSNAME="org.apache.flink.streaming.examples.statemachine.StateMachineExample"
-# curl -f -XPOST \
-#   -d '{"entryClass":"'"${CLASSNAME}"'","programArgs":"'"${PROGRAM_ARGS}"'","parallelism":"'"${PARALLELISM}"'"}' \
-#   $JOBMANAGER/jars/$jar_id/run
-# exit 0
 # Variables
 PARALLELISM=${PARALLELISM:-1}
 

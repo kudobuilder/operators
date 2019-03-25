@@ -21,6 +21,7 @@ spec:
     - name: JOB_ARGUMENTS
       description: Arguments to pass to Job at runtime
       default: ""
+      trigger: restart
     - name: DEPLOY_OWN_CLUSTER
       default: "false"
     - name: CLUSTER_NAME
@@ -237,7 +238,12 @@ spec:
     restart:
       strategy: serial
       phases:
-        - name: dependencies
+        - name: stop
+          steps:
+          - name: stop
+            tasks:
+            - stop
+        - name: start
           strategy: serial
           steps:
             - name: start
