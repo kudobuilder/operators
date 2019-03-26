@@ -105,7 +105,7 @@ or setting the `DEPLOY_OWN_CLUSTER: "yes"` will deploy a dedicated cluster to us
 
 
 
-### Modifacation Demo
+### Modification Demo
 
 This has currently only been tested with:
 1) A jar that's present on the Flink Image
@@ -135,6 +135,31 @@ zk-zk-2   1/1   Running   0     21s
 zk-zk-1   1/1   Running   0     23s
 ```
 
+Create a Kafka cluster 
+```bash
+$ kubectl apply -f repo/stable/kafka/versions/0/
+$ kubectl get pods -w
+NAME      READY   STATUS              RESTARTS   AGE
+small-kafka-0   0/1   Pending   0     1s
+small-kafka-0   0/1   Pending   0     1s
+small-kafka-0   0/1   Pending   0     1s
+small-kafka-0   0/1   ContainerCreating   0     1s
+small-kafka-0   0/1   Running   0     18s
+small-kafka-0   1/1   Running   0     26s
+small-kafka-1   0/1   Pending   0     1s
+small-kafka-1   0/1   Pending   0     1s
+small-kafka-1   0/1   Pending   0     1s
+small-kafka-1   0/1   ContainerCreating   0     1s
+small-kafka-1   0/1   Running   0     3s
+small-kafka-1   1/1   Running   0     10s
+small-kafka-2   0/1   Pending   0     1s
+small-kafka-2   0/1   Pending   0     1s
+small-kafka-2   0/1   Pending   0     1s
+small-kafka-2   0/1   ContainerCreating   0     1s
+small-kafka-2   0/1   Running   0     3s
+small-kafka-2   1/1   Running   0     9s
+```
+
 and a Flink Application
 ```bash
 $ kubectl apply -f repo/incubating/flink/versions/0/flinkapplication-instance.yaml
@@ -155,10 +180,10 @@ application-mycluster-taskmanager-78cf898476-lzhcr   1/1   Running   0     3s
 application-mycluster-taskmanager-78cf898476-m6qdh   1/1   Running   0     5s
 ```
 
-The creation of the Job should happen during deployment, but we currently have it separated into a separate plan to allow better control.  Yes I know there's a lot of environment varaibles at the top
+The creation of the Job should happen during deployment, but we currently have it separated into a separate plan to allow better control. Yes we know there's a lot of environment variables at the top
 
 ```bash
-$ kubectl apply -f repo/incubating/flink/demo/scratch/run.yaml
+$ kubectl apply -f repo/incubating/flink/demo/scratch/submit.yaml
 $ kubectl logs jobs/application-submit-flink-job
 + PARALLELISM=1
 + ls -la /opt/flink/examples/streaming/StateMachineExample.jar

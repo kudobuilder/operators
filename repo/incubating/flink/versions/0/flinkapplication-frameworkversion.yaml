@@ -11,7 +11,7 @@ spec:
     kind: Framework
   parameters:
     - name: JAR_URL
-      description: Location of JAR to run
+      description: Location of Jar to run
       default: ""
       required: false
     - name: JAR_PATH
@@ -21,7 +21,6 @@ spec:
     - name: JOB_ARGUMENTS
       description: Arguments to pass to Job at runtime
       default: ""
-      trigger: restart
     - name: DEPLOY_OWN_CLUSTER
       default: "false"
     - name: CLUSTER_NAME
@@ -30,6 +29,32 @@ spec:
       description: Classname to run inside the Jar.
       default: ""
   templates:
+    rbac.yaml: |
+      # to avoid: Error from server (Forbidden): configmaps "application-flink" is forbidden:User "system:serviceaccount:default:default" cannot get resource "configmaps" in API group "" in the namespace "default"
+      kind: Role
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        namespace: {{NAMESPACE}}
+        name: flink-configmap-access-role
+      rules:
+        - apiGroups: [""]
+          resources: ["configmaps"]
+          verbs: ["get", "watch", "list", "create", "update", "delete", "patch"]
+      ---
+      kind: RoleBinding
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: flink-configmap-rolebinding
+        namespace: {{NAMESPACE}}
+      subjects:
+        - kind: Group
+          name: system:serviceaccounts
+          apiGroup: rbac.authorization.k8s.io
+          namespace: {{NAMESPACE}}
+      roleRef:
+        kind: Role
+        name: flink-configmap-access-role
+        apiGroup: rbac.authorization.k8s.io
     cluster.yaml: |
       #need to create a rolebinding for the service account in use
       {{#DEPLOY_OWN_CLUSTER}}
@@ -67,23 +92,38 @@ spec:
             name: {{PLAN_NAME}}-job
           spec:
             restartPolicy: OnFailure
-             {{#JAR_URL}}
+            {{#JAR_URL}}
             initContainers:
-            - name: download
-              # Do some download things here and save to a shared Volume
-              # TODO
+            - name: {{PLAN_NAME}}-download
+              image: bash
+              imagePullPolicy: Always
+              command:
+                - "/usr/local/bin/bash"
+              args: ['-c',
+              'export JOB_FILENAME=$(basename $JAR_URL); echo "JAR_URL: $JAR_URL FILE: $JOB_FILENAME JOBMANAGER: $JOBMANAGER"; apk add --no-cache jq curl;
+              curl -s $JAR_URL -o /ha/jobs/$JOB_FILENAME;
+              echo "=====================";
+              echo "saved and done"']
+              env:
+              - name: JAR_URL
+                value: {{JAR_URL}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
             {{/JAR_URL}}
             containers:
             - env:
               - name: JAR_PATH
-                {{#JAR_URL}}
-                value: /volume/{{NAME}}.jar
-                {{/JAR_URL}}
-                {{#JAR_PATH}}
                 value: {{JAR_PATH}}
-                {{/JAR_PATH}}
               - name: JOBMANAGER
-                 {{#DEPLOY_OWN_CLUSTER}}
+                {{#DEPLOY_OWN_CLUSTER}}
                 value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
                 {{/DEPLOY_OWN_CLUSTER}}
                 {{^DEPLOY_OWN_CLUSTER}}
@@ -98,6 +138,10 @@ spec:
               name: {{PLAN_NAME}}
               image: kudobuilder/flink-submitter:1.7.2
               imagePullPolicy: Always
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-ha
     restart.yaml: |
       # job to start
       apiVersion: batch/v1
@@ -111,7 +155,7 @@ spec:
             name: {{PLAN_NAME}}-job
           spec:
             restartPolicy: OnFailure
-             {{#JAR_URL}}
+            {{#JAR_URL}}
             initContainers:
             - name: download
               # Do some download things here and save to a shared Volume
@@ -120,14 +164,9 @@ spec:
             containers:
             - env:
               - name: JAR_PATH
-                {{#JAR_URL}}
-                value: /volume/{{NAME}}.jar
-                {{/JAR_URL}}
-                {{#JAR_PATH}}
                 value: {{JAR_PATH}}
-                {{/JAR_PATH}}
               - name: JOBMANAGER
-                 {{#DEPLOY_OWN_CLUSTER}}
+                {{#DEPLOY_OWN_CLUSTER}}
                 value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
                 {{/DEPLOY_OWN_CLUSTER}}
                 {{^DEPLOY_OWN_CLUSTER}}
@@ -160,7 +199,7 @@ spec:
             name: {{PLAN_NAME}}-job
           spec:
             restartPolicy: OnFailure
-             {{#JAR_URL}}
+            {{#JAR_URL}}
             initContainers:
             - name: download
               # Do some download things here and save to a shared Volume
@@ -169,14 +208,9 @@ spec:
             containers:
             - env:
               - name: JAR_PATH
-                {{#JAR_URL}}
-                value: /volume/{{NAME}}.jar
-                {{/JAR_URL}}
-                {{#JAR_PATH}}
                 value: {{JAR_PATH}}
-                {{/JAR_PATH}}
               - name: JOBMANAGER
-                 {{#DEPLOY_OWN_CLUSTER}}
+                {{#DEPLOY_OWN_CLUSTER}}
                 value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
                 {{/DEPLOY_OWN_CLUSTER}}
                 {{^DEPLOY_OWN_CLUSTER}}
@@ -196,9 +230,10 @@ spec:
   tasks:
     dependencies:
       resources:
+        - rbac.yaml
         - cluster.yaml
         - config.yaml
-    run:
+    submit:
       resources:
         - start.yaml
     stop:
@@ -217,19 +252,19 @@ spec:
             - name: dependencies
               tasks:
                 - dependencies
-    run:
+    submit:
       strategy: serial
       phases:
-        - name: dependencies
+        - name: submit
           strategy: serial
           steps:
-            - name: start
+            - name: submit
               tasks:
-                - run
+                - submit
     stop:
       strategy: serial
       phases:
-        - name: dependencies
+        - name: stop
           strategy: serial
           steps:
             - name: stop
@@ -238,14 +273,9 @@ spec:
     restart:
       strategy: serial
       phases:
-        - name: stop
-          steps:
-          - name: stop
-            tasks:
-            - stop
-        - name: start
+        - name: restart
           strategy: serial
           steps:
-            - name: start
+            - name: restart
               tasks:
                 - restart
