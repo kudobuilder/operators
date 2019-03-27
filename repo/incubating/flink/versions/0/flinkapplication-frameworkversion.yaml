@@ -147,18 +147,38 @@ spec:
       kind: Job
       metadata:
         namespace: default
-        name: restart-flink-job
+        name: {{PLAN_NAME}}-flink-job
       spec:
         template:
           metadata:
             name: {{PLAN_NAME}}-job
           spec:
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-{{CLUSTER_NAME}}-ha
             restartPolicy: OnFailure
             {{#JAR_URL}}
             initContainers:
-            - name: download
-              # Do some download things here and save to a shared Volume
-              # TODO
+            - name: {{PLAN_NAME}}-download
+              image: bash
+              imagePullPolicy: Always
+              command: ['/bin/sh', '-c', 'mkdir -p /ha/artifacts; wget $JAR_URL -O $JAR_PATH; ls -al; ls -al /ha; ls -al /ha/artifacts']
+              env:
+              - name: JAR_URL
+                value: {{JAR_URL}}
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
             {{/JAR_URL}}
             containers:
             - env:
@@ -182,6 +202,9 @@ spec:
                   configMapKeyRef:
                     name: {{NAME}}-flink
                     key: "location"
+              volumeMounts:
+                - name: ha
+                  mountPath: /ha
               name: {{PLAN_NAME}}
               image: kudobuilder/flink-submitter:1.7.2
               imagePullPolicy: Always
@@ -191,19 +214,13 @@ spec:
       kind: Job
       metadata:
         namespace: default
-        name: stop-flink-job
+        name: {{PLAN_NAME}}-flink-job
       spec:
         template:
           metadata:
             name: {{PLAN_NAME}}-job
           spec:
             restartPolicy: OnFailure
-            {{#JAR_URL}}
-            initContainers:
-            - name: download
-              # Do some download things here and save to a shared Volume
-              # TODO
-            {{/JAR_URL}}
             containers:
             - env:
               - name: JAR_PATH
@@ -225,7 +242,6 @@ spec:
               name: {{PLAN_NAME}}
               image: kudobuilder/flink-submitter:1.7.2
               imagePullPolicy: Always
-
   tasks:
     dependencies:
       resources:

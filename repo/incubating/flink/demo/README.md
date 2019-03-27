@@ -227,7 +227,7 @@ You should be able now to see the job running in your Flink Dashboard.
 You also should be able to see the detected fraud output in your actor logs:
 
 ```bash
-$ kubectl logs actor-f65f7745-ft5qj
+$ kubectl logs $(kubectl get pod -l app=flink-demo-actor -o jsonpath={.items..metadata.name})
 Broker:   small-kafka-0.small-svc:9093
 Topic:   fraud
 
