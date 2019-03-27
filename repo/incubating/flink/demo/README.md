@@ -223,7 +223,25 @@ Submitting Job... Response: {"jobid":"19f12f073433d71d3dd360d93ba74f29"}
 JobID: 19f12f073433d71d3dd360d93ba74f29
 ```
 
-This updates the config map with the `jobid` to be used elsewhere:
+You should be able now to see the job running in your Flink Dashboard. 
+You also should be able to see the detected fraud output in your actor logs:
+
+```bash
+$ kubectl logs actor-f65f7745-ft5qj
+Broker:   small-kafka-0.small-svc:9093
+Topic:   fraud
+
+Detected Fraud:   TransactionAggregate {startTimestamp=0, endTimestamp=1553669518000, totalAmount=11392:
+Transaction{timestamp=1553669433000, origin=3, target='1', amount=3202}
+Transaction{timestamp=1553669518000, origin=3, target='1', amount=8190}}
+
+Detected Fraud:   TransactionAggregate {startTimestamp=0, endTimestamp=1553669512000, totalAmount=15044:
+Transaction{timestamp=1553669457000, origin=9, target='8', amount=6819}
+Transaction{timestamp=1553669499000, origin=9, target='8', amount=853}
+Transaction{timestamp=1553669512000, origin=9, target='8', amount=7372}}
+```
+
+While your job was submitted, the config map with the `jobid` to be used elsewhere was also updated:
 ```bash
 $ kubectl get configmap application-flink -o jsonpath="{ .data.jobid }"
 2884cf4cfe7f75c1e5ab5de47ec93e50

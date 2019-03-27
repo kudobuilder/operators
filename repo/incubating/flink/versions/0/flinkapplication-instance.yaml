@@ -53,3 +53,4 @@ spec:
     JAR_URL: "https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar"
     JAR_PATH: "/ha/jobs/flink-job-1.0.jar"
     JOB_ARGUMENTS: "--kafka_host small-kafka-0.small-svc.default.svc.cluster.local:9093"
+    CLASSNAME: "io.dcos.FinancialTransactionJob"

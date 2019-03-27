@@ -91,22 +91,22 @@ spec:
           metadata:
             name: {{PLAN_NAME}}-job
           spec:
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-{{CLUSTER_NAME}}-ha
             restartPolicy: OnFailure
             {{#JAR_URL}}
             initContainers:
             - name: {{PLAN_NAME}}-download
               image: bash
               imagePullPolicy: Always
-              command:
-                - "/usr/local/bin/bash"
-              args: ['-c',
-              'export JOB_FILENAME=$(basename $JAR_URL); echo "JAR_URL: $JAR_URL FILE: $JOB_FILENAME JOBMANAGER: $JOBMANAGER"; apk add --no-cache jq curl;
-              curl -s $JAR_URL -o /ha/jobs/$JOB_FILENAME;
-              echo "=====================";
-              echo "saved and done"']
+              command: ['/bin/sh', '-c', 'mkdir -p /ha/artifacts; wget $JAR_URL -O $JAR_PATH; ls -al; ls -al /ha; ls -al /ha/artifacts']
               env:
               - name: JAR_URL
                 value: {{JAR_URL}}
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
               - name: JOBMANAGER
                 {{#DEPLOY_OWN_CLUSTER}}
                 value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
@@ -135,13 +135,12 @@ spec:
                 value: {{CLASSNAME}}
               - name: PROGRAM_ARGS
                 value: {{JOB_ARGUMENTS}}
+              volumeMounts:
+                - name: ha
+                  mountPath: /ha
               name: {{PLAN_NAME}}
               image: kudobuilder/flink-submitter:1.7.2
               imagePullPolicy: Always
-            volumes:
-            - name: ha
-              persistentVolumeClaim:
-                claimName: {{NAME}}-ha
     restart.yaml: |
       # job to start
       apiVersion: batch/v1
