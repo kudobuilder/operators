@@ -109,3 +109,5 @@ You should see the following output.
   }
 }
 ```
+
+To learn more on how to use elasticsearch checkout the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
