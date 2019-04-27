@@ -1,5 +1,8 @@
 # Elastic
 
+Elasticsearch is a distributed, RESTful search and analytics engine. It is based on Apache Lucene.
+
+This Framework is deploying an Elasticsearch Cluster.
 
 ## Prerequisites
 
