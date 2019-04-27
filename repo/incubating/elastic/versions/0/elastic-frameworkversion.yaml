@@ -59,7 +59,7 @@ spec:
                   - containerPort: 9200
                     name: api
                   - containerPort: 9300
-                    name:
+                    name: internal
                 env:
                   - name: cluster.name
                     value: {{NAME}}-cluster
