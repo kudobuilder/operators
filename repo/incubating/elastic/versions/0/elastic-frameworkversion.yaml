@@ -1,0 +1,95 @@
+# framework version
+
+apiVersion: kudo.k8s.io/v1alpha1
+kind: FrameworkVersion
+metadata:
+  name: elastic-v1
+  namespace: default
+  labels:
+    controller-tools.k8s.io: "1.0"
+spec:
+  version: "1.0.0"
+  connectionString: ""
+  framework:
+    name: elastic
+    kind: Framework
+  templates:
+    service.yaml: |
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: hs
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          app: elastic
+        ports:
+          - protocol: TCP
+            port: 9200
+        clusterIP: None
+    node.yaml: |
+      kind: StatefulSet
+      apiVersion: apps/v1
+      metadata:
+        name: node
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          matchLabels:
+            app: elastic # has to match .spec.template.metadata.labels
+        serviceName: {{NAME}}-hs
+        replicas: 3
+        template:
+          metadata:
+            labels:
+              app: elastic # has to match .spec.selector.matchLabels
+          spec:
+            initContainers:
+              - name: volume-permissions
+                image: busybox
+                command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+            terminationGracePeriodSeconds: 10
+            containers:
+              - name: elastic
+                image: elasticsearch:7.0.0
+                ports:
+                  - containerPort: 9200
+                    name: api
+                  - containerPort: 9300
+                    name:
+                env:
+                  - name: cluster.name
+                    value: {{NAME}}-cluster
+                  - name: discovery.seed_hosts
+                    value: {{NAME}}-node-0.{{NAME}}-hs,{{NAME}}-node-1.{{NAME}}-hs,{{NAME}}-node-2.{{NAME}}-hs
+                  - name: cluster.initial_master_nodes
+                    value: {{NAME}}-node-0,{{NAME}}-node-1,{{NAME}}-node-2
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              resources:
+                requests:
+                  storage: 1Gi
+  tasks:
+    deploy:
+      resources:
+        - service.yaml
+        - node.yaml
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: deploy-elastic
+          strategy: parallel
+          steps:
+            - name: deploy
+              tasks:
+                - deploy
