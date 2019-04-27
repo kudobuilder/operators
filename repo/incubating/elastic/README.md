@@ -62,7 +62,7 @@ You should see the following output.
 
 Lets add some data.
 ```
-curl -X POST "localhost:9200/twitter/_doc/" -H 'Content-Type: application/json' -d'
+curl -X POST "myes-node-0.myes-hs:9200/twitter/_doc/" -H 'Content-Type: application/json' -d'
 {
     "user" : "kimchy",
     "post_date" : "2009-11-15T14:12:12",
@@ -73,7 +73,7 @@ curl -X POST "localhost:9200/twitter/_doc/" -H 'Content-Type: application/json' 
 
 Lets search for the entry.
 ```
-curl -X GET "localhost:9200/twitter/_search?q=user:kimchy"
+curl -X GET "myes-node-0.myes-hs:9200/twitter/_search?q=user:kimchy"
 ```
 
 You should see the following output.
