@@ -30,9 +30,9 @@ kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master
 ```
 
 
-## Use the instance
+## Use the Instance
 
-Exec into one of the POD's
+Exec into one of the POD's.
 ```
 kubectl -it exec myes-node-0 bash
 ```
@@ -113,4 +113,4 @@ You should see the following output.
 }
 ```
 
-To learn more on how to use elasticsearch checkout the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
+You can learn more on how to use elasticsearch from the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
