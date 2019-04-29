@@ -89,10 +89,7 @@ To get the fraud output from the actor:
 kubectl logs $(kubectl get pod -l step=act -o jsonpath="{.items[0].metadata.name}")
 ```
 
-
-
-
-## Modifications 
+## Modifications
 
 ### Flink Cluster Framework
 
@@ -100,18 +97,19 @@ Creates a Flink Cluster.  This creates a Highly avaialble cluster with 1 JobMana
 
 ### Flink Application
 
-Runs an application on a Flink Cluster.  The FlinkInstance Cluster could either be referenced by name (in the same namespace(need to test this)), 
-or setting the `DEPLOY_OWN_CLUSTER: "yes"` will deploy a dedicated cluster to use.
+Runs an application on a Flink Cluster.  The FlinkInstance Cluster could either be referenced by name (in the same namespace(need to test this)), or setting the `DEPLOY_OWN_CLUSTER: "yes"` will deploy a dedicated cluster to use.
 
 
 
 ### Modification Demo
 
 This has currently only been tested with:
+
 1) A jar that's present on the Flink Image
 2) A Cluster deployed as part of the FlinkApplication instance
 
 Install dependencies
+
 ```bash
 kubectl apply -f repo/incubating/flink/versions/0/flinkcluster-framework.yaml
 kubectl apply -f repo/incubating/flink/versions/0/flinkcluster-frameworkversion.yaml
@@ -119,7 +117,8 @@ kubectl apply -f repo/incubating/flink/versions/0/flinkapplication-framework.yam
 kubectl apply -f repo/incubating/flink/versions/0/flinkapplication-frameworkversion.yaml
 ```
 
-Create a Zookeeper 
+Create a Zookeeper
+
 ```bash
 $ kubectl apply -f repo/stable/zookeeper/versions/0/
 $ kubectl get pods -w
@@ -135,7 +134,8 @@ zk-zk-2   1/1   Running   0     21s
 zk-zk-1   1/1   Running   0     23s
 ```
 
-Create a Kafka cluster 
+Create a Kafka cluster
+
 ```bash
 $ kubectl apply -f repo/stable/kafka/versions/0/
 $ kubectl get pods -w
@@ -161,6 +161,7 @@ small-kafka-2   1/1   Running   0     9s
 ```
 
 and a Flink Application
+
 ```bash
 $ kubectl apply -f repo/incubating/flink/versions/0/flinkapplication-instance.yaml
 $ kubectl get pods -w
@@ -242,13 +243,15 @@ Transaction{timestamp=1553669512000, origin=9, target='8', amount=7372}}
 ```
 
 While your job was submitted, the config map with the `jobid` to be used elsewhere was also updated:
+
 ```bash
 $ kubectl get configmap application-flink -o jsonpath="{ .data.jobid }"
 2884cf4cfe7f75c1e5ab5de47ec93e50
 ```
 
 Stop the job with a savepoint
-```
+
+```bash
 $ kubectl apply -f repo/incubating/flink/demo/scratch/stop.yaml
 $ kubectl logs -f jobs/application-stop-flink-job
 ++ kubectl get configmap application-flink -o 'jsonpath={.data.jobid}'
@@ -676,6 +679,7 @@ Savepoint successful made, and job shut down
 ```
 
 See the savepoint on the master:
+
 ```bash
 $ kubectl get configmap application-flink -o jsonpath="{ .data.location }"
 file:/ha/savepoints/19f12f073433d71d3dd360d93ba74f29/savepoint-19f12f-259c470b04b1%
@@ -687,6 +691,7 @@ drwxr-xr-x 3 root root 4096 Mar 25 02:19 ..
 ```
 
 Start the job back up with the savepoint
+
 ```bash
 $ kubectl apply -f repo/incubating/flink/demo/scratch/restart.yaml
 $ kubectl logs -f jobs/application-restart-flink-job
@@ -736,12 +741,13 @@ $ kubectl logs application-mycluster-jobmanager-0| grep /ha/savepoints/19f12f073
 2019-03-25 02:22:16,841 INFO  org.apache.flink.runtime.checkpoint.CheckpointCoordinator     - Starting job 544898ff367a9f8e272d484f6b2193ee from savepoint file:/ha/savepoints/19f12f073433d71d3dd360d93ba74f29/savepoint-19f12f-259c470b04b1 ()
 ```
 
-
 ### Update cluster
+
 1) Snapshot and stop job
 2) Rollout Jobmanager and Task manager changes
 3) restart job from Snapshot
 
 ### TODO
-* Have startup scripts download JARs from URLs
-* look at kustomize to use same core Job for interactions
+
+1) Have startup scripts download JARs from URLs
+2) look at kustomize to use same core Job for interactions
