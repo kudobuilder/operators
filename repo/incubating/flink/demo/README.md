@@ -105,7 +105,7 @@ or setting the `DEPLOY_OWN_CLUSTER: "yes"` will deploy a dedicated cluster to us
 
 
 
-### Modifacation Demo
+### Modification Demo
 
 This has currently only been tested with:
 1) A jar that's present on the Flink Image
@@ -135,6 +135,31 @@ zk-zk-2   1/1   Running   0     21s
 zk-zk-1   1/1   Running   0     23s
 ```
 
+Create a Kafka cluster 
+```bash
+$ kubectl apply -f repo/stable/kafka/versions/0/
+$ kubectl get pods -w
+NAME      READY   STATUS              RESTARTS   AGE
+small-kafka-0   0/1   Pending   0     1s
+small-kafka-0   0/1   Pending   0     1s
+small-kafka-0   0/1   Pending   0     1s
+small-kafka-0   0/1   ContainerCreating   0     1s
+small-kafka-0   0/1   Running   0     18s
+small-kafka-0   1/1   Running   0     26s
+small-kafka-1   0/1   Pending   0     1s
+small-kafka-1   0/1   Pending   0     1s
+small-kafka-1   0/1   Pending   0     1s
+small-kafka-1   0/1   ContainerCreating   0     1s
+small-kafka-1   0/1   Running   0     3s
+small-kafka-1   1/1   Running   0     10s
+small-kafka-2   0/1   Pending   0     1s
+small-kafka-2   0/1   Pending   0     1s
+small-kafka-2   0/1   Pending   0     1s
+small-kafka-2   0/1   ContainerCreating   0     1s
+small-kafka-2   0/1   Running   0     3s
+small-kafka-2   1/1   Running   0     9s
+```
+
 and a Flink Application
 ```bash
 $ kubectl apply -f repo/incubating/flink/versions/0/flinkapplication-instance.yaml
@@ -155,10 +180,10 @@ application-mycluster-taskmanager-78cf898476-lzhcr   1/1   Running   0     3s
 application-mycluster-taskmanager-78cf898476-m6qdh   1/1   Running   0     5s
 ```
 
-The creation of the Job should happen during deployment, but we currently have it separated into a separate plan to allow better control.  Yes I know there's a lot of environment varaibles at the top
+The creation of the Job should happen during deployment, but we currently have it separated into a separate plan to allow better control. Yes we know there's a lot of environment variables at the top
 
 ```bash
-$ kubectl apply -f repo/incubating/flink/demo/scratch/run.yaml
+$ kubectl apply -f repo/incubating/flink/demo/scratch/submit.yaml
 $ kubectl logs jobs/application-submit-flink-job
 + PARALLELISM=1
 + ls -la /opt/flink/examples/streaming/StateMachineExample.jar
@@ -198,7 +223,25 @@ Submitting Job... Response: {"jobid":"19f12f073433d71d3dd360d93ba74f29"}
 JobID: 19f12f073433d71d3dd360d93ba74f29
 ```
 
-This updates the config map with the `jobid` to be used elsewhere:
+You should be able now to see the job running in your Flink Dashboard. 
+You also should be able to see the detected fraud output in your actor logs:
+
+```bash
+$ kubectl logs $(kubectl get pod -l app=flink-demo-actor -o jsonpath={.items..metadata.name})
+Broker:   small-kafka-0.small-svc:9093
+Topic:   fraud
+
+Detected Fraud:   TransactionAggregate {startTimestamp=0, endTimestamp=1553669518000, totalAmount=11392:
+Transaction{timestamp=1553669433000, origin=3, target='1', amount=3202}
+Transaction{timestamp=1553669518000, origin=3, target='1', amount=8190}}
+
+Detected Fraud:   TransactionAggregate {startTimestamp=0, endTimestamp=1553669512000, totalAmount=15044:
+Transaction{timestamp=1553669457000, origin=9, target='8', amount=6819}
+Transaction{timestamp=1553669499000, origin=9, target='8', amount=853}
+Transaction{timestamp=1553669512000, origin=9, target='8', amount=7372}}
+```
+
+While your job was submitted, the config map with the `jobid` to be used elsewhere was also updated:
 ```bash
 $ kubectl get configmap application-flink -o jsonpath="{ .data.jobid }"
 2884cf4cfe7f75c1e5ab5de47ec93e50

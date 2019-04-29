@@ -1,12 +1,11 @@
 apiVersion: kudo.k8s.io/v1alpha1
 kind: PlanExecution
 metadata:
-  name: run
+  name: submit
   namespace: default
 spec:
   instance:
     kind: Instance
     name: application
     namespace: default
-  planName: run
-  
+  planName: submit
