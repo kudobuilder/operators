@@ -1,0 +1,296 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: FrameworkVersion
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: flink-1.0
+  namespace: default
+spec:
+  framework:
+    name: flinkapplication
+    kind: Framework
+  parameters:
+    - name: JAR_URL
+      description: Location of Jar to run
+      default: ""
+      required: false
+    - name: JAR_PATH
+      description: Location of Jar inside of Flink submission container
+      default: ""
+      required: false
+    - name: JOB_ARGUMENTS
+      description: Arguments to pass to Job at runtime
+      default: ""
+    - name: DEPLOY_OWN_CLUSTER
+      default: "false"
+    - name: CLUSTER_NAME
+      default: "mycluster"
+    - name: CLASSNAME
+      description: Classname to run inside the Jar.
+      default: ""
+  templates:
+    rbac.yaml: |
+      # to avoid: Error from server (Forbidden): configmaps "application-flink" is forbidden:User "system:serviceaccount:default:default" cannot get resource "configmaps" in API group "" in the namespace "default"
+      kind: Role
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        namespace: {{NAMESPACE}}
+        name: flink-configmap-access-role
+      rules:
+        - apiGroups: [""]
+          resources: ["configmaps"]
+          verbs: ["get", "watch", "list", "create", "update", "delete", "patch"]
+      ---
+      kind: RoleBinding
+      apiVersion: rbac.authorization.k8s.io/v1
+      metadata:
+        name: flink-configmap-rolebinding
+        namespace: {{NAMESPACE}}
+      subjects:
+        - kind: Group
+          name: system:serviceaccounts
+          apiGroup: rbac.authorization.k8s.io
+          namespace: {{NAMESPACE}}
+      roleRef:
+        kind: Role
+        name: flink-configmap-access-role
+        apiGroup: rbac.authorization.k8s.io
+    cluster.yaml: |
+      #need to create a rolebinding for the service account in use
+      {{#DEPLOY_OWN_CLUSTER}}
+      apiVersion: kudo.k8s.io/v1alpha1
+      kind: Instance
+      metadata:
+        name: {{CLUSTER_NAME}}
+      spec:
+        frameworkVersion:
+          name: flinkcluster-1.7
+          namespace: default
+          type: FrameworkVersion
+        parameters:
+          HIGH_AVAILABILITY: ZOOKEEPER
+      {{/DEPLOY_OWN_CLUSTER}}
+    config.yaml: |
+      apiVersion: v1
+      data:
+        jobid: ""
+        snapshot: ""
+      kind: ConfigMap
+      metadata:
+        name: flink
+        namespace: {{NAMESPACE}}
+    start.yaml: |
+      # job to start
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        namespace: default
+        name: submit-flink-job
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-{{CLUSTER_NAME}}-ha
+            restartPolicy: OnFailure
+            {{#JAR_URL}}
+            initContainers:
+            - name: {{PLAN_NAME}}-download
+              image: bash
+              imagePullPolicy: Always
+              command: ['/bin/sh', '-c', 'mkdir -p /ha/artifacts; wget $JAR_URL -O $JAR_PATH; ls -al; ls -al /ha; ls -al /ha/artifacts']
+              env:
+              - name: JAR_URL
+                value: {{JAR_URL}}
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
+            {{/JAR_URL}}
+            containers:
+            - env:
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              - name: CONFIGMAP
+                value: {{NAME}}-flink
+              - name: CLASSNAME
+                value: {{CLASSNAME}}
+              - name: PROGRAM_ARGS
+                value: {{JOB_ARGUMENTS}}
+              volumeMounts:
+                - name: ha
+                  mountPath: /ha
+              name: {{PLAN_NAME}}
+              image: kudobuilder/flink-submitter:1.7.2
+              imagePullPolicy: Always
+    restart.yaml: |
+      # job to start
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        namespace: default
+        name: {{PLAN_NAME}}-flink-job
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-{{CLUSTER_NAME}}-ha
+            restartPolicy: OnFailure
+            {{#JAR_URL}}
+            initContainers:
+            - name: {{PLAN_NAME}}-download
+              image: bash
+              imagePullPolicy: Always
+              command: ['/bin/sh', '-c', 'mkdir -p /ha/artifacts; wget $JAR_URL -O $JAR_PATH; ls -al; ls -al /ha; ls -al /ha/artifacts']
+              env:
+              - name: JAR_URL
+                value: {{JAR_URL}}
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
+            {{/JAR_URL}}
+            containers:
+            - env:
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              - name: CONFIGMAP
+                value: {{NAME}}-flink
+              - name: CLASSNAME
+                value: {{CLASSNAME}}
+              - name: PROGRAM_ARGS
+                value: {{JOB_ARGUMENTS}}
+              - name: SAVEPOINT_PATH
+                valueFrom:
+                  configMapKeyRef:
+                    name: {{NAME}}-flink
+                    key: "location"
+              volumeMounts:
+                - name: ha
+                  mountPath: /ha
+              name: {{PLAN_NAME}}
+              image: kudobuilder/flink-submitter:1.7.2
+              imagePullPolicy: Always
+    stop.yaml: |
+      # job to start
+      apiVersion: batch/v1
+      kind: Job
+      metadata:
+        namespace: default
+        name: {{PLAN_NAME}}-flink-job
+      spec:
+        template:
+          metadata:
+            name: {{PLAN_NAME}}-job
+          spec:
+            restartPolicy: OnFailure
+            containers:
+            - env:
+              - name: JAR_PATH
+                value: {{JAR_PATH}}
+              - name: JOBMANAGER
+                {{#DEPLOY_OWN_CLUSTER}}
+                value: {{NAME}}-{{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+                {{^DEPLOY_OWN_CLUSTER}}
+                value: {{CLUSTER_NAME}}-jobmanager
+                {{/DEPLOY_OWN_CLUSTER}}
+              - name: CONFIGMAP
+                value: {{NAME}}-flink
+              - name: CLASSNAME
+                value: {{CLASSNAME}}
+              - name: PROGRAM_ARGS
+                value: {{JOB_ARGUMENTS}}
+              command: ["./shutdown.sh"]
+              name: {{PLAN_NAME}}
+              image: kudobuilder/flink-submitter:1.7.2
+              imagePullPolicy: Always
+  tasks:
+    dependencies:
+      resources:
+        - rbac.yaml
+        - cluster.yaml
+        - config.yaml
+    submit:
+      resources:
+        - start.yaml
+    stop:
+      resources:
+        - stop.yaml
+    restart:
+      resources:
+        - restart.yaml
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: dependencies
+          strategy: serial
+          steps:
+            - name: dependencies
+              tasks:
+                - dependencies
+    submit:
+      strategy: serial
+      phases:
+        - name: submit
+          strategy: serial
+          steps:
+            - name: submit
+              tasks:
+                - submit
+    stop:
+      strategy: serial
+      phases:
+        - name: stop
+          strategy: serial
+          steps:
+            - name: stop
+              tasks:
+                - stop
+    restart:
+      strategy: serial
+      phases:
+        - name: restart
+          strategy: serial
+          steps:
+            - name: restart
+              tasks:
+                - restart

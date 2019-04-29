@@ -3,4 +3,4 @@ kind: Framework
 metadata:
   labels:
     controller-tools.k8s.io: "1.0"
-  name: flink # this will be the "app" label but not the pod name (thats what instance is for)
+  name: flink-cluster # this will be the "app" label but not the pod name (thats what instance is for)

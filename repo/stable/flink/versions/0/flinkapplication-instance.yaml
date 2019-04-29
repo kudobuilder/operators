@@ -1,0 +1,18 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: flink
+  name: application # this is the instance label which will lead the pod name
+spec:
+  frameworkVersion:
+    name: flink-1.0
+    namespace: default
+    type: FrameworkVersion
+  parameters:
+    DEPLOY_OWN_CLUSTER: "yes"
+    JAR_URL: "https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar"
+    JAR_PATH: "/ha/artifacts/flink-job-1.0.jar"
+    JOB_ARGUMENTS: "--kafka_host small-kafka-0.small-svc.default.svc.cluster.local:9093"
+    CLASSNAME: "io.dcos.FinancialTransactionJob"

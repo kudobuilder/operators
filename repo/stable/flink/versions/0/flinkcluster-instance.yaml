@@ -1,0 +1,14 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: flinkcluster
+  name: flinkcluster # this is the instance label which will lead the pod name
+spec:
+  frameworkVersion:
+    name: flinkcluster-1.7
+    namespace: default
+    type: FrameworkVersion
+  parameters:
+    HIGH_AVAILABILITY: ZOOKEEPER

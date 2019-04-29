@@ -1,0 +1,286 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: FrameworkVersion
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+  name: flinkcluster-1.7
+  namespace: default
+spec:
+  framework:
+    name: flinkcluster # this needs to link to an existing framework defined in the *-framework.yaml
+    kind: Framework
+  # Add fields here
+  version: "1.7" # this will be the version label
+  parameters:
+    - name: FLINK_TASKMANAGER_REPLICAS
+      description: Number of task managers to run
+      default: "2"
+    - name: FLINK_JOBMANAGER_REPLICAS
+      description: Number of job managers to run
+      default: "1"
+    - name: ZOOKEEPER_URL
+      description: Connection information for Zookeeper
+      default: "zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181"
+    - name: ZOOKEEPER_PATH
+      description: Path to store Flink data in Zookeeper
+      default: "/flink"
+    - name: HIGH_AVAILABILITY
+      description: Defines high-availability mode used for the cluster execution. To enable high-availability, set this mode to "ZOOKEEPER" or specify FQN of factory class.
+      default: NONE
+  templates:
+    storage.yaml: |
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: snapshots
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1Gi
+      ---
+      apiVersion: v1
+      kind: PersistentVolumeClaim
+      metadata:
+        name: ha
+      spec:
+        accessModes:
+          - ReadWriteMany
+        resources:
+          requests:
+            storage: 1Gi
+    services.yaml: |
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: jobmanager
+        namespace: {{NAMESPACE}}
+      spec:
+        ports:
+        - name: rpc
+          port: 6123
+        - name: blob
+          port: 6124
+        - name: query
+          port: 6125
+        - name: ui
+          port: 8081
+        - name: ha
+          port: 8082
+        - name: metrics
+          port: 8083
+        selector:
+          app: {{NAME}}
+          component: {{NAME}}-jobmanager
+      ---
+      apiVersion: v1
+      kind: Service
+      metadata:
+        name: hs
+        namespace: {{NAMESPACE}}
+        labels:
+          app: flink
+          component: {{NAME}}-jobmanager
+      spec:
+        ports:
+        - name: rpc
+          port: 6123
+        - name: blob
+          port: 6124
+        - name: query
+          port: 6125
+        - name: ui
+          port: 8081
+        - name: ha
+          port: 8082
+        - name: metrics
+          port: 8083
+        selector:
+          app: {{NAME}}
+          component: {{NAME}}-jobmanager
+        clusterIP: None
+    taskmanager-deployment.yaml: |
+      apiVersion: extensions/v1beta1
+      kind: Deployment
+      metadata:
+        name: taskmanager
+      spec:
+        replicas: {{FLINK_TASKMANAGER_REPLICAS}}
+        template:
+          metadata:
+            labels:
+              app: flink
+              component: {{NAME}}-taskmanager
+          spec:
+            containers:
+            - name: taskmanager
+              image: kudobuilder/flink:1.7.2
+              args:
+              - taskmanager
+              - "-Dhigh-availability={{HIGH_AVAILABILITY}}"
+              - "-Dhigh-availability.storageDir=file:///ha"
+              - "-Dstate.savepoints.dir=file:///snapshots/"
+              - "-Dstate.checkpoints.dir=file:///snapshots/"
+              - "-Dhigh-availability.zookeeper.quorum={{ZOOKEEPER_URL}}"
+              - "-Dhigh-availability.zookeeper.path.root={{ZOOKEEPER_PATH}}"
+              - "-Dhigh-availability.cluster-id={{NAME}}"
+              - "-Dtaskmanager.rpc.port=6123"
+              - "-Dtaskmanager.data.port=6121"
+              - "-Dquery.server.port=6125"
+              - "-Dblob.server.port=6124"
+              - "-Dlog.file=/logs/jobmanager.log"
+              ports:
+              - containerPort: 6121
+                name: data
+              - containerPort: 6123
+                name: rpc
+              - containerPort: 6125
+                name: query
+              - containerPort: 8081
+                name: ui
+              env:
+              - name: JOB_MANAGER_RPC_ADDRESS
+                value: {{NAME}}-jobmanager
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
+              - name: snapshots
+                mountPath: /snapshots
+              - name: logs
+                mountPath: /logs
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-ha
+            - name: snapshots
+              persistentVolumeClaim:
+                claimName: {{NAME}}-snapshots
+            - name: logs
+              emptyDir: {}
+    jobmanager-deployment.yaml: |
+      apiVersion: policy/v1beta1
+      kind: PodDisruptionBudget
+      metadata:
+        name: {{NAME}}-pdb
+        namespace: {{NAMESPACE}}
+        labels:
+          app: flink
+          component: {{NAME}}-jobmanager
+      spec:
+        selector:
+          matchLabels:
+            app: flink
+            zookeeper: {{NAME}}
+      ---
+      apiVersion: apps/v1
+      kind: StatefulSet
+      metadata:
+        name: jobmanager
+      spec:
+        selector:
+          matchLabels:
+            app: {{NAME}}
+            component: {{NAME}}-jobmanager
+        serviceName: {{NAME}}-hs
+        replicas: {{FLINK_JOBMANAGER_REPLICAS}}
+        updateStrategy:
+          type: RollingUpdate
+        podManagementPolicy: Parallel
+        volumeClaimTemplates: []
+        template:
+          metadata:
+            labels:
+              app: {{NAME}}
+              component: {{NAME}}-jobmanager
+          spec:
+            containers:
+            - name: jobmanager
+              image: kudobuilder/flink:1.7.2
+              command: ["/opt/flink/bin/flink-console.sh"]
+              args:
+              - "standalonesession"
+              - "-r"
+              - "8081"
+              - "--configDir"
+              - "/opt/flink/conf"
+              - "--executionMode"
+              - "cluster"
+              - "-Dhigh-availability={{HIGH_AVAILABILITY}}"
+              - "-Dhigh-availability.storageDir=file:///ha"
+              - "-Dhigh-availability.zookeeper.quorum={{ZOOKEEPER_URL}}"
+              - "-Dhigh-availability.zookeeper.path.root={{ZOOKEEPER_PATH}}"
+              - "-Dhigh-availability.cluster-id={{NAME}}"
+              - "-Dquery.server.port=6125"
+              - "-Dblob.server.port=6124"
+              - "-Drest.address=$(HOSTNAME).{{NAME}}-hs"
+              - "-Dresourcemanager.rpc.port=2552"
+              - "-Djobmanager.rpc.address=$(HOSTNAME).{{NAME}}-hs"
+              - "-Dhigh-availability.jobmanager.port=8082"
+              - "-Dmetrics.internal.query-service.port=8083"
+              - "-Dlog.file=/logs/jobmanager.log"
+              - "-Dweb.upload.dir=/ha/data"
+              ports:
+              - containerPort: 6123
+                name: rpc
+              - containerPort: 6124
+                name: blob
+              - containerPort: 6125
+                name: query
+              - containerPort: 8081
+                name: ui
+              - containerPort: 8082
+                name: ha
+              - containerPort: 8083
+                name: metrics
+              env:
+              - name: JOB_MANAGER_RPC_ADDRESS
+                value: {{NAME}}-jobmanager
+              - name: log.file
+                value: /logs/jobmanager.log
+              - name: HOSTNAME
+                valueFrom:
+                  fieldRef:
+                    fieldPath: metadata.name
+              volumeMounts:
+              - name: ha
+                mountPath: /ha
+              - name: snapshots
+                mountPath: /snapshots
+              - name: logs
+                mountPath: /logs        
+            volumes:
+            - name: ha
+              persistentVolumeClaim:
+                claimName: {{NAME}}-ha
+            - name: snapshots
+              persistentVolumeClaim:
+                claimName: {{NAME}}-snapshots
+            - name: logs
+              emptyDir: {}
+  tasks:
+    common:
+      resources:
+        - storage.yaml
+    jobmanager:
+      resources:
+        - jobmanager-deployment.yaml
+    jobmanager-service:
+      resources:
+        - services.yaml
+    taskmanager:
+      resources:
+        - taskmanager-deployment.yaml
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: flink
+          strategy: serial
+          steps:
+            - name: jobmanager
+              tasks:
+                - common
+                - jobmanager
+                - jobmanager-service
+                - taskmanager
