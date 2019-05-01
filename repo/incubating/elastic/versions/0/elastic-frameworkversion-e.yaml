@@ -1,0 +1,263 @@
+# framework version
+
+apiVersion: kudo.k8s.io/v1alpha1
+kind: FrameworkVersion
+metadata:
+  name: elastic-v1
+  namespace: default
+  labels:
+    controller-tools.k8s.io: "1.0"
+spec:
+  version: "1.0.0"
+  connectionString: ""
+  framework:
+    name: elastic
+    kind: Framework
+  templates:
+    master-service.yaml: |
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: master-hs
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          app: master
+        ports:
+          - protocol: TCP
+            port: 9200
+        clusterIP: None
+    master.yaml: |
+      kind: StatefulSet
+      apiVersion: apps/v1
+      metadata:
+        name: master
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          matchLabels:
+            app: master # has to match .spec.template.metadata.labels
+        serviceName: {{NAME}}-master-hs
+        replicas: 3
+        template:
+          metadata:
+            labels:
+              app: master # has to match .spec.selector.matchLabels
+          spec:
+            initContainers:
+              - name: volume-permissions
+                image: busybox
+                command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+            terminationGracePeriodSeconds: 10
+            containers:
+              - name: elastic
+                image: elasticsearch:7.0.0
+                ports:
+                  - containerPort: 9200
+                    name: api
+                  - containerPort: 9300
+                    name: internal
+                env:
+                  - name: cluster.name
+                    value: {{NAME}}-cluster
+                  - name: discovery.seed_hosts
+                    value: {{NAME}}-master-0.{{NAME}}-master-hs,{{NAME}}-master-1.{{NAME}}-master-hs,{{NAME}}-master-2.{{NAME}}-master-hs
+                  - name: cluster.initial_master_nodes
+                    value: {{NAME}}-master-0,{{NAME}}-master-1,{{NAME}}-master-2
+                  - name: node.master
+                    value: "true"
+                  - name: node.data
+                    value: "false"
+                  - name: node.ingest
+                    value: "false"
+                  - name: cluster.remote.connect
+                    value: "false"
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              resources:
+                requests:
+                  storage: 1Gi
+    data-service.yaml: |
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: data-hs
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          app: data
+        ports:
+          - protocol: TCP
+            port: 9200
+        clusterIP: None
+    data.yaml: |
+      kind: StatefulSet
+      apiVersion: apps/v1
+      metadata:
+        name: data
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          matchLabels:
+            app: data # has to match .spec.template.metadata.labels
+        serviceName: {{NAME}}-data-hs
+        replicas: 2
+        template:
+          metadata:
+            labels:
+              app: data # has to match .spec.selector.matchLabels
+          spec:
+            initContainers:
+              - name: volume-permissions
+                image: busybox
+                command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+            terminationGracePeriodSeconds: 10
+            containers:
+              - name: elastic
+                image: elasticsearch:7.0.0
+                ports:
+                  - containerPort: 9200
+                    name: api
+                  - containerPort: 9300
+                    name: internal
+                env:
+                  - name: cluster.name
+                    value: {{NAME}}-cluster
+                  - name: discovery.seed_hosts
+                    value: {{NAME}}-master-0.{{NAME}}-master-hs,{{NAME}}-master-1.{{NAME}}-master-hs,{{NAME}}-master-2.{{NAME}}-master-hs
+                  - name: node.master
+                    value: "false"
+                  - name: node.data
+                    value: "true"
+                  - name: node.ingest
+                    value: "false"
+                  - name: cluster.remote.connect
+                    value: "false"
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              resources:
+                requests:
+                  storage: 1Gi
+    coordinator-service.yaml: |
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: coordinator-hs
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          app: coordinator
+        ports:
+          - protocol: TCP
+            port: 9200
+        clusterIP: None
+    coordinator.yaml: |
+      kind: StatefulSet
+      apiVersion: apps/v1
+      metadata:
+        name: coordinator
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          matchLabels:
+            app: coordinator # has to match .spec.template.metadata.labels
+        serviceName: {{NAME}}-coordinator-hs
+        replicas: 1
+        template:
+          metadata:
+            labels:
+              app: coordinator # has to match .spec.selector.matchLabels
+          spec:
+            initContainers:
+              - name: volume-permissions
+                image: busybox
+                command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+            terminationGracePeriodSeconds: 10
+            containers:
+              - name: elastic
+                image: elasticsearch:7.0.0
+                ports:
+                  - containerPort: 9200
+                    name: api
+                  - containerPort: 9300
+                    name: internal
+                env:
+                  - name: cluster.name
+                    value: {{NAME}}-cluster
+                  - name: discovery.seed_hosts
+                    value: {{NAME}}-master-0.{{NAME}}-master-hs,{{NAME}}-master-1.{{NAME}}-master-hs,{{NAME}}-master-2.{{NAME}}-master-hs
+                  - name: node.master
+                    value: "false"
+                  - name: node.data
+                    value: "false"
+                  - name: node.ingest
+                    value: "false"
+                  - name: cluster.remote.connect
+                    value: "false"
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              resources:
+                requests:
+                  storage: 1Gi
+  tasks:
+    deploy-master:
+      resources:
+        - master-service.yaml
+        - master.yaml
+    deploy-data:
+      resources:
+        - data-service.yaml
+        - data.yaml
+    deploy-coordinator:
+      resources:
+        - coordinator-service.yaml
+        - coordinator.yaml
+  plans:
+    deploy:
+      strategy: serial
+      phases:
+        - name: deploy-master
+          strategy: parallel
+          steps:
+            - name: deploy-master
+              tasks:
+                - deploy-master
+        - name: deploy-data
+          strategy: parallel
+          steps:
+            - name: deploy-data
+              tasks:
+                - deploy-data
+        - name: deploy-coordinator
+          strategy: parallel
+          steps:
+            - name: deploy-coordinator
+              tasks:
+                - deploy-coordinator
