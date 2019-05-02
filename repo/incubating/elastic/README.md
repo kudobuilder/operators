@@ -29,17 +29,33 @@ Deploy the `Instance` using the following command:
 kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/elastic/versions/0/elastic-instance.yaml
 ```
 
+Once the deployment has finished use the following command.
+```
+kubectl get pods
+```
+
+You should see that 3 master, 2 data, and 1 coordinator node have been deployed.
+
+```
+NAME                 READY   STATUS    RESTARTS   AGE
+myes-coordinator-0   1/1     Running   0          23m
+myes-data-0          1/1     Running   0          24m
+myes-data-1          1/1     Running   0          24m
+myes-master-0        1/1     Running   0          25m
+myes-master-1        1/1     Running   0          24m
+myes-master-2        1/1     Running   0          24m
+```
 
 ## Use the Instance
 
 Exec into one of the POD's.
 ```
-kubectl -it exec myes-node-0 bash
+kubectl exec -ti myes-master-0 bash
 ```
 
 Use the following curl command to check the health of the cluster.
 ```
-curl myes-node-0.myes-hs:9200/_cluster/health?pretty
+curl myes-coordinator-0.myes-coordinator-hs:9200/_cluster/health?pretty
 ```
 
 You should see the following output.
@@ -48,8 +64,8 @@ You should see the following output.
   "cluster_name" : "myes-cluster",
   "status" : "green",
   "timed_out" : false,
-  "number_of_nodes" : 3,
-  "number_of_data_nodes" : 3,
+  "number_of_nodes" : 6,
+  "number_of_data_nodes" : 2,
   "active_primary_shards" : 0,
   "active_shards" : 0,
   "relocating_shards" : 0,
@@ -65,7 +81,7 @@ You should see the following output.
 
 Lets add some data.
 ```
-curl -X POST "myes-node-0.myes-hs:9200/twitter/_doc/" -H 'Content-Type: application/json' -d'
+curl -X POST "myes-coordinator-0.myes-coordinator-hs:9200/twitter/_doc/" -H 'Content-Type: application/json' -d'
 {
     "user" : "kimchy",
     "post_date" : "2009-11-15T14:12:12",
@@ -76,13 +92,13 @@ curl -X POST "myes-node-0.myes-hs:9200/twitter/_doc/" -H 'Content-Type: applicat
 
 Lets search for the entry.
 ```
-curl -X GET "myes-node-0.myes-hs:9200/twitter/_search?q=user:kimchy"
+curl -X GET "myes-coordinator-0.myes-coordinator-hs:9200/twitter/_search?q=user:kimchy&pretty"
 ```
 
 You should see the following output.
 ```
 {
-  "took" : 74,
+  "took" : 6,
   "timed_out" : false,
   "_shards" : {
     "total" : 1,
@@ -100,7 +116,7 @@ You should see the following output.
       {
         "_index" : "twitter",
         "_type" : "_doc",
-        "_id" : "qgisYGoB5y1lRDh0Miao",
+        "_id" : "n18aemoBCj0qv5VrMWv2",
         "_score" : 0.2876821,
         "_source" : {
           "user" : "kimchy",
