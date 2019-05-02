@@ -13,5 +13,5 @@ spec:
     namespace: default
     type: FrameworkVersions
   parameters:
-    DATA_NODE_COUNT: "1"
+    DATA_NODE_COUNT: "2"
     COORDINATOR_NODE_COUNT: "1"
