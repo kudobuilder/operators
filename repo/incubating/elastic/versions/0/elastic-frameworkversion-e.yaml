@@ -13,6 +13,11 @@ spec:
   framework:
     name: elastic
     kind: Framework
+  parameters:
+    - name: DATA_NODE_COUNT
+      default: "2"
+    - name: COORDINATOR_NODE_COUNT
+      default: "1"
   templates:
     master-service.yaml: |
       kind: Service
@@ -110,7 +115,7 @@ spec:
           matchLabels:
             app: data # has to match .spec.template.metadata.labels
         serviceName: {{NAME}}-data-hs
-        replicas: 2
+        replicas: {{DATA_NODE_COUNT}}
         template:
           metadata:
             labels:
@@ -180,7 +185,7 @@ spec:
           matchLabels:
             app: coordinator # has to match .spec.template.metadata.labels
         serviceName: {{NAME}}-coordinator-hs
-        replicas: 1
+        replicas: {{COORDINATOR_NODE_COUNT}}
         template:
           metadata:
             labels:

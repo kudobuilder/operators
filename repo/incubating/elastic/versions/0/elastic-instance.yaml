@@ -12,3 +12,6 @@ spec:
     name: elastic-v1
     namespace: default
     type: FrameworkVersions
+  parameters:
+    DATA_NODE_COUNT: "1"
+    COORDINATOR_NODE_COUNT: "1"
