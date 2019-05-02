@@ -18,6 +18,8 @@ spec:
       default: "2"
     - name: COORDINATOR_NODE_COUNT
       default: "1"
+    - name: INGEST_NODE_COUNT
+      default: "0"      
   templates:
     master-service.yaml: |
       kind: Service
@@ -231,6 +233,76 @@ spec:
               resources:
                 requests:
                   storage: 1Gi
+    ingest-service.yaml: |
+      kind: Service
+      apiVersion: v1
+      metadata:
+        name: ingest-hs
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          app: ingest
+        ports:
+          - protocol: TCP
+            port: 9200
+        clusterIP: None
+    ingest.yaml: |
+      kind: StatefulSet
+      apiVersion: apps/v1
+      metadata:
+        name: ingest
+        namespace: {{NAMESPACE}}
+      spec:
+        selector:
+          matchLabels:
+            app: ingest # has to match .spec.template.metadata.labels
+        serviceName: {{NAME}}-ingest-hs
+        replicas: {{INGEST_NODE_COUNT}}
+        template:
+          metadata:
+            labels:
+              app: ingest # has to match .spec.selector.matchLabels
+          spec:
+            initContainers:
+              - name: volume-permissions
+                image: busybox
+                command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+            terminationGracePeriodSeconds: 10
+            containers:
+              - name: elastic
+                image: elasticsearch:7.0.0
+                ports:
+                  - containerPort: 9200
+                    name: api
+                  - containerPort: 9300
+                    name: internal
+                env:
+                  - name: cluster.name
+                    value: {{NAME}}-cluster
+                  - name: discovery.seed_hosts
+                    value: {{NAME}}-master-0.{{NAME}}-master-hs,{{NAME}}-master-1.{{NAME}}-master-hs,{{NAME}}-master-2.{{NAME}}-master-hs
+                  - name: node.master
+                    value: "false"
+                  - name: node.data
+                    value: "false"
+                  - name: node.ingest
+                    value: "true"
+                  - name: cluster.remote.connect
+                    value: "false"
+                volumeMounts:
+                  - name: data
+                    mountPath: /usr/share/elasticsearch/data
+        volumeClaimTemplates:
+          - metadata:
+              name: data
+            spec:
+              accessModes: [ "ReadWriteOnce" ]
+              resources:
+                requests:
+                  storage: 1Gi
   tasks:
     deploy-master:
       resources:
@@ -244,6 +316,10 @@ spec:
       resources:
         - coordinator-service.yaml
         - coordinator.yaml
+    deploy-ingest:
+      resources:
+        - ingest-service.yaml
+        - ingest.yaml
   plans:
     deploy:
       strategy: serial
@@ -266,3 +342,9 @@ spec:
             - name: deploy-coordinator
               tasks:
                 - deploy-coordinator
+        - name: deploy-ingest
+          strategy: parallel
+          steps:
+            - name: deploy-ingest
+              tasks:
+                - deploy-ingest
