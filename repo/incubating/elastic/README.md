@@ -130,3 +130,73 @@ You should see the following output.
 ```
 
 You can learn more on how to use elasticsearch from the [elasticsearch documentation](https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html).
+
+## Update the Instance
+
+Lets update `elastic-instance.yaml` setting for `DATA_NODE_COUNT` to 2.
+```
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  name: myes
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: elastic
+spec:
+  frameworkVersion:
+    name: elastic-v1
+    namespace: default
+    type: FrameworkVersions
+  parameters:
+    DATA_NODE_COUNT: "3"
+    COORDINATOR_NODE_COUNT: "1"
+```
+
+Next we apply that change.
+```
+kubectl apply -f elastic-instance.yaml
+```
+
+Lets check on the pods.
+```
+kubectl get pods
+```
+
+You should see that a `3rd data` node has been deployed.
+```
+NAME                 READY   STATUS    RESTARTS   AGE
+myes-coordinator-0   1/1     Running   0          3m37s
+myes-data-0          1/1     Running   0          4m2s
+myes-data-1          1/1     Running   0          3m49s
+myes-data-2          1/1     Running   0          73s
+myes-master-0        1/1     Running   0          4m30s
+myes-master-1        1/1     Running   0          4m21s
+myes-master-2        1/1     Running   0          4m13s
+```
+
+
+## Upgrade the Instance
+
+Lets update `elastic-instance.yaml` to use `elastic-v2`.
+```
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  name: myes
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: elastic
+spec:
+  frameworkVersion:
+    name: elastic-v2
+    namespace: default
+    type: FrameworkVersions
+  parameters:
+    DATA_NODE_COUNT: "3"
+    COORDINATOR_NODE_COUNT: "1"
+```
+
+Next we apply to upgrade.
+```
+kubectl apply -f elastic-instance.yaml
+```
