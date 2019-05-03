@@ -19,7 +19,7 @@ spec:
     - name: COORDINATOR_NODE_COUNT
       default: "1"
     - name: INGEST_NODE_COUNT
-      default: "0"      
+      default: "0"
   templates:
     master-service.yaml: |
       kind: Service
@@ -52,6 +52,11 @@ spec:
               app: master # has to match .spec.selector.matchLabels
           spec:
             initContainers:
+              - name: init-sysctl
+                image: busybox
+                command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                securityContext:
+                  privileged: true
               - name: volume-permissions
                 image: busybox
                 command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
@@ -124,6 +129,11 @@ spec:
               app: data # has to match .spec.selector.matchLabels
           spec:
             initContainers:
+              - name: init-sysctl
+                image: busybox
+                command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                securityContext:
+                  privileged: true
               - name: volume-permissions
                 image: busybox
                 command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
@@ -194,6 +204,11 @@ spec:
               app: coordinator # has to match .spec.selector.matchLabels
           spec:
             initContainers:
+              - name: init-sysctl
+                image: busybox
+                command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                securityContext:
+                  privileged: true
               - name: volume-permissions
                 image: busybox
                 command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
@@ -264,6 +279,11 @@ spec:
               app: ingest # has to match .spec.selector.matchLabels
           spec:
             initContainers:
+              - name: init-sysctl
+                image: busybox
+                command: ['sh', '-c', 'sysctl -w vm.max_map_count=262144']
+                securityContext:
+                  privileged: true
               - name: volume-permissions
                 image: busybox
                 command: ['sh', '-c', 'chown -R 1000:1000 /usr/share/elasticsearch/data']
