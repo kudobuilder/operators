@@ -292,6 +292,7 @@ spec:
                     - sh
                     - -c
                     - "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server=localhost:{{BROKER_PORT}}"
+                timeoutSeconds: 10
             securityContext:
               runAsUser: 1000
               fsGroup: 1000
