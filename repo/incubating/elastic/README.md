@@ -133,7 +133,7 @@ You can learn more on how to use elasticsearch from the [elasticsearch documenta
 
 ## Update the Instance
 
-Lets update `elastic-instance.yaml` setting for `DATA_NODE_COUNT` to 2.
+Lets update `elastic-instance.yaml` setting the `DATA_NODE_COUNT` to 3.
 ```
 apiVersion: kudo.k8s.io/v1alpha1
 kind: Instance
@@ -177,7 +177,9 @@ myes-master-2        1/1     Running   0          4m13s
 
 ## Upgrade the Instance
 
-Lets update `elastic-instance.yaml` to use `elastic-v2`.
+Note: Currently not working [issue 208](https://github.com/kudobuilder/kudo/issues/208).
+
+Lets update `elastic-instance.yaml` to use `elastic-v2`. This newer framework version references a newer elasticsearch docker image.
 ```
 apiVersion: kudo.k8s.io/v1alpha1
 kind: Instance
@@ -200,3 +202,5 @@ Next we apply to upgrade.
 ```
 kubectl apply -f elastic-instance.yaml
 ```
+
+... more to come ...
