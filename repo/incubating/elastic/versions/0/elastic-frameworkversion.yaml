@@ -20,6 +20,30 @@ spec:
       default: "1"
     - name: INGEST_NODE_COUNT
       default: "0"
+    - name: MASTER_CPU
+      default: "0.25"
+    - name: MASTER_MEM
+      default: "1Gi"
+    - name: MASTER_DISK
+      default: "2Gi"
+    - name: DATA_CPU
+      default: "0.25"
+    - name: DATA_MEM
+      default: "2Gi"
+    - name: DATA_DISK
+      default: "4Gi"
+    - name: COORDINATOR_CPU
+      default: "0.1"
+    - name: COORDINATOR_MEM
+      default: "1Gi"
+    - name: COORDINATOR_DISK
+      default: "2Gi"
+    - name: INGEST_CPU
+      default: "0.1"
+    - name: INGEST_MEM
+      default: "1Gi"
+    - name: INGEST_DISK
+      default: "2Gi"
   templates:
     master-service.yaml: |
       kind: Service
@@ -67,6 +91,10 @@ spec:
             containers:
               - name: elastic
                 image: elasticsearch:7.0.0
+                resources:
+                  requests:
+                    cpu: {{MASTER_CPU}}
+                    memory: {{MASTER_MEM}}
                 ports:
                   - containerPort: 9200
                     name: api
@@ -97,7 +125,7 @@ spec:
               accessModes: [ "ReadWriteOnce" ]
               resources:
                 requests:
-                  storage: 1Gi
+                  storage: {{MASTER_DISK}}
     data-service.yaml: |
       kind: Service
       apiVersion: v1
@@ -144,6 +172,10 @@ spec:
             containers:
               - name: elastic
                 image: elasticsearch:7.0.0
+                resources:
+                  requests:
+                    cpu: {{DATA_CPU}}
+                    memory: {{DATA_MEM}}
                 ports:
                   - containerPort: 9200
                     name: api
@@ -172,7 +204,7 @@ spec:
               accessModes: [ "ReadWriteOnce" ]
               resources:
                 requests:
-                  storage: 1Gi
+                  storage: {{DATA_DISK}}
     coordinator-service.yaml: |
       kind: Service
       apiVersion: v1
@@ -219,6 +251,10 @@ spec:
             containers:
               - name: elastic
                 image: elasticsearch:7.0.0
+                resources:
+                  requests:
+                    cpu: {{COORDINATOR_CPU}}
+                    memory: {{COORDINATOR_MEM}}
                 ports:
                   - containerPort: 9200
                     name: api
@@ -247,7 +283,7 @@ spec:
               accessModes: [ "ReadWriteOnce" ]
               resources:
                 requests:
-                  storage: 1Gi
+                  storage: {{COORDINATOR_DISK}}
     ingest-service.yaml: |
       kind: Service
       apiVersion: v1
@@ -294,6 +330,10 @@ spec:
             containers:
               - name: elastic
                 image: elasticsearch:7.0.0
+                resources:
+                  requests:
+                    cpu: {{INGEST_CPU}}
+                    memory: {{INGEST_MEM}}
                 ports:
                   - containerPort: 9200
                     name: api
@@ -322,7 +362,7 @@ spec:
               accessModes: [ "ReadWriteOnce" ]
               resources:
                 requests:
-                  storage: 1Gi
+                  storage: {{INGEST_DISK}}
   tasks:
     deploy-master:
       resources:
