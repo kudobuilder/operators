@@ -6,7 +6,13 @@ This Framework is deploying an Elasticsearch Cluster.
 
 ## Prerequisites
 
-You need a Kubernetes cluster up and running and Persistent Storage available with a default `Storage Class` defined.
+You need a `Kubernetes cluster` up and running and `Persistent Storage` available with a default `Storage Class` defined.
+
+If you use `minikube` then launch it with the following resource options.
+
+```
+minikube start --vm-driver=hyperkit --cpus=3 --memory=9216 --disk-size=10g
+```
 
 
 ## Deploy the Framework and FrameworkVersion
