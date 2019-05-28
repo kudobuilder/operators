@@ -1,0 +1,17 @@
+# framework instance
+
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  name: myes
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: elastic
+spec:
+  frameworkVersion:
+    name: elastic-v1
+    namespace: default
+    type: FrameworkVersions
+  parameters:
+    DATA_NODE_COUNT: "2"
+    COORDINATOR_NODE_COUNT: "1"
