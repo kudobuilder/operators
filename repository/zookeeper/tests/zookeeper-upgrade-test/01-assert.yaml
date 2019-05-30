@@ -1,0 +1,26 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: TestAssert
+timeout: 60
+---
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  name: zk
+status:
+  status: COMPLETE
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: zk-zk
+spec:
+  template:
+    spec:
+     containers:
+     - name: kubernetes-zookeeper
+       resources:
+         requests:
+           memory: "1Gi"
+           cpu: "500m"
+status:
+  readyReplicas: 3
