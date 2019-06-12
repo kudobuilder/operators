@@ -1,0 +1,14 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    framework: flink
+  name: flink # this is the instance label which will lead the pod name
+spec:
+  frameworkVersion:
+    name: flink-0.1.0
+    namespace: default
+    type: FrameworkVersion
+  parameters:
+    FLINK_JOBMANAGER_REPLICAS: "1"
