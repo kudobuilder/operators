@@ -9,4 +9,4 @@ spec:
     type: FrameworkVersions
   name: "zk"
   parameters:
-    cpus: "0.5"
+    cpus: "0.3"
