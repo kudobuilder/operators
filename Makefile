@@ -34,5 +34,6 @@ install-frameworks:
 
 # Test runs the test framework using go test.
 # GOPROXY makes it fetch dependencies faster.
+# Setting `-count=` says to run every test only one time, but explicitly disables the Go test cache.
 test: install-frameworks
-	GOPROXY=https://proxy.golang.org GO111MODULE=on $(GO) test -v -count=8 ./
+	GOPROXY=https://proxy.golang.org GO111MODULE=on $(GO) test -v -count=1 -parallel=8 ./
