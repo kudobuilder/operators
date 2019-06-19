@@ -35,4 +35,4 @@ install-frameworks:
 # Test runs the test framework using go test.
 # GOPROXY makes it fetch dependencies faster.
 test: install-frameworks
-	 GOPROXY=https://proxy.golang.org GO111MODULE=on $(GO) test -v -count=8 ./
+	GOPROXY=https://proxy.golang.org GO111MODULE=on $(GO) test -v -count=8 ./
