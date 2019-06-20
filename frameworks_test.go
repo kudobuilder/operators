@@ -1,19 +1,22 @@
 package main
 
 import (
+	"path/filepath"
 	"testing"
 
 	"github.com/kudobuilder/kudo/pkg/test"
 )
 
 // Launch the KUDO tests.
-// To add more tests, add them to TestDirs belowe.
 func TestKudoFrameworks(t *testing.T) {
+	matches, err := filepath.Glob("./repository/*/tests")
+	if err != nil {
+		t.Fatal(err)
+	}
+
 	harness := test.Harness{
 		T:         t,
-		TestDirs:  []string{
-			"./repository/zookeeper/tests/",
-		},
+		TestDirs:  matches,
 		StartKUDO: true,
 	}
 
