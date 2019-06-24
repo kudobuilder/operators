@@ -19,3 +19,5 @@ spec:
     KAFKA_ZOOKEEPER_URI: zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181
     KAFKA_ZOOKEEPER_PATH: "/kafka"
     BROKER_COUNT: "1"
+    CLIENT_PORT_ENABLED: "false"
+    METRICS_ENABLED: "true"
