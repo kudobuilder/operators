@@ -19,13 +19,19 @@ spec:
       displayName: "Broker Count"
     - name: BROKER_CPUS
       description: "CPUs allocated to the Kafka Broker pods"
-      default: "200m"
+      default: "500m"
     - name: BROKER_MEM
       description: "Memory (limit) allocated to the Kafka Broker pods"
-      default: "200m"
+      default: "2048m"
     - name: BROKER_PORT
       description: "Port brokers run on"
       default: "9093"
+    - name: CLIENT_PORT
+      description: "Broker client port"
+      default: "9092"
+    - name: METRICS_PORT
+      description: "Port JMX_EXPORTER binds"
+      default: "9094"
     - name: KAFKA_NUM_PARTITIONS
       description: "Number of partitions for Kafka topics"
       default: "3"
@@ -73,10 +79,20 @@ spec:
       kind: Service
       metadata:
         name: svc
+        {{ if .Params.METRICS_ENABLED }}
+        labels:
+          "kudo.dev/servicemonitor": "true"
+        {{ end }}
       spec:
         ports:
         - port: {{ .Params.BROKER_PORT }}
           name: server
+        - port: {{ .Params.CLIENT_PORT }}
+          name: client
+        {{ if .Params.METRICS_ENABLED }}
+        - port: {{ .Params.METRICS_PORT }}
+          name: metrics
+        {{end}}
         clusterIP: None
         selector:
           app: kafka
@@ -116,7 +132,7 @@ spec:
           ############################# Server Basics #############################
 
           # The id of the broker. This must be set to a unique integer for each broker.
-          broker.id=${HOSTNAME##*-}
+          # broker.id=${HOSTNAME##*-}
           ############################# Socket Server Settings #############################
 
           # The address the socket server listens on. It will get the value returned from
@@ -125,7 +141,7 @@ spec:
           #     listeners = listener_name://host_name:port
           #   EXAMPLE:
           #     listeners = PLAINTEXT://your.host.name:9092
-          listeners=PLAINTEXT://:{{ .Params.BROKER_PORT }}
+          #listeners=PLAINTEXT://:{{ .Params.BROKER_PORT }}
 
           # Hostname and port the broker will advertise to producers and consumers. If not set,
           # it uses the value for "listeners" if configured.  Otherwise, it will use the value
@@ -154,7 +170,7 @@ spec:
           ############################# Log Basics #############################
 
           # A comma separated list of directories under which to store log files
-          log.dirs=/var/lib/kafka/data
+          # log.dirs=/var/lib/kafka/data
 
           # The default number of log partitions per topic. More partitions allow greater
           # parallelism for consumption, but this will also result in more files across
@@ -264,7 +280,7 @@ spec:
             containers:
             - name: k8skafka
               imagePullPolicy: Always
-              image: gcr.io/google_samples/k8skafka:v1
+              image: mesosphere/kafka:0.1-2.2.1
               resources:
                 requests:
                   memory: {{ .Params.BROKER_MEM }}
@@ -275,12 +291,30 @@ spec:
               command:
               - sh
               - -c
-              - "exec kafka-server-start.sh /config/server.properties --override broker.id=${HOSTNAME##*-}"
+              - "exec $KAFKA_HOME/bin/start-kafka.sh"
               env:
               - name: KAFKA_HEAP_OPTS
                 value : "-Xmx512M -Xms512M"
               - name: KAFKA_OPTS
                 value: "-Dlogging.level=INFO"
+              {{ if .Params.METRICS_ENABLED }}
+              - name: METRICS_OPTS
+                value: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=9094:/opt/kafka/metrics-config.yml"
+              {{ end }}
+              - name: KAFKA_ZK_URI
+                value: {{ .Params.KAFKA_ZOOKEEPER_URI }}{{ .Params.KAFKA_ZOOKEEPER_PATH }}
+              - name: GC_LOG_ENABLED
+                value: "false"
+              - name: LOG_DIR
+                value: /var/lib/kafka/data
+              - name: METRICS_ENABLED
+                value: "{{ .Params.METRICS_ENABLED }}"
+              - name: KAFKA_CLIENT_ENABLED
+                value: "{{ .Params.CLIENT_PORT_ENABLED }}"
+              - name: KAFKA_BROKER_PORT
+                value: "{{ .Params.BROKER_PORT }}"
+              - name: KAFKA_CLIENT_PORT
+                value: "{{ .Params.CLIENT_PORT }}"
               volumeMounts:
               - name: datadir
                 mountPath: /var/lib/kafka
@@ -291,7 +325,7 @@ spec:
                   command:
                     - sh
                     - -c
-                    - "/opt/kafka/bin/kafka-broker-api-versions.sh --bootstrap-server=localhost:{{ .Params.BROKER_PORT }}"
+                    - "$KAFKA_HOME/readiness-check.sh"
                 timeoutSeconds: 10
             securityContext:
               runAsUser: 1000
@@ -307,7 +341,7 @@ spec:
             accessModes: [ "ReadWriteOnce" ]
             resources:
               requests:
-                storage: 1Gi
+                storage: 5Gi
   plans:
     deploy:
       strategy: serial
