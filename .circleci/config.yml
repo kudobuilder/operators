@@ -1,0 +1,37 @@
+# Golang CircleCI 2.0 configuration file
+#
+# Check https://circleci.com/docs/2.0/language-go/ for more details
+version: 2
+
+jobs:
+  test:
+    machine:
+      enabled: true
+      # enabled to make kind cluster start faster.
+      docker_layer_caching: true
+
+    steps:
+      - checkout
+
+      - restore_cache:
+          key: frameworks-cache-v1-{{ checksum "go.sum" }}
+
+      - run: make create-cluster
+      - run: |
+          go get golang.org/dl/go1.12.5
+          go1.12.5 download
+
+      - run:
+          command: make GO=go1.12.5 test
+
+      - save_cache:
+          key: frameworks-cache-v1-{{ checksum "go.sum" }}
+          paths:
+          - /home/circleci/.cache/go-build
+          - /home/circleci/.go_workspace
+
+workflows:
+  version: 2
+  test:
+    jobs:
+      - test
