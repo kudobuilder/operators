@@ -1,0 +1,30 @@
+name: redis
+version: 0.1.0
+kudoVersion: 0.2.0
+maintainers:
+  - Fabian Baier <fabian@mesosphere.io>
+  - Gastón Kleiman <gaston@mesosphere.io>
+url: https://redis.io/
+tasks:
+  deploy:
+    resources:
+      - service.yaml
+      - pdb.yaml
+      - configmap.yaml
+      - statefulset.yaml
+  init:
+    resources:
+      - init.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy-redis
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - deploy
+          - name: init
+            tasks:
+              - init

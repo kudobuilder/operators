@@ -1,0 +1,10 @@
+instances:
+  description: "Number of redis instances"
+  default: "3"
+  displayName: "Redis instances"
+client_port:
+  description: "Client port"
+  default: "6379"
+gossip_port:
+  description: "Gossip port"
+  default: "16379"

@@ -1,0 +1,19 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  namespace: default
+  name: {{ .PlanName }}-job
+spec:
+  template:
+    metadata:
+      name: {{ .PlanName }}-job
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: {{ .PlanName }}
+        image: redis:5.0.1-alpine
+        imagePullPolicy: IfNotPresent
+        command:
+        - /bin/sh
+        - -c
+        - 'echo yes | redis-cli -x -h rediscluster1-redis-0.rediscluster1-svc.default.svc.cluster.local --cluster create --cluster-replicas 1 $(i=0; while [ $i -le 5 ]; do printf $(nslookup rediscluster1-redis-${i}.rediscluster1-svc.default.svc.cluster.local  | grep "Address" |  awk "{ print \$3 }")":6379 "; i=$((i+1)); done)'
