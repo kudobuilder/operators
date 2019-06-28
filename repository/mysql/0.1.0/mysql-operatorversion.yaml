@@ -1,5 +1,5 @@
 apiVersion: kudo.k8s.io/v1alpha1
-kind: FrameworkVersion
+kind: OperatorVersion
 metadata:
   labels:
     controller-tools.k8s.io: "1.0"
@@ -9,9 +9,9 @@ spec:
   serviceSpec:
   version: "0.1.0"
   connectionString: ""
-  framework:
+  operator:
     name: mysql
-    kind: Framework
+    kind: Operator
   parameters:
     - name: BACKUP_FILE
       description: "Filename to save the backups to"

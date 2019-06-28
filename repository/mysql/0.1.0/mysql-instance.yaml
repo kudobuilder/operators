@@ -3,13 +3,13 @@ kind: Instance
 metadata:
   labels:
     controller-tools.k8s.io: "1.0"
-    framework: mysql
+    operator: mysql
   name: mysql
 spec:
-  frameworkVersion:
+  operatorVersion:
     name: mysql-0.1.0
     namespace: default
-    type: FrameworkVersions
+    type: OperatorVersions
   # Add fields here
   parameters:
     PASSWORD: password

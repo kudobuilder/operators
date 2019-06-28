@@ -4,7 +4,7 @@ Redis is an open source (BSD licensed), in-memory data structure store, used as 
 
 Redis Cluster provides a way to run a Redis installation where data is automatically sharded across multiple Redis nodes.
 
-This Framework is deploying a Redis Cluster.
+This Operator is deploying a Redis Cluster.
 
 ## Prerequisites
 
@@ -12,17 +12,17 @@ You need a Kubernetes cluster up and running and Persistent Storage available wi
 
 ## Getting Started
 
-Deploy the `Framework` using the following command:
+Deploy the `Operator` using the following command:
 
-`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/redis/versions/0/redis-framework.yaml`
+`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/operators/master/repo/incubating/redis/versions/0/redis-operator.yaml`
 
-Deploy the `FrameworkVersion` using the following command:
+Deploy the `OperatorVersion` using the following command:
 
-`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/redis/versions/0/redis-frameworkversion.yaml`
+`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/operators/master/repo/incubating/redis/versions/0/redis-operatorversion.yaml`
 
 Deploy the `Instance` using the following command:
 
-`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/redis/versions/0/redis-instance.yaml`
+`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/operators/master/repo/incubating/redis/versions/0/redis-instance.yaml`
 
 You can check that everything has been deployed correctly as below:
 
