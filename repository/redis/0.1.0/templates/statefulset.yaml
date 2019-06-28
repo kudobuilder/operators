@@ -4,11 +4,11 @@ metadata:
   name: {{ .Name }}
   namespace: {{ .Namespace }}
   labels:
-    redis: {{ .OperatorName }}
     app: redis
+    redis: {{ .OperatorName }}
 spec:
   serviceName: {{ .Name }}-svc
-  replicas: {{ .Params.instances }}
+  replicas: {{ .Params.masters | mul 2 }}
   selector:
     matchLabels:
       app: redis

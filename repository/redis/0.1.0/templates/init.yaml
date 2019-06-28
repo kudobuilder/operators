@@ -16,4 +16,4 @@ spec:
         command:
         - /bin/sh
         - -c
-        - 'echo yes | redis-cli -x -h rediscluster1-redis-0.rediscluster1-svc.default.svc.cluster.local --cluster create --cluster-replicas 1 $(i=0; while [ $i -le 5 ]; do printf $(nslookup rediscluster1-redis-${i}.rediscluster1-svc.default.svc.cluster.local  | grep "Address" |  awk "{ print \$3 }")":6379 "; i=$((i+1)); done)'
+        - 'echo yes | redis-cli -x -h {{ .Name }}-svc --cluster create --cluster-replicas 1 $(i=0; while [ $i -lt {{ .Params.masters | mul 2 }} ]; do printf $(nslookup {{ .Name }}-{{ .Name }}-${i}.{{ .Name }}-svc | grep "Address" | awk "{ print \$3 }")":{{ .Params.client_port }} "; i=$((i+1)); done)'
