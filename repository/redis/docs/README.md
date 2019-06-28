@@ -14,30 +14,6 @@ You need a Kubernetes cluster up and running and Persistent Storage available wi
 
 Deploy the `Operator` using the following command:
 
-`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/operators/master/repo/incubating/redis/versions/0/redis-operator.yaml`
+`kubectl kudo install redis`
 
-Deploy the `OperatorVersion` using the following command:
-
-`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/operators/master/repo/incubating/redis/versions/0/redis-operatorversion.yaml`
-
-Deploy the `Instance` using the following command:
-
-`kubectl apply -f https://raw.githubusercontent.com/kudobuilder/operators/master/repo/incubating/redis/versions/0/redis-instance.yaml`
-
-You can check that everything has been deployed correctly as below:
-
-```
-kubectl get pods
-NAME                             READY   STATUS      RESTARTS   AGE
-rediscluster1-deploy-job-r9rfg   0/1     Completed   0          85m
-rediscluster1-redis-0            1/1     Running     0          86m
-rediscluster1-redis-1            1/1     Running     0          86m
-rediscluster1-redis-2            1/1     Running     0          86m
-rediscluster1-redis-3            1/1     Running     0          85m
-rediscluster1-redis-4            1/1     Running     0          85m
-rediscluster1-redis-5            1/1     Running     0          85m
-```
-
-It deploys a Redis Cluster composed of 6 instances. There are 3 masters and 1 slave per master.
-
-The first Pod corresponds to a Job launched to initialize the cluster.
+It deploys a Redis Cluster composed of 6 instances. There are 3 masters and 1 replica per master:
