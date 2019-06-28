@@ -1,0 +1,53 @@
+BROKER_COUNT:
+  description: "Number of brokers spun up for Kafka"
+  default: "3"
+  displayName: "Broker Count"
+BROKER_CPUS:
+  description: "CPUs allocated to the Kafka Broker pods"
+  default: "500m"
+BROKER_MEM:
+  description: "Memory (limit) allocated to the Kafka Broker pods"
+  default: "2048m"
+BROKER_PORT:
+  description: "Port brokers run on"
+  default: "9093"
+CLIENT_PORT:
+  description: "Broker client port"
+  default: "9092"
+CLIENT_PORT_ENABLED:
+  default: "true"
+METRICS_PORT:
+  description: "Port JMX_EXPORTER binds"
+  default: "9094"
+METRICS_ENABLED:
+  default: "true"
+KAFKA_NUM_PARTITIONS:
+  description: "Number of partitions for Kafka topics"
+  default: "3"
+KAFKA_ZOOKEEPER_URI:
+  description: |
+    host and port information for Zookeeper connection.
+    e.g. zk:2181,zk2:2181,zk3:2181
+  default: "zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181"
+  required: true
+KAFKA_ZOOKEEPER_PATH:
+  description: "Path inside of KAFKA_ZOOKEEPER_URI to host data"
+  default: "/kafka"
+KAFKA_AUTO_CREATE_TOPICS_ENABLE:
+  default: "true"
+KAFKA_AUTO_LEADER_REBALANCE_ENABLE:
+  default: "true"
+KAFKA_BACKGROUND_THREADS:
+  default: "10"
+KAFKA_COMPRESSION_TYPE:
+  default: "producer"
+KAFKA_DELETE_TOPIC_ENABLE:
+  default: "true"
+KAFKA_LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS:
+  default: "300"
+KAKFA_LEADER_IMBALANCE_PER_BROKER_PERCENTAGE:
+  default: "10"
+KAFKA_LOG_FLUSH_INTERVAL_MESSAGES:
+  default: "9223372036854775807"
+KAFKA_LOG_FLUSH_INTERVAL_MS:
+  default: "60000"
