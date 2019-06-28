@@ -39,6 +39,7 @@ spec:
       description: |
         host and port information for Zookeeper connection.
         e.g. zk:2181,zk2:2181,zk3:2181
+      default: "zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181"
       required: true
     - name: KAFKA_ZOOKEEPER_PATH
       description: "Path inside of KAFKA_ZOOKEEPER_URI to host data"
@@ -61,6 +62,16 @@ spec:
       default: "9223372036854775807"
     - name: KAFKA_LOG_FLUSH_INTERVAL_MS
       default: "60000"
+    - name: CLIENT_PORT_ENABLED
+      default: "false"
+      description: |
+        If enabled, adds to advertised.listeners the kubernetes dns addresses
+        So the kafka brokers are reachable from inside the cluster.
+    - name: METRICS_ENABLED
+      description: |
+        To add the Prometheus JMX exporter as java agent in the brokers.
+        And also adds a metrics port to the kafka service.
+      default: "true"
   dependencies:
     - referenceName: zookeeper
       type: Framework
