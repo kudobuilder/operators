@@ -1,6 +1,6 @@
 name: redis
 version: 0.1.0
-kudoVersion: 0.2.0
+kudoVersion: 0.3.0
 maintainers:
   - Fabian Baier <fabian@mesosphere.io>
   - Gastón Kleiman <gaston@mesosphere.io>
