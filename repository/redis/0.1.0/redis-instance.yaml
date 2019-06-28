@@ -3,13 +3,13 @@ kind: Instance
 metadata:
   labels:
     controller-tools.k8s.io: "1.0"
-    framework: redis
+    operator: redis
   name: rediscluster1
 spec:
-  frameworkVersion:
+  operatorVersion:
     name: redis-0.1.0
     namespace: default
-    type: FrameworkVersion
+    type: OperatorVersion
   # Add fields here
   parameters:
     INSTANCES: "6"

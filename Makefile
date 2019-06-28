@@ -45,7 +45,7 @@ create-cluster: bin/kind bin/kubectl bin/kudoctl
 
 install-operators:
 	kubectl apply -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs/deployment/10-crds.yaml
-	ls -d repository/zookeeper/0.* |xargs -n1 kudoctl install --skip-instance --kubeconfig=$(KUBECONFIG)
+	ls -d repository/*/operator |xargs -n1 kudoctl install --skip-instance --kubeconfig=$(KUBECONFIG)
 
 # Test runs the test harness using kudoctl test.
 test: install-operators

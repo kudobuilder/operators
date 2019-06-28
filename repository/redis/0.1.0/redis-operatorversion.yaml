@@ -1,5 +1,5 @@
 apiVersion: kudo.k8s.io/v1alpha1
-kind: FrameworkVersion
+kind: OperatorVersion
 metadata:
   labels:
     controller-tools.k8s.io: "1.0"
@@ -9,9 +9,9 @@ spec:
   serviceSpec:
   version: "0.1.0"
   connectionString: ""
-  framework:
+  operator:
     name: redis
-    kind: Framework
+    kind: Operator
   parameters:
     - name: INSTANCES
       description: "Number of redis instances"
@@ -85,10 +85,10 @@ spec:
       apiVersion: apps/v1
       kind: StatefulSet
       metadata:
-        name: {{ .FrameworkName }}
+        name: {{ .OperatorName }}
         namespace: {{ .Namespace }}
         labels:
-          redis: {{ .FrameworkName }}
+          redis: {{ .OperatorName }}
           app: redis
       spec:
         serviceName: {{ .Name }}-svc
@@ -96,12 +96,12 @@ spec:
         selector:
           matchLabels:
             app: redis
-            redis: {{ .FrameworkName }}
+            redis: {{ .OperatorName }}
         template:
           metadata:
             labels:
               app: redis
-              redis: {{ .FrameworkName }}
+              redis: {{ .OperatorName }}
           spec:
             containers:
             - name: redis
