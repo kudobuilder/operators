@@ -35,8 +35,3 @@ workflows:
     jobs:
     - test:
         kubernetes_version: 1.12.9
-
-  test-1.11:
-    jobs:
-    - test:
-        kubernetes_version: 1.11.10
