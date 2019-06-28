@@ -15,24 +15,11 @@ minikube start --vm-driver=hyperkit --cpus=3 --memory=9216 --disk-size=10g
 ```
 
 
-## Deploy the Framework and FrameworkVersion
-
-Deploy the `Framework` using the following command:
-```
-kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/elastic/versions/0/elastic-framework.yaml
-```
-
-Deploy the `FrameworkVersion` using the following command:
-```
-kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/elastic/versions/0/elastic-frameworkversion.yaml
-```
-
-
 ## Deploy an Instance
 
 Deploy the `Instance` using the following command:
 ```
-kubectl apply -f https://raw.githubusercontent.com/kudobuilder/frameworks/master/repo/incubating/elastic/versions/0/elastic-instance.yaml
+kubectl kudo install elastic --instance myes
 ```
 
 Once the deployment has finished use the following command.
