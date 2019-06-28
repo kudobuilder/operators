@@ -1,0 +1,58 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: taskmanager
+  namespace: {{ .Namespace }}
+spec:
+  replicas: {{ .Params.flink_taskmanager_replicas }}
+  template:
+    metadata:
+      labels:
+        app: flink
+        component: {{ .Name }}-taskmanager
+    spec:
+      containers:
+        - name: taskmanager
+          image: kudobuilder/flink:1.7.2
+          args:
+            - taskmanager
+            - "-Dhigh-availability={{ .Params.high_availability }}"
+            - "-Dhigh-availability.storageDir=file:///ha"
+            - "-Dstate.savepoints.dir=file:///snapshots/"
+            - "-Dstate.checkpoints.dir=file:///snapshots/"
+            - "-Dhigh-availability.zookeeper.quorum={{ .Params.zookeeper_url }}"
+            - "-Dhigh-availability.zookeeper.path.root={{ .Params.zookeeper_path }}"
+            - "-Dhigh-availability.cluster-id={{ .Name }}"
+            - "-Dtaskmanager.rpc.port=6123"
+            - "-Dtaskmanager.data.port=6121"
+            - "-Dquery.server.port=6125"
+            - "-Dblob.server.port=6124"
+            - "-Dlog.file=/logs/jobmanager.log"
+          ports:
+            - containerPort: 6121
+              name: data
+            - containerPort: 6123
+              name: rpc
+            - containerPort: 6125
+              name: query
+            - containerPort: 8081
+              name: ui
+          env:
+            - name: JOB_MANAGER_RPC_ADDRESS
+              value: {{ .Name }}-jobmanager
+          volumeMounts:
+            - name: ha
+              mountPath: /ha
+            - name: snapshots
+              mountPath: /snapshots
+            - name: logs
+              mountPath: /logs
+      volumes:
+        - name: ha
+          persistentVolumeClaim:
+            claimName: {{ .Name }}-ha
+        - name: snapshots
+          persistentVolumeClaim:
+            claimName: {{ .Name }}-snapshots
+        - name: logs
+          emptyDir: {}

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: jobmanager
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Name }}
+      component: {{ .Name }}-jobmanager
+  serviceName: {{ .Name }}-hs
+  replicas: {{ .Params.flink_jobmanager_replicas }}
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: Parallel
+  volumeClaimTemplates: []
+  template:
+    metadata:
+      labels:
+        app: {{ .Name }}
+        component: {{ .Name }}-jobmanager
+    spec:
+      containers:
+        - name: jobmanager
+          image: kudobuilder/flink:1.7.2
+          command: ["/opt/flink/bin/flink-console.sh"]
+          args:
+            - "standalonesession"
+            - "-r"
+            - "8081"
+            - "--configDir"
+            - "/opt/flink/conf"
+            - "--executionMode"
+            - "cluster"
+            - "-Dhigh-availability={{ .Params.high_availability }}"
+            - "-Dhigh-availability.storageDir=file:///ha"
+            - "-Dhigh-availability.zookeeper.quorum={{ .Params.zookeeper_url }}"
+            - "-Dhigh-availability.zookeeper.path.root={{ .Params.zookeeper_path }}"
+            - "-Dhigh-availability.cluster-id={{ .Name }}"
+            - "-Dquery.server.port=6125"
+            - "-Dblob.server.port=6124"
+            - "-Drest.address={{ .Name }}-jobmanager"
+            - "-Dresourcemanager.rpc.port=2552"
+            - "-Djobmanager.rpc.address={{ .Name }}-jobmanager"
+            - "-Dhigh-availability.jobmanager.port=8082"
+            - "-Dmetrics.internal.query-service.port=8083"
+            - "-Dlog.file=/logs/jobmanager.log"
+            - "-Dweb.upload.dir=/ha/data"
+          ports:
+            - containerPort: 6123
+              name: rpc
+            - containerPort: 6124
+              name: blob
+            - containerPort: 6125
+              name: query
+            - containerPort: 8081
+              name: ui
+            - containerPort: 8082
+              name: ha
+            - containerPort: 8083
+              name: metrics
+          env:
+            - name: JOB_MANAGER_RPC_ADDRESS
+              value: {{ .Name }}-jobmanager
+            - name: log.file
+              value: /logs/jobmanager.log
+            - name: HOSTNAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+          volumeMounts:
+            - name: ha
+              mountPath: /ha
+            - name: snapshots
+              mountPath: /snapshots
+            - name: logs
+              mountPath: /logs
+      volumes:
+        - name: ha
+          persistentVolumeClaim:
+            claimName: {{ .Name }}-ha
+        - name: snapshots
+          persistentVolumeClaim:
+            claimName: {{ .Name }}-snapshots
+        - name: logs
+          emptyDir: {}

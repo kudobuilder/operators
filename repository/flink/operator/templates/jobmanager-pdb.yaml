@@ -1,0 +1,13 @@
+apiVersion: policy/v1beta1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ .Name }}-pdb
+  namespace: {{ .Namespace }}
+  labels:
+    app: flink
+    component: {{ .Name }}-jobmanager
+spec:
+  selector:
+    matchLabels:
+      app: flink
+      zookeeper: {{ .Name }}

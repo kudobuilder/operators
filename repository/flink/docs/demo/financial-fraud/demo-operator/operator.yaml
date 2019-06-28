@@ -1,0 +1,64 @@
+name: "flink-demo"
+version: "0.1.0"
+kudoVersion: 0.3.0
+kubernetesVersion: 1.5.1
+maintainers:
+  - Fabian Baier <fabian@mesosphere.io>
+  - Tom Runyon <runyontr@gmail.com>
+url: https://zookeeper.apache.org/
+tasks:
+  kafka:
+    resources:
+      - kafka.yaml
+  zookeeper:
+    resources:
+      - zookeeper.yaml
+  flink:
+    resources:
+      - flink.yaml
+  generator:
+    resources:
+      - generator.yaml
+  actor:
+    resources:
+      - actor.yaml
+  upload:
+    resources:
+      - uploader.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: dependencies
+        strategy: serial
+        steps:
+          - name: zookeeper
+            tasks:
+              - zookeeper
+          - name: kafka
+            tasks:
+              - kafka
+      - name: flink-cluster
+        strategy: serial
+        steps:
+          - name: flink
+            tasks:
+              - flink
+      - name: demo
+        strategy: serial
+        steps:
+          - name: gen
+            tasks:
+              - generator
+          - name: act
+            tasks:
+              - actor
+  upload:
+    strategy: serial
+    phases:
+      - name: dependencies
+        strategy: serial
+        steps:
+          - name: upload
+            tasks:
+              - upload
