@@ -16,4 +16,4 @@ Deploy the `Operator` using the following command:
 
 `kubectl kudo install redis`
 
-It deploys a Redis Cluster composed of 6 instances. There are 3 masters and 1 replica per master:
+It deploys a Redis Cluster composed of 6 instances. There are 3 masters and 1 replica per master.
