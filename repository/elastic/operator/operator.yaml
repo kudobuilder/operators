@@ -1,0 +1,52 @@
+name: "elastic"
+version: "0.1.0"
+kudoVersion: 0.3.0
+kubernetesVersion: 1.15.0
+maintainers:
+  - Michael Beisiegel <michael.beisiegel@gmail.com>
+url: https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html
+tasks:
+  deploy-master:
+    resources:
+      - master-service.yaml
+      - master.yaml
+  deploy-data:
+    resources:
+      - data-service.yaml
+      - data.yaml
+  deploy-coordinator:
+    resources:
+      - coordinator-service.yaml
+      - coordinator.yaml
+  deploy-ingest:
+    resources:
+      - ingest-service.yaml
+      - ingest.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy-master
+        strategy: parallel
+        steps:
+          - name: deploy-master
+            tasks:
+              - deploy-master
+      - name: deploy-data
+        strategy: parallel
+        steps:
+          - name: deploy-data
+            tasks:
+              - deploy-data
+      - name: deploy-coordinator
+        strategy: parallel
+        steps:
+          - name: deploy-coordinator
+            tasks:
+              - deploy-coordinator
+      - name: deploy-ingest
+        strategy: parallel
+        steps:
+          - name: deploy-ingest
+            tasks:
+              - deploy-ingest

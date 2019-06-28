@@ -1,0 +1,32 @@
+
+
+DATA_NODE_COUNT:
+  default: "2"
+COORDINATOR_NODE_COUNT:
+  default: "1"
+INGEST_NODE_COUNT:
+  default: "0"
+MASTER_CPU:
+  default: "0.25"
+MASTER_MEM:
+  default: "1Gi"
+MASTER_DISK:
+  default: "2Gi"
+DATA_CPU:
+  default: "0.25"
+DATA_MEM:
+  default: "2Gi"
+DATA_DISK:
+  default: "4Gi"
+COORDINATOR_CPU:
+  default: "0.1"
+COORDINATOR_MEM:
+  default: "1Gi"
+COORDINATOR_DISK:
+  default: "2Gi"
+INGEST_CPU:
+  default: "0.1"
+INGEST_MEM:
+  default: "1Gi"
+INGEST_DISK:
+  default: "2Gi"

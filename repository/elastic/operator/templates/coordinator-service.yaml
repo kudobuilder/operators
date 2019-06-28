@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: coordinator-hs
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    app: coordinator
+  ports:
+    - protocol: TCP
+      port: 9200
+  clusterIP: None
