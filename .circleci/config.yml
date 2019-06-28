@@ -1,7 +1,4 @@
-# Golang CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-go/ for more details
-version: 2
+version: 2.1
 
 jobs:
   test:
@@ -9,29 +6,32 @@ jobs:
       enabled: true
       # enabled to make kind cluster start faster.
       docker_layer_caching: true
-
+    parameters:
+      kubernetes_version:
+        type: string
+    description: "Run KUDO Operators tests against a Kubernetes cluster."
     steps:
       - checkout
-
-      - restore_cache:
-          key: frameworks-cache-v1-{{ checksum "go.sum" }}
-
-      - run: make create-cluster
-      - run: |
-          go get golang.org/dl/go1.12.5
-          go1.12.5 download
-
-      - run:
-          command: make GO=go1.12.5 test
-
-      - save_cache:
-          key: frameworks-cache-v1-{{ checksum "go.sum" }}
-          paths:
-          - /home/circleci/.cache/go-build
-          - /home/circleci/.go_workspace
+      - run: make KUBERNETES_VERSION=<< parameters.kubernetes_version >> create-cluster
+      - run: make test
 
 workflows:
-  version: 2
-  test:
+  test-1.15:
     jobs:
-      - test
+    - test:
+        kubernetes_version: 1.15.0
+
+  test-1.14:
+    jobs:
+    - test:
+        kubernetes_version: 1.14.3
+
+  test-1.13:
+    jobs:
+    - test:
+        kubernetes_version: 1.13.7
+
+  test-1.12:
+    jobs:
+    - test:
+        kubernetes_version: 1.12.9
