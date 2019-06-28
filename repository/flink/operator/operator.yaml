@@ -1,0 +1,35 @@
+name: "flink"
+version: "0.1.0"
+kudoVersion: 0.3.0
+kubernetesVersion: 1.5.1
+maintainers:
+  - Fabian Baier <fabian@mesosphere.io>
+  - Tom Runyon <runyontr@gmail.com>
+url: https://zookeeper.apache.org/
+tasks:
+  storage:
+    resources:
+      - storage.yaml
+  jobmanager:
+    resources:
+      - jobmanager-pdb.yaml
+      - jobmanager-statefulset.yaml
+  jobmanager-service:
+    resources:
+      - services.yaml
+  taskmanager:
+    resources:
+      - taskmanager-deployment.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: flink
+        strategy: serial
+        steps:
+          - name: jobmanager
+            tasks:
+              - storage
+              - jobmanager
+              - jobmanager-service
+              - taskmanager

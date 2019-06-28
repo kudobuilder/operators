@@ -1,0 +1,15 @@
+apiVersion: kudo.k8s.io/v1alpha1
+kind: Instance
+metadata:
+  labels:
+    controller-tools.k8s.io: "1.0"
+    operator: flink
+  name: flink
+spec:
+  operatorVersion:
+    name: flink-0.1.0
+    namespace: default
+    type: OperatorVersions
+  parameters:
+    high_availability: ZOOKEEPER
+    zookeeper_url: "{{ .Name }}-zk-{{ .Name }}-zk-0.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-{{ .Name }}-zk-1.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-{{ .Name }}-zk-2.{{ .Name }}-zk-hs:2181"

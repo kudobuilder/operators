@@ -1,0 +1,49 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jobmanager
+  namespace: {{ .Namespace }}
+spec:
+  ports:
+    - name: rpc
+      port: 6123
+    - name: blob
+      port: 6124
+    - name: query
+      port: 6125
+    - name: ui
+      port: 8081
+    - name: ha
+      port: 8082
+    - name: metrics
+      port: 8083
+  selector:
+    app: {{ .Name }}
+    component: {{ .Name }}-jobmanager
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hs
+  namespace: {{ .Namespace }}
+  labels:
+    app: flink
+    component: {{ .Name }}-jobmanager
+spec:
+  ports:
+    - name: rpc
+      port: 6123
+    - name: blob
+      port: 6124
+    - name: query
+      port: 6125
+    - name: ui
+      port: 8081
+    - name: ha
+      port: 8082
+    - name: metrics
+      port: 8083
+  selector:
+    app: {{ .Name }}
+    component: {{ .Name }}-jobmanager
+  clusterIP: None
