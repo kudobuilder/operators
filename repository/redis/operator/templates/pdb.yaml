@@ -8,4 +8,3 @@ spec:
       app: redis
       instance: {{ .Name }}
   minAvailable: 2
-
