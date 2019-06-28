@@ -12,7 +12,7 @@ spec:
   selector:
     matchLabels:
       app: redis
-      redis: {{ .Name }}
+      redis: {{ .OperatorName }}
   template:
     metadata:
       labels:
