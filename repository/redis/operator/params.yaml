@@ -1,0 +1,10 @@
+masters:
+  description: "Number of Redis masters"
+  default: "3"
+  displayName: "Redis masters"
+client_port:
+  description: "Client port"
+  default: "6379"
+gossip_port:
+  description: "Gossip port"
+  default: "16379"
