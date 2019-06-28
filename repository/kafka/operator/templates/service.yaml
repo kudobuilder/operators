@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: svc
+  {{ if .Params.METRICS_ENABLED }}
+  labels:
+    "kudo.dev/servicemonitor": "true"
+  {{ end }}
+spec:
+  ports:
+    - port: {{ .Params.BROKER_PORT }}
+      name: server
+    - port: {{ .Params.CLIENT_PORT }}
+      name: client
+    {{ if .Params.METRICS_ENABLED }}
+    - port: {{ .Params.METRICS_PORT }}
+      name: metrics
+    {{end}}
+  clusterIP: None
+  selector:
+    app: kafka
+    instance: {{ .Name }}

@@ -1,0 +1,87 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .OperatorName }}
+  namespace: {{ .Namespace }}
+  labels:
+    kafka: {{ .OperatorName }}
+    app: kafka
+spec:
+  selector:
+    matchLabels:
+      app: kafka
+      kafka: {{ .OperatorName }}
+  serviceName: {{ .Name }}-svc
+  replicas: {{ .Params.BROKER_COUNT }}
+  template:
+    metadata:
+      labels:
+        app: kafka
+        kafka: {{ .OperatorName }}
+    spec:
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: k8skafka
+          imagePullPolicy: Always
+          image: mesosphere/kafka:0.1-2.2.1
+          resources:
+            requests:
+              memory: {{ .Params.BROKER_MEM }}
+              cpu: {{ .Params.BROKER_CPUS }}
+          ports:
+            - containerPort: {{ .Params.BROKER_PORT }}
+              name: server
+          command:
+            - sh
+            - -c
+            - "exec $KAFKA_HOME/bin/start-kafka.sh"
+          env:
+            - name: KAFKA_HEAP_OPTS
+              value : "-Xmx512M -Xms512M"
+            - name: KAFKA_OPTS
+              value: "-Dlogging.level=INFO"
+            {{ if .Params.METRICS_ENABLED }}
+            - name: METRICS_OPTS
+              value: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=9094:/opt/kafka/metrics-config.yml"
+            {{ end }}
+            - name: KAFKA_ZK_URI
+              value: {{ .Params.KAFKA_ZOOKEEPER_URI }}{{ .Params.KAFKA_ZOOKEEPER_PATH }}
+            - name: GC_LOG_ENABLED
+              value: "false"
+            - name: LOG_DIR
+              value: /var/lib/kafka/data
+            - name: METRICS_ENABLED
+              value: "{{ .Params.METRICS_ENABLED }}"
+            - name: KAFKA_CLIENT_ENABLED
+              value: "{{ .Params.CLIENT_PORT_ENABLED }}"
+            - name: KAFKA_BROKER_PORT
+              value: "{{ .Params.BROKER_PORT }}"
+            - name: KAFKA_CLIENT_PORT
+              value: "{{ .Params.CLIENT_PORT }}"
+          volumeMounts:
+            - name: datadir
+              mountPath: /var/lib/kafka
+            - name: config
+              mountPath: /config
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - "$KAFKA_HOME/readiness-check.sh"
+            timeoutSeconds: 10
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      volumes:
+        - name: config
+          configMap:
+            name: {{ .Name }}-serverproperties
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        accessModes: [ "ReadWriteOnce" ]
+        resources:
+          requests:
+            storage: 5Gi

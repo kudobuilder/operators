@@ -1,0 +1,24 @@
+name: "kafka"
+version: "0.1.0"
+kudoVersion: 0.3.0
+kubernetesVersion: 1.5.1
+maintainers:
+  - Zain Malik <zmalikshxil@gmail.com>
+url: https://kafka.apache.org/
+tasks:
+  deploy:
+    resources:
+      - service.yaml
+      - pdb.yaml
+      - configmap.yaml
+      - statefulset.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy-kafka
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - deploy
