@@ -23,7 +23,7 @@ spec:
       containers:
         - name: k8skafka
           imagePullPolicy: Always
-          image: mesosphere/kafka:0.1-2.2.1
+          image: mesosphere/kafka:0.1.0-2.2.1
           resources:
             requests:
               memory: {{ .Params.BROKER_MEM }}
@@ -45,7 +45,7 @@ spec:
               value: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=9094:/opt/kafka/metrics-config.yml"
             {{ end }}
             - name: KAFKA_ZK_URI
-              value: {{ .Params.KAFKA_ZOOKEEPER_URI }}{{ .Params.KAFKA_ZOOKEEPER_PATH }}
+              value: {{ .Params.ZOOKEEPER_URI }}{{ .Params.ZOOKEEPER_PATH }}
             - name: GC_LOG_ENABLED
               value: "false"
             - name: LOG_DIR
@@ -70,6 +70,14 @@ spec:
                 - -c
                 - "$KAFKA_HOME/readiness-check.sh"
             timeoutSeconds: 10
+          livenessProbe:
+            exec:
+              command:
+              - sh
+              - -c
+              - "$KAFKA_HOME/readiness-check.sh"
+            initialDelaySeconds: 10
+            periodSeconds: 10
       securityContext:
         runAsUser: 1000
         fsGroup: 1000

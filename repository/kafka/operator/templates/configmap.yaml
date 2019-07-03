@@ -15,70 +15,39 @@ data:
     # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
     # See the License for the specific language governing permissions and
     # limitations under the License.
-
     # see kafka.server.KafkaConfig for additional details and defaults
 
-    ############################# Server Basics #############################
+    # The number of threads handling network requests
+    num.network.threads={{ .Params.NUM_NETWORK_THREADS }}
 
-    # The id of the broker. This must be set to a unique integer for each broker.
-    # broker.id=${HOSTNAME##*-}
-    ############################# Socket Server Settings #############################
-
-    # The address the socket server listens on. It will get the value returned from
-    # java.net.InetAddress.getCanonicalHostName() if not configured.
-    #   FORMAT:
-    #     listeners = listener_name://host_name:port
-    #   EXAMPLE:
-    #     listeners = PLAINTEXT://your.host.name:9092
-    #listeners=PLAINTEXT://:{{ .Params.BROKER_PORT }}
-
-    # Hostname and port the broker will advertise to producers and consumers. If not set,
-    # it uses the value for "listeners" if configured.  Otherwise, it will use the value
-    # returned from java.net.InetAddress.getCanonicalHostName().
-    #advertised.listeners=PLAINTEXT://your.host.name:9092
-
-    # Maps listener names to security protocols, the default is for them to be the same. See the config documentation for more details
-    #listener.security.protocol.map=PLAINTEXT:PLAINTEXT,SSL:SSL,SASL_PLAINTEXT:SASL_PLAINTEXT,SASL_SSL:SASL_SSL
-
-    # The number of threads that the server uses for receiving requests from the network and sending responses to the network
-    num.network.threads=3
-
-    # The number of threads that the server uses for processing requests, which may include disk I/O
-    num.io.threads=8
+    # The number of threads doing disk I/O
+    num.io.threads={{ .Params.NUM_IO_THREADS }}
 
     # The send buffer (SO_SNDBUF) used by the socket server
-    socket.send.buffer.bytes=102400
+    socket.send.buffer.bytes={{ .Params.SOCKET_SEND_BUFFER_BYTES }}
 
     # The receive buffer (SO_RCVBUF) used by the socket server
-    socket.receive.buffer.bytes=102400
+    socket.receive.buffer.bytes={{ .Params.SOCKET_RECEIVE_BUFFER_BYTES }}
 
     # The maximum size of a request that the socket server will accept (protection against OOM)
-    socket.request.max.bytes=104857600
+    socket.request.max.bytes={{ .Params.SOCKET_REQUEST_MAX_BYTES }}
 
+    ############################# Authorization Settings #############################
+    # TODO support Security settings
 
     ############################# Log Basics #############################
 
     # A comma separated list of directories under which to store log files
-    # log.dirs=/var/lib/kafka/data
+    # log.dirs= determined by the mounted volume datadir
 
     # The default number of log partitions per topic. More partitions allow greater
     # parallelism for consumption, but this will also result in more files across
     # the brokers.
-    num.partitions={{ .Params.KAFKA_NUM_PARTITIONS }}
+    num.partitions={{ .Params.NUM_PARTITIONS }}
 
     # The number of threads per data directory to be used for log recovery at startup and flushing at shutdown.
     # This value is recommended to be increased for installations with data dirs located in RAID array.
-    num.recovery.threads.per.data.dir=1
-
-    ############################# Internal Topic Settings  #############################
-    # The replication factor for the group metadata internal topics "__consumer_offsets" and "__transaction_state"
-    # For anything other than development testing, a value greater than 1 is recommended for to ensure availability such as 3.
-    offsets.topic.replication.factor=1
-    transaction.state.log.replication.factor=1
-    transaction.state.log.min.isr=1
-    auto.create.topics.enable={{ .Params.KAFKA_AUTO_CREATE_TOPICS_ENABLE }}
-    auto.leader.rebalance.enable={{ .Params.KAFKA_AUTO_LEADER_REBALANCE_ENABLE }}
-    delete.topic.enable={{ .Params.KAFKA_DELETE_TOPIC_ENABLE }}
+    num.recovery.threads.per.data.dir={{ .Params.NUM_RECOVERY_THREADS_PER_DATA_DIR }}
 
     ############################# Log Flush Policy #############################
 
@@ -92,10 +61,9 @@ data:
     # every N messages (or both). This can be done globally and overridden on a per-topic basis.
 
     # The number of messages to accept before forcing a flush of data to disk
-    #log.flush.interval.messages=10000
+    log.flush.interval.messages={{ .Params.LOG_FLUSH_INTERVAL_MESSAGES }}
 
-    # The maximum amount of time a message can sit in a log before we force a flush
-    #log.flush.interval.ms=1000
+    log.flush.interval.ms={{ .Params.LOG_FLUSH_INTERVAL_MS }}
 
     ############################# Log Retention Policy #############################
 
@@ -104,19 +72,27 @@ data:
     # A segment will be deleted whenever *either* of these criteria are met. Deletion always happens
     # from the end of the log.
 
-    # The minimum age of a log file to be eligible for deletion due to age
-    log.retention.hours=168
+    # The minimum age of a log file to be eligible for deletion.
+    {{ if .Params.LOG_RETENTION_MS }}
+    log.retention.ms={{ .Params.LOG_RETENTION_MS }}
+    {{ end }}
+    {{ if .Params.LOG_RETENTION_MINUTES }}
+    log.retention.minutes={{ .Params.LOG_RETENTION_MINUTES }}
+    {{ end }}
+    {{ if .Params.LOG_RETENTION_HOURS }}
+    log.retention.hours={{ .Params.LOG_RETENTION_HOURS }}
+    {{ end }}
 
-    # A size-based retention policy for logs. Segments are pruned from the log unless the remaining
-    # segments drop below log.retention.bytes. Functions independently of log.retention.hours.
-    #log.retention.bytes=1073741824
+    # A size-based retention policy for logs. Segments are pruned from the log as long as the remaining
+    # segments don't drop below log.retention.bytes.
+    log.retention.bytes={{ .Params.LOG_RETENTION_BYTES }}
 
     # The maximum size of a log segment file. When this size is reached a new log segment will be created.
-    log.segment.bytes=1073741824
+    log.segment.bytes={{ .Params.LOG_SEGMENT_BYTES }}
 
     # The interval at which log segments are checked to see if they can be deleted according
     # to the retention policies
-    log.retention.check.interval.ms=300000
+    log.retention.check.interval.ms={{ .Params.LOG_RETENTION_CHECK_INTERVAL_MS }}
 
     ############################# Zookeeper #############################
 
@@ -125,20 +101,148 @@ data:
     # server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
     # You can also append an optional chroot string to the urls to specify the
     # root directory for all kafka znodes.
-    zookeeper.connect={{ .Params.KAFKA_ZOOKEEPER_URI }}{{ .Params.KAFKA_ZOOKEEPER_PATH }}
+    zookeeper.connect={{ .Params.ZOOKEEPER_URI }}{{ .Params.ZOOKEEPER_PATH }}
 
     # Timeout in ms for connecting to zookeeper
-    zookeeper.connection.timeout.ms=6000
+    # zookeeper.connection.timeout.ms= defaults to zookeeper.session.timeout.ms
 
 
-    ############################# Group Coordinator Settings #############################
+    ########################### Additional Parameters ########################
 
-    # The following configuration specifies the time, in milliseconds, that the GroupCoordinator will delay the initial consumer rebalance.
-    # The rebalance will be further delayed by the value of group.initial.rebalance.delay.ms as new members join the group, up to a maximum of max.poll.interval.ms.
-    # The default value for this is 3 seconds.
-    # We override this to 0 here as it makes for a better out-of-the-box experience for development and testing.
-    # However, in production environments the default value of 3 seconds is more suitable as this will help to avoid unnecessary, and potentially expensive, rebalances during application startup.
-    group.initial.rebalance.delay.ms=0
+    auto.create.topics.enable={{ .Params.AUTO_CREATE_TOPICS_ENABLE }}
+    auto.leader.rebalance.enable={{ .Params.AUTO_LEADER_REBALANCE_ENABLE }}
+
+    background.threads={{ .Params.BACKGROUND_THREADS }}
+
+    compression.type={{ .Params.COMPRESSION_TYPE }}
+
+    connections.max.idle.ms={{ .Params.CONNECTIONS_MAX_IDLE_MS }}
+
+    controlled.shutdown.enable={{ .Params.CONTROLLED_SHUTDOWN_ENABLE }}
+    controlled.shutdown.max.retries={{ .Params.CONTROLLED_SHUTDOWN_MAX_RETRIES }}
+    controlled.shutdown.retry.backoff.ms={{ .Params.CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS }}
+    controller.socket.timeout.ms={{ .Params.CONTROLLER_SOCKET_TIMEOUT_MS }}
+
+    default.replication.factor={{ .Params.DEFAULT_REPLICATION_FACTOR }}
+
+    delete.topic.enable={{ .Params.DELETE_TOPIC_ENABLE }}
+
+    delete.records.purgatory.purge.interval.requests={{ .Params.DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS }}
+
+    fetch.purgatory.purge.interval.requests={{ .Params.FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS }}
+
+    group.max.session.timeout.ms={{ .Params.GROUP_MAX_SESSION_TIMEOUT_MS }}
+    group.min.session.timeout.ms={{ .Params.GROUP_MIN_SESSION_TIMEOUT_MS }}
+    group.initial.rebalance.delay.ms={{ .Params.GROUP_INITIAL_REBALANCE_DELAY_MS }}
+
+    inter.broker.protocol.version={{ .Params.INTER_BROKER_PROTOCOL_VERSION }}
+
+    leader.imbalance.check.interval.seconds={{ .Params.LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS }}
+    leader.imbalance.per.broker.percentage={{ .Params.LEADER_IMBALANCE_PER_BROKER_PERCENTAGE }}
+
+    log.cleaner.backoff.ms={{ .Params.LOG_CLEANER_BACKOFF_MS }}
+    log.cleaner.dedupe.buffer.size={{ .Params.LOG_CLEANER_DEDUPE_BUFFER_SIZE }}
+    log.cleaner.delete.retention.ms={{ .Params.LOG_CLEANER_DELETE_RETENTION_MS }}
+    log.cleaner.enable={{ .Params.LOG_CLEANER_ENABLE }}
+    log.cleaner.io.buffer.load.factor={{ .Params.LOG_CLEANER_IO_BUFFER_LOAD_FACTOR }}
+    log.cleaner.io.buffer.size={{ .Params.LOG_CLEANER_IO_BUFFER_SIZE }}
+    log.cleaner.io.max.bytes.per.second={{ .Params.LOG_CLEANER_IO_MAX_BYTES_PER_SECOND }}
+    log.cleaner.min.cleanable.ratio={{ .Params.LOG_CLEANER_MIN_CLEANABLE_RATIO }}
+    log.cleaner.min.compaction.lag.ms={{ .Params.LOG_CLEANER_MIN_COMPACTION_LAG_MS }}
+    log.cleaner.threads={{ .Params.LOG_CLEANER_THREADS }}
+    log.cleanup.policy={{ .Params.LOG_CLEANUP_POLICY }}
+
+    log.flush.offset.checkpoint.interval.ms={{ .Params.LOG_FLUSH_OFFSET_CHECKPOINT_INTERVAL_MS }}
+    log.flush.scheduler.interval.ms={{ .Params.LOG_FLUSH_SCHEDULER_INTERVAL_MS }}
+    log.flush.start.offset.checkpoint.interval.ms={{ .Params.LOG_FLUSH_START_OFFSET_CHECKPOINT_INTERVAL_MS }}
+
+    log.index.interval.bytes={{ .Params.LOG_INDEX_INTERVAL_BYTES }}
+    log.index.size.max.bytes={{ .Params.LOG_INDEX_SIZE_MAX_BYTES }}
+
+    log.message.format.version={{ .Params.LOG_MESSAGE_FORMAT_VERSION }}
+
+    log.preallocate={{ .Params.LOG_PREALLOCATE }}
+
+    {{ if .Params.LOG_ROLL_MS }}
+    log.roll.ms={{ .Params.LOG_ROLL_MS }}
+    {{ end }}
+    {{ if .Params.LOG_ROLL_HOURS }}
+    log.roll.hours={{ .Params.LOG_ROLL_HOURS }}
+    {{ end }}
+    {{ if .Params.LOG_ROLL_JITTER_MS }}
+    log.roll.jitter.ms={{ .Params.LOG_ROLL_JITTER_MS }}
+    {{ end }}
+    {{ if .Params.LOG_ROLL_JITTER_HOURS }}
+    log.roll.jitter.hours={{ .Params.LOG_ROLL_JITTER_HOURS }}
+    {{ end }}
+
+    log.segment.delete.delay.ms={{ .Params.LOG_SEGMENT_DELETE_DELAY_MS }}
+
+    max.connections.per.ip.overrides={{ .Params.MAX_CONNECTIONS_PER_IP_OVERRIDES }}
+    max.connections.per.ip={{ .Params.MAX_CONNECTIONS_PER_IP }}
+
+    message.max.bytes={{ .Params.MESSAGE_MAX_BYTES }}
+
+    metric.reporters={{ .Params.METRIC_REPORTERS }}
+    metrics.num.samples={{ .Params.METRICS_NUM_SAMPLES }}
+    metrics.sample.window.ms={{ .Params.METRICS_SAMPLE_WINDOW_MS }}
+
+    min.insync.replicas={{ .Params.MIN_INSYNC_REPLICAS }}
+
+    num.replica.fetchers={{ .Params.NUM_REPLICA_FETCHERS }}
+
+    offset.metadata.max.bytes={{ .Params.OFFSET_METADATA_MAX_BYTES }}
+    offsets.commit.required.acks={{ .Params.OFFSETS_COMMIT_REQUIRED_ACKS }}
+    offsets.commit.timeout.ms={{ .Params.OFFSETS_COMMIT_TIMEOUT_MS }}
+    offsets.load.buffer.size={{ .Params.OFFSETS_LOAD_BUFFER_SIZE }}
+    offsets.retention.check.interval.ms={{ .Params.OFFSETS_RETENTION_CHECK_INTERVAL_MS }}
+    offsets.retention.minutes={{ .Params.OFFSETS_RETENTION_MINUTES }}
+    offsets.topic.compression.codec={{ .Params.OFFSETS_TOPIC_COMPRESSION_CODEC }}
+    offsets.topic.num.partitions={{ .Params.OFFSETS_TOPIC_NUM_PARTITIONS }}
+    offsets.topic.replication.factor={{ .Params.OFFSETS_TOPIC_REPLICATION_FACTOR }}
+    offsets.topic.segment.bytes={{ .Params.OFFSETS_TOPIC_SEGMENT_BYTES }}
+
+    producer.purgatory.purge.interval.requests={{ .Params.PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS }}
+
+    queued.max.requests={{ .Params.QUEUED_MAX_REQUESTS }}
+    queued.max.request.bytes={{ .Params.QUEUED_MAX_REQUEST_BYTES }}
+    quota.consumer.default={{ .Params.QUOTA_CONSUMER_DEFAULT }}
+    quota.producer.default={{ .Params.QUOTA_PRODUCER_DEFAULT }}
+    quota.window.num={{ .Params.QUOTA_WINDOW_NUM }}
+    quota.window.size.seconds={{ .Params.QUOTA_WINDOW_SIZE_SECONDS }}
+
+    replica.fetch.backoff.ms={{ .Params.REPLICA_FETCH_BACKOFF_MS }}
+    replica.fetch.max.bytes={{ .Params.REPLICA_FETCH_MAX_BYTES }}
+    replica.fetch.min.bytes={{ .Params.REPLICA_FETCH_MIN_BYTES }}
+    replica.fetch.response.max.bytes={{ .Params.REPLICA_FETCH_RESPONSE_MAX_BYTES }}
+    replica.fetch.wait.max.ms={{ .Params.REPLICA_FETCH_WAIT_MAX_MS }}
+    replica.high.watermark.checkpoint.interval.ms={{ .Params.REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS }}
+    replica.lag.time.max.ms={{ .Params.REPLICA_LAG_TIME_MAX_MS }}
+    replica.socket.receive.buffer.bytes={{ .Params.REPLICA_SOCKET_RECEIVE_BUFFER_BYTES }}
+    replica.socket.timeout.ms={{ .Params.REPLICA_SOCKET_TIMEOUT_MS }}
+
+    replication.quota.window.num={{ .Params.REPLICATION_QUOTA_WINDOW_NUM }}
+    replication.quota.window.size.seconds={{ .Params.REPLICATION_QUOTA_WINDOW_SIZE_SECONDS }}
+
+    request.timeout.ms={{ .Params.REQUEST_TIMEOUT_MS }}
+
+    reserved.broker.max.id={{ .Params.RESERVED_BROKER_MAX_ID }}
+
+    transaction.state.log.segment.bytes={{ .Params.TRANSACTION_STATE_LOG_SEGMENT_BYTES }}
+    transaction.remove.expired.transaction.cleanup.interval.ms={{ .Params.TRANSACTION_REMOVE_EXPIRED_TRANSACTION_CLEANUP_INTERVAL_MS }}
+    transaction.max.timeout.ms={{ .Params.TRANSACTION_MAX_TIMEOUT_MS }}
+    transaction.state.log.num.partitions={{ .Params.TRANSACTION_STATE_LOG_NUM_PARTITIONS }}
+    transaction.abort.timed.out.transaction.cleanup.interval.ms={{ .Params.TRANSACTION_ABORT_TIMED_OUT_TRANSACTION_CLEANUP_INTERVAL_MS }}
+    transaction.state.log.load.buffer.size={{ .Params.TRANSACTION_STATE_LOG_LOAD_BUFFER_SIZE }}
+    transactional.id.expiration.ms={{ .Params.TRANSACTIONAL_ID_EXPIRATION_MS }}
+    transaction.state.log.replication.factor={{ .Params.TRANSACTION_STATE_LOG_REPLICATION_FACTOR }}
+    transaction.state.log.min.isr={{ .Params.TRANSACTION_STATE_LOG_MIN_ISR }}
+
+    unclean.leader.election.enable={{ .Params.UNCLEAN_LEADER_ELECTION_ENABLE }}
+
+    zookeeper.session.timeout.ms={{ .Params.ZOOKEEPER_SESSION_TIMEOUT_MS }}
+    zookeeper.sync.time.ms={{ .Params.ZOOKEEPER_SYNC_TIME_MS }}
+
 kind: ConfigMap
 metadata:
   creationTimestamp: 2016-03-30T18:14:41Z

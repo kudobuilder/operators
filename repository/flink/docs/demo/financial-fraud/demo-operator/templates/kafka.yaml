@@ -11,7 +11,7 @@ spec:
     namespace: default
     type: OperatorVersions
   parameters:
-    KAFKA_ZOOKEEPER_URI: "{{ .Name }}-zk-{{ .Name }}-zk-0.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-{{ .Name }}-zk-1.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-{{ .Name }}-zk-2.{{ .Name }}-zk-hs:2181"
-    KAFKA_ZOOKEEPER_PATH: "/kafka"
+    ZOOKEEPER_URI: "{{ .Name }}-zk-{{ .Name }}-zk-0.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-{{ .Name }}-zk-1.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-{{ .Name }}-zk-2.{{ .Name }}-zk-hs:2181"
+    ZOOKEEPER_PATH: "/kafka"
     BROKER_COUNT: "3"
-    KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    AUTO_CREATE_TOPICS_ENABLE: "true"
