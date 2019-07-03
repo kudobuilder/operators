@@ -126,28 +126,10 @@ You can learn more on how to use elasticsearch from the [elasticsearch documenta
 
 ## Update the Instance
 
-Lets update `elastic-instance.yaml` setting the `DATA_NODE_COUNT` to 3.
-```
-apiVersion: kudo.k8s.io/v1alpha1
-kind: Instance
-metadata:
-  name: myes
-  labels:
-    controller-tools.k8s.io: "1.0"
-    framework: elastic
-spec:
-  frameworkVersion:
-    name: elastic-v1
-    namespace: default
-    type: FrameworkVersions
-  parameters:
-    DATA_NODE_COUNT: "3"
-    COORDINATOR_NODE_COUNT: "1"
-```
+Lets increase the `DATA_NODE_COUNT` to `3` using the following command.
 
-Next we apply that change.
 ```
-kubectl apply -f elastic-instance.yaml
+kubectl patch instance myes -p '{"spec":{"parameters":{"DATA_NODE_COUNT":"3"}}}' --type=merge
 ```
 
 Lets check on the pods.
@@ -169,31 +151,5 @@ myes-master-2        1/1     Running   0          4m13s
 
 
 ## Upgrade the Instance
-
-Note: Currently not working [issue 208](https://github.com/kudobuilder/kudo/issues/208).
-
-Lets update `elastic-instance.yaml` to use `elastic-v2`. This newer framework version references a newer elasticsearch docker image.
-```
-apiVersion: kudo.k8s.io/v1alpha1
-kind: Instance
-metadata:
-  name: myes
-  labels:
-    controller-tools.k8s.io: "1.0"
-    framework: elastic
-spec:
-  frameworkVersion:
-    name: elastic-v2
-    namespace: default
-    type: FrameworkVersions
-  parameters:
-    DATA_NODE_COUNT: "3"
-    COORDINATOR_NODE_COUNT: "1"
-```
-
-Next we apply to upgrade.
-```
-kubectl apply -f elastic-instance.yaml
-```
 
 ... more to come ...

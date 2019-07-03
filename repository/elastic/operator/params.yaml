@@ -1,5 +1,3 @@
-
-
 DATA_NODE_COUNT:
   default: "2"
 COORDINATOR_NODE_COUNT:
