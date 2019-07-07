@@ -11,6 +11,7 @@ tasks:
       - service.yaml
       - pdb.yaml
       - configmap.yaml
+      - metrics-config.yaml
       - statefulset.yaml
 plans:
   deploy:
