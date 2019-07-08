@@ -107,7 +107,7 @@ spec:
         resources:
           requests:
             storage: {{ .Params.DISK_SIZE }}
-        {{ if eq .Params.STORAGE_CLASS }}
+        {{ if .Params.STORAGE_CLASS }}
         storageClassName: {{ .Params.STORAGE_CLASS }}
         {{ end }}
     {{ end }}

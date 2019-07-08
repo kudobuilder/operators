@@ -37,6 +37,7 @@ kubectl kudo install kafka --instance=my-kafka-name -p STORAGE_CLASS=<STORAGE_CL
 kubectl kudo install kafka --instance=my-kafka-name -p PERSISTENT_STORAGE=false
 ```
 
+Having `PERSISTENT_STORAGE` value `false` means that any data or logs in broker will be lost after the a pod restart or rescheduling.
 Deploying without persistent storage isn't recommended for production usage. 
 
 ##### Metrics
