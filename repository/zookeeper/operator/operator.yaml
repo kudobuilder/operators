@@ -28,6 +28,12 @@ plans:
             tasks:
               - infra
               - app
+      - name: validation
+        strategy: parallel
+        steps:
+          - name: validation
+            tasks:
+              - validation
   validation:
     strategy: serial
     phases:

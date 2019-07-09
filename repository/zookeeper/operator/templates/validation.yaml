@@ -14,14 +14,12 @@ spec:
         image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"
         env:
         - name: CONN
-          value: zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181
+          value: {{ .Name }}-{{ .Name }}-0.{{ .Name }}-hs:2181,{{ .Name }}-{{ .Name }}-1.{{ .Name }}-hs:2181,{{ .Name }}-{{ .Name }}-2.{{ .Name }}-hs:2181
         resources:
           requests:
             memory: "{{ .Params.memory }}"
             cpu: "{{ .Params.cpus }}"
-          command:
-            - sh
-            - -c
-            - "/opt/zookeeper/bin/zkCLI.sh \
-              --server $CONN \
-              ls /"
+        command:
+          - bash
+          - -c
+          - "until /opt/zookeeper/bin/zkCli.sh -server $CONN ls /; do sleep 5; done"
