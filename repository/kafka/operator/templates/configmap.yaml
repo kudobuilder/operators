@@ -101,7 +101,7 @@ data:
     # server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
     # You can also append an optional chroot string to the urls to specify the
     # root directory for all kafka znodes.
-    zookeeper.connect={{ .Params.ZOOKEEPER_URI }}{{ .Params.ZOOKEEPER_PATH }}
+    zookeeper.connect={{ .Params.ZOOKEEPER_URI }}{{ if .Params.ZOOKEEPER_PATH }}{{ .Params.ZOOKEEPER_PATH }}{{ else }}/{{ .Name }}{{ end }}
 
     # Timeout in ms for connecting to zookeeper
     # zookeeper.connection.timeout.ms= defaults to zookeeper.session.timeout.ms

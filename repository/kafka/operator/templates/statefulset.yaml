@@ -40,16 +40,20 @@ spec:
               value : "-Xmx512M -Xms512M"
             - name: KAFKA_OPTS
               value: "-Dlogging.level=INFO"
-            {{ if .Params.METRICS_ENABLED }}
+            {{ if eq .Params.METRICS_ENABLED "true" }}
             - name: METRICS_OPTS
-              value: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=9094:/opt/kafka/metrics-config.yml"
+              value: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=9094:/metrics/metrics.properties"
             {{ end }}
             - name: KAFKA_ZK_URI
-              value: {{ .Params.ZOOKEEPER_URI }}{{ .Params.ZOOKEEPER_PATH }}
+              value: {{ .Params.ZOOKEEPER_URI }}{{ if .Params.ZOOKEEPER_PATH }}{{ .Params.ZOOKEEPER_PATH }}{{ else }}/{{ .Name }}{{ end }}
             - name: GC_LOG_ENABLED
               value: "false"
             - name: LOG_DIR
+            {{ if eq .Params.PERSISTENT_STORAGE "true" }}
               value: /var/lib/kafka/data
+            {{ else }}
+              value: "${KAFKA_HOME}/data"
+            {{ end }}
             - name: METRICS_ENABLED
               value: "{{ .Params.METRICS_ENABLED }}"
             - name: KAFKA_CLIENT_ENABLED
@@ -59,25 +63,31 @@ spec:
             - name: KAFKA_CLIENT_PORT
               value: "{{ .Params.CLIENT_PORT }}"
           volumeMounts:
+          {{ if eq .Params.PERSISTENT_STORAGE "true" }}
             - name: datadir
               mountPath: /var/lib/kafka
+          {{ end }}
             - name: config
               mountPath: /config
+          {{ if eq .Params.METRICS_ENABLED "true" }}
+            - name: metrics
+              mountPath: /metrics
+          {{ end }}
           readinessProbe:
             exec:
               command:
                 - sh
                 - -c
                 - "$KAFKA_HOME/readiness-check.sh"
-            timeoutSeconds: 10
+            timeoutSeconds: {{ .Params.READINESS_TIMEOUT_SECONDS }}
           livenessProbe:
             exec:
               command:
               - sh
               - -c
               - "$KAFKA_HOME/readiness-check.sh"
-            initialDelaySeconds: 10
-            periodSeconds: 10
+            initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
+            periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
@@ -85,11 +95,19 @@ spec:
         - name: config
           configMap:
             name: {{ .Name }}-serverproperties
+        - name: metrics
+          configMap:
+            name: {{ .Name }}-metrics-config
   volumeClaimTemplates:
+    {{ if eq .Params.PERSISTENT_STORAGE "true" }}
     - metadata:
         name: datadir
       spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:
           requests:
-            storage: 5Gi
+            storage: {{ .Params.DISK_SIZE }}
+        {{ if .Params.STORAGE_CLASS }}
+        storageClassName: {{ .Params.STORAGE_CLASS }}
+        {{ end }}
+    {{ end }}

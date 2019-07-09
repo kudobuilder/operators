@@ -15,6 +15,18 @@ BROKER_PORT:
   description: "Port brokers run on"
   default: "9093"
 
+DISK_SIZE:
+  description: "Disk size for the brokers"
+  default: "5Gi"
+
+STORAGE_CLASS:
+  description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
+  required: false
+
+PERSISTENT_STORAGE:
+  description: "If false, ephemeral storage is used. Not recommended for Production use."
+  default: "true"
+
 CLIENT_PORT:
   description: "Broker client port"
   default: "9092"
@@ -42,7 +54,7 @@ ZOOKEEPER_URI:
 
 ZOOKEEPER_PATH:
   description: "Path inside of KAFKA_ZOOKEEPER_URI to host data"
-  default: "/kafka"
+  required: false
 
 AUTO_CREATE_TOPICS_ENABLE:
   default: "true"
@@ -77,6 +89,16 @@ LEADER_IMBALANCE_PER_BROKER_PERCENTAGE:
   default: "10"
   description: "The ratio of leader imbalance allowed per broker. The controller would trigger a leader balance if it goes above this value per broker. The value is specified in percentage."
 
+LIVENESS_INITIAL_DELAY_SECONDS:
+  displayName: "livenessProbe initial delay timeout seconds"
+  description: "livenessProbe initial delay in seconds"
+  default: "10"
+
+LIVENESS_PERIOD_SECONDS:
+  displayName: "livenessProbe period seconds"
+  description: "livenessProbe period in seconds"
+  default: "10"
+
 LOG_FLUSH_INTERVAL_MESSAGES:
   default: "9223372036854775807"
   description: "The number of messages accumulated on a log partition before messages are flushed to disk"
@@ -105,33 +127,40 @@ LOG_RETENTION_BYTES:
 LOG_RETENTION_MS:
   displayName: "log.retention.ms"
   description: "The number of milliseconds to keep a log file before deleting it (in milliseconds) If not set, the value in log.retention.minutes is used"
+  required: false
 
 LOG_RETENTION_MINUTES:
   displayName: "log.retention.minutes"
   description: "The number of minutes to keep a log file before deleting it (in minutes), secondary to log.retention.ms property. If not set, the value in log.retention.hours is used"
+  required: false
 
 LOG_RETENTION_HOURS:
   displayName: "log.retention.hours"
   description: "The number of hours to keep a log file before deleting it (in hours), tertiary to log.retention.ms property"
   default: "168"
+  required: false
   
 LOG_ROLL_MS:
   displayName: "log.roll.ms"
   description: "The maximum time before a new log segment is rolled out (in milliseconds). If not set, the value in log.roll.hours is used"
+  required: false
 
 LOG_ROLL_JITTER_MS:
   displayName: "log.roll.jitter.ms"
   description: "The maximum jitter to subtract from logRollTimeMillis (in milliseconds). If not set, the value in log.roll.jitter.hours is used"
+  required: false
 
 LOG_ROLL_HOURS:
   displayName: "log.roll.hours"
   description: "The maximum time before a new log segment is rolled out (in hours), secondary to log.roll.ms property"
   default: "168"
+  required: false
 
 LOG_ROLL_JITTER_HOURS:
   displayName: "log.roll.jitter.hours"
   description: "The maximum jitter to subtract from logRollTimeMillis (in hours), secondary to log.roll.jitter.ms property"
   default: "0"
+  required: false
 
 LOG_SEGMENT_BYTES:
   displayName: "log.segment.bytes"
@@ -245,6 +274,11 @@ QUOTA_PRODUCER_DEFAULT:
   displayName: "quota.producer.default"
   description: "Used only when dynamic default quotas are not configured for , or in Zookeeper. Any producer distinguished by clientId will get throttled if it produces more bytes than this value per-second"
   default: "9223372036854775807"
+
+READINESS_TIMEOUT_SECONDS:
+  displayName: "readinessProbe timeout seconds"
+  description: "readinessProbe timeout in seconds"
+  default: "10"
   
 REPLICA_FETCH_MAX_BYTES:
   displayName: "replica.fetch.max.bytes"
