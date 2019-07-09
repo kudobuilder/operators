@@ -1,6 +1,6 @@
 ## KUDO Kafka v0.1.1
 
-- [Installation](./installation.md)
+- [Installation](./install.md)
 - [Configuration](./configuration.md)
 - [Monitoring](./monitoring.md)
 
