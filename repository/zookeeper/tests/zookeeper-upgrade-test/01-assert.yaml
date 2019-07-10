@@ -12,7 +12,7 @@ status:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: zk-zk
+  name: zk-zookeeper
 spec:
   template:
     spec:
@@ -20,7 +20,7 @@ spec:
      - name: kubernetes-zookeeper
        resources:
          requests:
-           memory: "1Gi"
+           memory: "256Mi"
            cpu: "300m"
 status:
   readyReplicas: 3

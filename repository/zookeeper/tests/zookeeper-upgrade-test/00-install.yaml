@@ -9,4 +9,5 @@ spec:
     kind: OperatorVersion
   name: "zk"
   parameters:
+    memory: "256Mi"
     cpus: "0.3"
