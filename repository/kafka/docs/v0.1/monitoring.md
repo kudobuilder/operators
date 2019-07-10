@@ -21,7 +21,7 @@ TargetPort:        9094/TCP
 
 To use the prometheus service monitor, its necessary to have installed the prometheus operator previously in the cluster.
 
-If the Kafka Cluster Service in the default namespace, we can use the next example of the service-monitor.
+If the Kafka Cluster Service in the default namespace, we can use the next example of the service-monitor. The `service-monitor.yaml` file referenced below is available ![here](https://raw.githubusercontent.com/kudobuilder/operators/master/repository/kafka/docs/v0.1/resources/service-monitor.yaml).
 ```
 kubectl create -f resources/service-monitor.yaml
 ```
