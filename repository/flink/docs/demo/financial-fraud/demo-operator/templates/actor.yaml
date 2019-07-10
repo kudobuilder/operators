@@ -8,11 +8,11 @@ spec:
     metadata:
       name: flink-demo-actor
       labels:
-        app: flink-demo-actor
+        actor: {{ .Name }}
     spec:
       containers:
         - name: actor
-          image: mesosphere/flink-demo-actor:0.2
+          image: dcoslabs/flink-demo-actor:0.3
           command: ["/fraudDisplay-linux"]
           imagePullPolicy: Always
           args: ["--broker", "{{ .Name }}-kafka-kafka-0.{{ .Name }}-kafka-svc:9093"]

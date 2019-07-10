@@ -20,44 +20,48 @@ The architecture follows more or less the [SMACK stack architecture](https://mes
 Before you get started:
 
 - Have KUDO installed on your cluster [ [Getting Started](https://kudo.dev/docs/getting-started/) ]
-- Have the `zookeeper` Framework with `0.1.0` as FrameworkVersion installed 
+- Have the `zookeeper` Operator with `0.1.0` as OperatorVersion installed 
     - Use the KUDO CLI with the following command:
         ```bash
-        $ kubectl kudo install zookeeper --package-version=0.1.0
-        framework.kudo.k8s.io/v1alpha1/zookeeper created
-        frameworkversion.kudo.k8s.io/v1alpha1/zookeeper-0.1.0 created
-        No Instance tied to this "zookeeper" version has been found. Do you want to create one? (Yes/no) no
-
+        $ kubectl kudo install zookeeper --package-version=0.1.0 --skip-instance
+        operator.kudo.k8s.io/v1alpha1/zookeeper created
+        operatorversion.kudo.k8s.io/v1alpha1/zookeeper-0.1.0 created
         ```
-        *Note: Don't forget to say "**no**" when prompted, we just want to install the Framework and FrameworkVersion objects but we don't want to instantiate an Instance object*
-- Have the `kafka` Framework with `0.1.0` as FrameworkVersion installed 
+- Have the `kafka` Operator with `0.1.1` as OperatorVersion installed 
     - Use the KUDO CLI with the following command:
         ```bash
-        $ kubectl kudo install kafka --package-version=0.1.0
-        framework.kudo.k8s.io/v1alpha1/kafka created
-        frameworkversion.kudo.k8s.io/v1alpha1/kafka-0.1.0 created
-        No Instance tied to this "kafka" version has been found. Do you want to create one? (Yes/no) no
-
+        $ kubectl kudo install kafka --package-version=0.1.0 --skip-instance
+        operator.kudo.k8s.io/v1alpha1/kafka created
+        operatorversion.kudo.k8s.io/v1alpha1/kafka-0.1.1 created
         ```
-        *Note: Don't forget to say "**no**" when prompted, we just want to install the Framework and FrameworkVersion objects but we don't want to instantiate an Instance object*
-- Have the `flink` Framework with `0.2.0` as FrameworkVersion installed 
-    - Get the KUDO Frameworks repository: `git clone git@github.com:kudobuilder/frameworks.git`
-    - Change directory into the cloned repository: `cd kudo`
-    - Install the Flink `0.2.0` objects straight out the repository:
-        - `kubectl create -f repository/flink/0.2.0/flink-framework.yaml`
-        - `kubectl create -f repository/flink/0.2.0/flink-frameworkversion.yaml`
+- Have the `flink` Operator with `0.1.0` as OperatorVersion installed 
+    - Use the KUDO CLI with the following command:
+        ```bash
+        $ kubectl kudo install flink --package-version=0.1.0 --skip-instance
+        operator.kudo.k8s.io/v1alpha1/flink created
+        operatorversion.kudo.k8s.io/v1alpha1/flink-0.1.0 created
+        ```
         
-Now you should have all required Frameworks installed.
+Now you should have all required Operators installed.
 
 ## Getting Started
 
-Install the `flink-financial-demo` from the main repository directory via:
+Install the Flink `financial-fraud` demo from the main repository directory.
 
-`kubectl create -f repository/flink/docs/demo/financial-fraud/flink-demo.yaml`
+ - Get the KUDO Operators repository: `git clone git@github.com:kudobuilder/operators.git`
+    - Change directory into the cloned repository: `cd operators`
+    - Install the Flink demo objects straight out of the repository:
+        ```bash
+        $ kubectl kudo install flink/docs/demo/financial-fraud/demo-operator
+        operator.kudo.k8s.io/v1alpha1/flink-demo created
+        operatorversion.kudo.k8s.io/v1alpha1/flink-demo-0.1.0 created
+        No instance named 'flink-demo' tied to this 'flink-demo' version has been found. Do you want to create one? (Yes/no) yes
+        instance.kudo.k8s.io/v1alpha1/flink-demo created
+        ```
 
 To see if Flink is working properly run:
 
-`kubectl proxy` and access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/demo-flink-jobmanager:ui/proxy/#/overview
+`kubectl proxy` and access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
 
 Wait until Zookeeper, Kafka and Flink are healthy and running.
 Once everything is up, start the job:
@@ -86,25 +90,22 @@ EOF
 To get the job output:
 
 ```bash
-$ kubectl logs $(kubectl get pod -l planexecution=flink-submit-job -o jsonpath="{.items[0].metadata.name}")
-DOWNLOAD_URL: https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar FILE: flink-job-1.0.jar JOBMANAGER: demo-flink-jobmanager
-fetch http://dl-cdn.alpinelinux.org/alpine/v3.8/main/x86_64/APKINDEX.tar.gz
-fetch http://dl-cdn.alpinelinux.org/alpine/v3.8/community/x86_64/APKINDEX.tar.gz
-(1/7) Installing ca-certificates (20171114-r3)
-(2/7) Installing nghttp2-libs (1.32.0-r0)
-(3/7) Installing libssh2 (1.8.0-r3)
-(4/7) Installing libcurl (7.61.1-r1)
-(5/7) Installing curl (7.61.1-r1)
-(6/7) Installing oniguruma (6.8.2-r0)
-(7/7) Installing jq (1.6_rc1-r1)
-Executing busybox-1.28.4-r2.trigger
-Executing ca-certificates-20171114-r3.trigger
-OK: 15 MiB in 24 packages
-{"filename":"/tmp/flink-web-1324b551-a734-43fe-824b-396d7760647c/flink-web-upload/684b6919-9e66-4064-94d9-22641c9c2fb1_flink-job-1.0.jar","status":"success"}Thu Jan 24 04:59:15 UTC 2019
-No uploaded jar detected
-=====================
-Thu Jan 24 04:59:20 UTC 2019
-Found jar 684b6919-9e66-4064-94d9-22641c9c2fb1_flink-job-1.0.jar
+$ kubectl logs $(kubectl get pod -l job-name=flink-demo-submit-flink-job -o jsonpath="{.items[0].metadata.name}")
+DOWNLOAD_URL: https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar FILE: flink-job-1.0.jar JOBMANAGER: flink-demo-flink-jobmanager
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.9/main/x86_64/APKINDEX.tar.gz
+fetch http://dl-cdn.alpinelinux.org/alpine/v3.9/community/x86_64/APKINDEX.tar.gz
+(1/7) Installing ca-certificates (20190108-r0)
+(2/7) Installing nghttp2-libs (1.35.1-r0)
+(3/7) Installing libssh2 (1.8.2-r0)
+(4/7) Installing libcurl (7.64.0-r2)
+(5/7) Installing curl (7.64.0-r2)
+(6/7) Installing oniguruma (6.9.1-r0)
+(7/7) Installing jq (1.6-r0)
+Executing busybox-1.29.3-r10.trigger
+Executing ca-certificates-20190108-r0.trigger
+OK: 16 MiB in 25 packages
+{"filename":"/ha/data/flink-web-upload/1044f898-66b0-4c71-a59c-602cdd53a7b9_flink-job-1.0.jar","status":"success"}Wed Jul 10 18:54:50 UTC 2019
+Found jar 1044f898-66b0-4c71-a59c-602cdd53a7b9_flink-job-1.0.jar
 RESPONSE: null
 SUBMITTED JOB!
 ```
@@ -112,7 +113,22 @@ SUBMITTED JOB!
 To get the fraud output from the actor:
 
 ```bash
-kubectl logs $(kubectl get pod -l step=act -o jsonpath="{.items[0].metadata.name}")
+kubectl logs $(kubectl get pod -l actor=flink-demo -o jsonpath="{.items[0].metadata.name}")
+```
+
+The output will look like:
+
+```bash
+Broker:   flink-demo-kafka-kafka-0.flink-demo-kafka-svc:9093
+Topic:   fraud
+
+Detected Fraud:   TransactionAggregate {startTimestamp=0, endTimestamp=1562784331000, totalAmount=11612:
+Transaction{timestamp=1562784330000, origin=1, target='5', amount=5175}
+Transaction{timestamp=1562784331000, origin=1, target='5', amount=6437}}
+
+Detected Fraud:   TransactionAggregate {startTimestamp=0, endTimestamp=1562784349000, totalAmount=16917:
+Transaction{timestamp=1562784339000, origin=0, target='7', amount=9028}
+Transaction{timestamp=1562784349000, origin=0, target='7', amount=7889}}
 ```
 
 Congratulations, you just installed a highly available Flink cluster that runs a financial fraud detection job!
@@ -121,7 +137,7 @@ Congratulations, you just installed a highly available Flink cluster that runs a
 
 To successfully uninstall the demo follow those steps:
 
-- Delete the demo yamls: `kubectl delete -f repository/flink/docs/demo/financial-fraud/flink-demo.yaml `
+- Delete the `flink-demo` instance: `kubectl delete instance flink-demo`
 - Delete all PVCs:
-    - For Kafka: `kubectl delete pvc -l instance=demo-kafka`
-    - For Zookeeper: `kubectl delete pvc -l instance=demo-zk`
+    - For Kafka: `kubectl delete pvc -l instance=flink-demo-kafka`
+    - For Zookeeper: `kubectl delete pvc -l instance=flink-demo-zk`

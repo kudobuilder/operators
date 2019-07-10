@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: zookeeper-validation
+  name: validation
 spec:
   template:
     metadata:
@@ -14,7 +14,7 @@ spec:
         image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"
         env:
         - name: CONN
-          value: {{ .Name }}-{{ .Name }}-0.{{ .Name }}-hs:2181,{{ .Name }}-{{ .Name }}-1.{{ .Name }}-hs:2181,{{ .Name }}-{{ .Name }}-2.{{ .Name }}-hs:2181
+          value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-1.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-2.{{ .Name }}-hs:2181
         resources:
           requests:
             memory: "{{ .Params.memory }}"
