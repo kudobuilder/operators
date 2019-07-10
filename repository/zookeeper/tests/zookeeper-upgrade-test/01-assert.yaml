@@ -21,6 +21,6 @@ spec:
        resources:
          requests:
            memory: "256Mi"
-           cpu: "300m"
+           cpu: "200m"
 status:
   readyReplicas: 3

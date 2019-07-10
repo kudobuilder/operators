@@ -10,4 +10,4 @@ spec:
   name: "zk"
   parameters:
     memory: "256Mi"
-    cpus: "0.3"
+    cpus: "0.2"
