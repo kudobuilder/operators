@@ -1,6 +1,6 @@
 name: "kafka"
-version: "0.1.1"
-kudoVersion: 0.3.0
+version: "0.2.0"
+kudoVersion: 0.3.1
 kubernetesVersion: 1.5.1
 maintainers:
   - Zain Malik <zmalikshxil@gmail.com>
