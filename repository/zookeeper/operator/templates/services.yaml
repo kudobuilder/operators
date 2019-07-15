@@ -15,7 +15,7 @@ spec:
   clusterIP: None
   selector:
     app: zookeeper
-    zookeeper: {{ .Name }}
+    instance: {{ .Name }}
 ---
 apiVersion: v1
 kind: Service
@@ -31,4 +31,4 @@ spec:
       name: client
   selector:
     app: zookeeper
-    zookeeper: {{ .Name }}
+    instance: {{ .Name }}

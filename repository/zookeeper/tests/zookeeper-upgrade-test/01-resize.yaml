@@ -6,7 +6,8 @@ spec:
   operatorVersion:
     name: zookeeper-0.1.0
     namespace: default
-    type: OperatorVersions
+    kind: OperatorVersion
   name: "zk"
   parameters:
-    cpus: "0.3"
+    memory: "256Mi"
+    cpus: "0.2"

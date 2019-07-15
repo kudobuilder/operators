@@ -1,13 +1,16 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Name }}
+  name: {{ .OperatorName }}
   namespace: {{ .Namespace }}
+  labels:
+    zookeeper: {{ .OperatorName }}
+    app: zookeeper
 spec:
   selector:
     matchLabels:
       app: zookeeper
-      zookeeper: {{ .Name }}
+      zookeeper: {{ .OperatorName }}
   serviceName: {{ .Name }}-hs
   replicas: 3
   updateStrategy:
@@ -17,7 +20,7 @@ spec:
     metadata:
       labels:
         app: zookeeper
-        zookeeper: {{ .Name }}
+        zookeeper: {{ .OperatorName }}
     spec:
       containers:
         - name: kubernetes-zookeeper
