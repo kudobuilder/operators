@@ -9,17 +9,17 @@ spec:
     spec:
       restartPolicy: Never
       containers:
-      - name: kubernetes-zookeeper
-        imagePullPolicy: Always
-        image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"
-        env:
-        - name: CONN
-          value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-1.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-2.{{ .Name }}-hs:2181
-        resources:
-          requests:
-            memory: "{{ .Params.memory }}"
-            cpu: "{{ .Params.cpus }}"
-        command:
-          - bash
-          - -c
-          - "until /opt/zookeeper/bin/zkCli.sh -server $CONN ls /; do sleep 5; done"
+        - name: kubernetes-zookeeper
+          imagePullPolicy: Always
+          image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"
+          env:
+            - name: CONN
+              value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-1.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-2.{{ .Name }}-hs:2181
+          resources:
+            requests:
+              memory: "{{ .Params.memory }}"
+              cpu: "{{ .Params.cpus }}"
+          command:
+            - bash
+            - -c
+            - "until /opt/zookeeper/bin/zkCli.sh -server $CONN ls /; do sleep 5; done"
