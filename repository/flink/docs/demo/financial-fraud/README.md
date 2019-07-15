@@ -23,21 +23,21 @@ Before you get started:
 - Have the `zookeeper` Operator with `0.1.0` as OperatorVersion installed 
     - Use the KUDO CLI with the following command:
         ```bash
-        $ kubectl kudo install zookeeper --package-version=0.1.0 --skip-instance
+        $ kubectl kudo install zookeeper --version=0.1.0 --skip-instance
         operator.kudo.k8s.io/v1alpha1/zookeeper created
         operatorversion.kudo.k8s.io/v1alpha1/zookeeper-0.1.0 created
         ```
 - Have the `kafka` Operator with `0.1.1` as OperatorVersion installed 
     - Use the KUDO CLI with the following command:
         ```bash
-        $ kubectl kudo install kafka --package-version=0.1.0 --skip-instance
+        $ kubectl kudo install kafka --version=0.1.1 --skip-instance
         operator.kudo.k8s.io/v1alpha1/kafka created
         operatorversion.kudo.k8s.io/v1alpha1/kafka-0.1.1 created
         ```
 - Have the `flink` Operator with `0.1.0` as OperatorVersion installed 
     - Use the KUDO CLI with the following command:
         ```bash
-        $ kubectl kudo install flink --package-version=0.1.0 --skip-instance
+        $ kubectl kudo install flink --version=0.1.0 --skip-instance
         operator.kudo.k8s.io/v1alpha1/flink created
         operatorversion.kudo.k8s.io/v1alpha1/flink-0.1.0 created
         ```
@@ -63,31 +63,9 @@ To see if Flink is working properly run:
 
 `kubectl proxy` and access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
 
-Wait until Zookeeper, Kafka and Flink are healthy and running.
-Once everything is up, start the job:
+### Flink Job Output
 
-### Deploy Upload Plan
-
-```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: kudo.k8s.io/v1alpha1
-kind: PlanExecution
-metadata:
-  labels:
-    framework-version: flink-financial-demo
-    instance: demo-flink-submit-job
-  name: flink-submit-job
-  namespace: default
-spec:
-  instance:
-    kind: Instance
-    name: demo
-    namespace: default
-  planName: upload
-EOF
-```
-
-To get the job output:
+To see if the job was submitted successfully:
 
 ```bash
 $ kubectl logs $(kubectl get pod -l job-name=flink-demo-submit-flink-job -o jsonpath="{.items[0].metadata.name}")
