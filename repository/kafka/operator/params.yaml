@@ -49,7 +49,7 @@ ZOOKEEPER_URI:
   description: |
     host and port information for Zookeeper connection.
     e.g. zk:2181,zk2:2181,zk3:2181
-  default: "zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181"
+  default: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
   required: true
 
 ZOOKEEPER_PATH:
