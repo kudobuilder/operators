@@ -19,7 +19,11 @@ The architecture follows more or less the [SMACK stack architecture](https://mes
 
 Before you get started:
 
-- Have KUDO installed on your cluster [ [Getting Started](https://kudo.dev/docs/getting-started/) ]
+- Have current KUDO `v0.3.x` or higher installed on your cluster:
+    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/00-prereqs.yaml`
+    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/10-crds.yaml`
+    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/20-deployment.yaml`
+- Have current KUDO CLI `v0.3.x` or higher [installed](https://kudo.dev/docs/cli/#install)
 - Have the `zookeeper` Operator with `0.1.0` as OperatorVersion installed 
     - Use the KUDO CLI with the following command:
         ```bash
