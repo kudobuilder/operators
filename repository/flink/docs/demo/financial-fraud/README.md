@@ -52,7 +52,7 @@ Install the Flink `financial-fraud` demo from the main repository directory.
     - Change directory into the cloned repository: `cd operators`
     - Install the Flink demo objects straight out of the repository:
         ```bash
-        $ kubectl kudo install flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
+        $ kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
         operator.kudo.k8s.io/v1alpha1/flink-demo created
         operatorversion.kudo.k8s.io/v1alpha1/flink-demo-0.1.0 created
         No instance named 'flink-demo' tied to this 'flink-demo' version has been found. Do you want to create one? (Yes/no) yes
