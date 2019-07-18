@@ -1,8 +1,23 @@
+# Upgrading the KUDO Kafka Operator
 
 
 
+KUDO upgrades work by linking the Kafka cluster Instance object to the correct operatorVersion object.
 
-Install the new operator version
+We can have multiple operator versions in the same Kubernetes cluster, but yet only one Kafka cluster running. 
+
+![operator-upgrade-1](./resources/images/operator-upgrade-1.png)
+
+The upgrade process can be done by patching the Kafka Instance that holds all the configuration around the Kafka cluster, and pointing it to the a new OperatorVersion object.
+
+
+
+![operator-upgrade-1](./resources/images/operator-upgrade-2.png)
+
+Lets do the upgrade process only having one Kafka cluster and one Kafka operator version.  
+
+First we need to install the new operator version
+
 ```
 kubectl kudo install kafka --version=0.2.0 --skip-instance
 
@@ -40,3 +55,23 @@ Plan(s) for "kafka-fc6vzn" in namespace "default":
 Note the operator version `kafka-0.1.1`
 
 Lets update the Kafka cluster from version 0.1.1 to 0.2.0
+
+```
+> kubectl patch instance kafka  -p '{"spec":{"operatorVersion":{"name":"kafka-0.2.0"}}}' --type=merge
+instance.kudo.k8s.io/kafka patched
+```
+
+We can check the plan status 
+
+```
+kubectl kudo plan status --instance=kafka
+Plan(s) for "kafka" in namespace "default":
+.
+└── kafka (Operator-Version: "kafka-0.2.0" Active-Plan: "kafka-deploy-575561000")
+    └── Plan deploy (serial strategy) [COMPLETE]
+        └── Phase deploy-kafka (serial strategy) [COMPLETE]
+            └── Step deploy (COMPLETE)
+```
+
+Note the operator-version : kafka-0.2.0, means that we have successfully upgraded the operator
+

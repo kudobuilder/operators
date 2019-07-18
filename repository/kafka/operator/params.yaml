@@ -4,12 +4,20 @@ BROKER_COUNT:
   displayName: "Broker Count"
 
 BROKER_CPUS:
-  description: "CPUs allocated to the Kafka Broker pods"
+  description: "CPUs (request) for the Kafka Broker pods. spec.containers[].resources.requests.cpu"
   default: "500m"
 
+BROKER_CPUS_LIMIT:
+  description: "CPUs (limit) for the Kafka Broker pods. spec.containers[].resources.limits.cpu"
+  default: "2000m"
+
 BROKER_MEM:
-  description: "Memory (limit) allocated to the Kafka Broker pods"
+  description: "Memory (request) for the Kafka Broker pods. spec.containers[].resources.requests.memory"
   default: "2048m"
+
+BROKER_MEM_LIMIT:
+  description: "Memory (limit) for the Kafka Broker pods. spec.containers[].resources.limits.memory"
+  default: "4096m"
 
 BROKER_PORT:
   description: "Port brokers run on"

@@ -28,6 +28,9 @@ spec:
             requests:
               memory: {{ .Params.BROKER_MEM }}
               cpu: {{ .Params.BROKER_CPUS }}
+            limits:
+              memory: {{ .Params.BROKER_MEM_LIMIT }}
+              cpu: {{ .Params.BROKER_CPUS_LIMIT }}
           ports:
             - containerPort: {{ .Params.BROKER_PORT }}
               name: server
