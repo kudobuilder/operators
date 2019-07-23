@@ -4,7 +4,8 @@
 
 KUDO upgrades work by linking the Kafka cluster Instance object to the correct operatorVersion object.
 
-We can have multiple operator versions in the same Kubernetes cluster, but yet only one Kafka cluster running. 
+We can have multiple operator versions in the same Kubernetes cluster. 
+One instance object represents a Kafka Cluster. And different instances can use same or different operator versions.
 
 ![operator-upgrade-1](./resources/images/operator-upgrade-1.png)
 
@@ -24,8 +25,7 @@ kubectl kudo install kafka --version=0.2.0 --skip-instance
 operator.kudo.k8s.io/kafka unchanged
 operatorversion.kudo.k8s.io/v1alpha1/kafka-0.2.0 created
 ```
-
-
+Verify if the operator version 0.2.0 is installed. Now we have two operator versions installed. 
 ```
 kubectl  get operatorversions.kudo.k8s.io
 
@@ -34,7 +34,7 @@ kafka-0.1.1       2d2h
 kafka-0.2.0       2m6s
 ```
 
-Now we have two operator versions installed. 
+And check the instances that are installed.
 
 ```
 kubectl get instances

@@ -54,3 +54,7 @@ User can override the default zk path by using `ZOOKEEPER_PATH` parameter.
 kubectl kudo install kafka --instance=my-kafka-name -p ZOOKEEPER_URI=zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181 -p ZOOKEEPER_PATH=/custom-path
 ```
 
+##### Docker image
+
+The [Dockerfile](https://github.com/mesosphere/dcos-kafka-service/blob/master/images/Dockerfile) used in the KUDO Kafka operator is hosted in the [dcos-kafka-service](https://github.com/mesosphere/dcos-kafka-service) repo
+

@@ -131,7 +131,7 @@ LOG_RETENTION_BYTES:
   displayName: "log.retention.bytes"
   description: "The maximum size of the log before deleting it"
   default: "-1"
-  
+
 LOG_RETENTION_MS:
   displayName: "log.retention.ms"
   description: "The number of milliseconds to keep a log file before deleting it (in milliseconds) If not set, the value in log.retention.minutes is used"
@@ -147,7 +147,7 @@ LOG_RETENTION_HOURS:
   description: "The number of hours to keep a log file before deleting it (in hours), tertiary to log.retention.ms property"
   default: "168"
   required: false
-  
+
 LOG_ROLL_MS:
   displayName: "log.roll.ms"
   description: "The maximum time before a new log segment is rolled out (in milliseconds). If not set, the value in log.roll.hours is used"
@@ -192,7 +192,7 @@ MIN_INSYNC_REPLICAS:
     When used together, min.insync.replicas and acks allow you to enforce greater durability guarantees.
     A typical scenario would be to create a topic with a replication factor of 3, set min.insync.replicas to 2, and produce with acks of "all".
   default: "1"
-  
+
 NUM_IO_THREADS:
   displayName: "num.io.threads"
   description: "The number of threads that the server uses for processing requests, which may include disk I/O"
@@ -212,17 +212,17 @@ NUM_REPLICA_FETCHERS:
   displayName: "num.replica.fetchers"
   description: "Number of fetcher threads used to replicate messages from a source broker. Increasing this value can increase the degree of I/O parallelism in the follower broker."
   default: "1"
-  
+
 OFFSET_METADATA_MAX_BYTES:
   displayName: "offset.metadata.max.bytes"
   description: "The maximum size for a metadata entry associated with an offset commit"
   default: "4096"
-  
+
 OFFSETS_COMMIT_REQUIRED_ACKS:
   displayName: "offsets.commit.required.acks"
   description: "The required acks before the commit can be accepted. In general the default (-1) should not be overridden"
   default: -1
-  
+
 OFFSETS_COMMIT_TIMEOUT_MS:
   displayName: "offsets.commit.timeout.ms"
   description: "Offset commit will be delayed until all replicas for the offsets topic receive the commit or this timeout is reached. This is similar to the producer request timeout."
@@ -247,7 +247,7 @@ OFFSETS_TOPIC_COMPRESSION_CODEC:
   displayName: "offsets.topic.compression.codec"
   description: "Compression codec for the offsets topic - compression may be used to achieve \"atomic\" commits"
   default: "0"
-  
+
 OFFSETS_TOPIC_NUM_PARTITIONS:
   displayName: "offsets.topic.num.partitions"
   description: "The number of partitions for the offset commit topic (should not change after deployment)"
@@ -272,12 +272,12 @@ QUEUED_MAX_REQUEST_BYTES:
   displayName: "queued.max.request.bytes"
   description: "The number of queued bytes allowed before no more requests are read"
   default: -1
-  
+
 QUOTA_CONSUMER_DEFAULT:
   displayName: "quota.consumer.default"
   description: "Used only when dynamic default quotas are not configured for or in Zookeeper. Any consumer distinguished by clientId/consumer group will get throttled if it fetches more bytes than this value per-second"
   default: "9223372036854775807"
-  
+
 QUOTA_PRODUCER_DEFAULT:
   displayName: "quota.producer.default"
   description: "Used only when dynamic default quotas are not configured for , or in Zookeeper. Any producer distinguished by clientId will get throttled if it produces more bytes than this value per-second"
@@ -287,22 +287,22 @@ READINESS_TIMEOUT_SECONDS:
   displayName: "readinessProbe timeout seconds"
   description: "readinessProbe timeout in seconds"
   default: "30"
-  
+
 REPLICA_FETCH_MAX_BYTES:
   displayName: "replica.fetch.max.bytes"
   description: "The number of bytes of messages to attempt to fetch for each partition. This is not an absolute maximum, if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
   default: "1048576"
-  
+
 REPLICA_FETCH_MIN_BYTES:
   displayName: "replica.fetch.min.bytes"
   description: "Minimum bytes expected for each fetch response. If not enough bytes, wait up to replicaMaxWaitTimeMs"
   default: "1"
-  
+
 REPLICA_FETCH_WAIT_MAX_MS:
   displayName: "replica.fetch.wait.max.ms"
   description: "Max wait time for each fetcher request issued by follower replicas. This value should always be less than the replica.lag.time.max.ms at all times to prevent frequent shrinking of ISR for low throughput topics"
   default: "500"
-  
+
 REPLICA_FETCH_RESPONSE_MAX_BYTES:
   displayName: "replica.fetch.response.max.bytes"
   description: "Maximum bytes expected for the entire fetch response. Records are fetched in batches, and if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. As such this is not an absolute maximum. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
@@ -312,22 +312,22 @@ REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS:
   displayName: "replica.high.watermark.checkpoint.interval.ms"
   description: "The frequency with which the high watermark is saved out to disk"
   default: "5000"
-  
+
 REPLICA_LAG_TIME_MAX_MS:
   displayName: "replica.lag.time.max.ms"
   description: "If a follower hasn't sent any fetch requests or hasn't consumed up to the leaders log end offset for at least this time, the leader will remove the follower from isr"
   default: "10000"
-  
+
 REPLICA_SOCKET_RECEIVE_BUFFER_BYTES:
   displayName: "replica.socket.receive.buffer.bytes"
   description: "The socket receive buffer for network requests"
   default: "65536"
-  
+
 REPLICA_SOCKET_TIMEOUT_MS:
   displayName: "replica.socket.timeout.ms"
   description: "The socket timeout for network requests. Its value should be at least replica.fetch.wait.max.ms"
   default: "30000"
-  
+
 REPLICATION_QUOTA_WINDOW_NUM:
   displayName: "replication.quota.window.num"
   description: "The number of samples to retain in memory for replication quotas"
@@ -342,12 +342,12 @@ REQUEST_TIMEOUT_MS:
   displayName: "request.timeout.ms"
   description: "The configuration controls the maximum amount of time the client will wait for the response of a request. If the response is not received before the timeout elapses the client will resend the request if necessary or fail the request if retries are exhausted."
   default: "30000"
-  
+
 SOCKET_RECEIVE_BUFFER_BYTES:
   displayName: "socket.receive.buffer.bytes"
   description: "The SO_RCVBUF buffer of the socket sever sockets. If the value is -1 the OS default will be used."
   default: "102400"
-  
+
 SOCKET_REQUEST_MAX_BYTES:
   displayName: "socket.request.max.bytes"
   description: "The maximum number of bytes in a socket request"
@@ -357,77 +357,77 @@ SOCKET_SEND_BUFFER_BYTES:
   displayName: "socket.send.buffer.bytes"
   description: "The SO_SNDBUF buffer of the socket sever sockets. If the value is -1, the OS default will be used."
   default: "102400"
-  
+
 UNCLEAN_LEADER_ELECTION_ENABLE:
   displayName: "unclean.leader.election.enable"
   description: "Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss"
   default: "false"
-  
+
 ZOOKEEPER_SESSION_TIMEOUT_MS:
   displayName: "zookeeper.session.timeout.ms"
   description: "Zookeeper session timeout"
   default: "6000"
-  
+
 CONNECTIONS_MAX_IDLE_MS:
   displayName: "connections.max.idle.ms"
   description: "Idle connections timeout: the server socket processor threads close the connections that idle more than this"
   default: "600000"
-  
+
 CONTROLLED_SHUTDOWN_ENABLE:
   displayName: "controlled.shutdown.enable"
   description: "Enable controlled shutdown of the server"
   default: "true"
-  
+
 CONTROLLED_SHUTDOWN_MAX_RETRIES:
   displayName: "controlled.shutdown.max.retries"
   description: "Controlled shutdown can fail for multiple reasons. This determines the number of retries when such failure happens"
   default: "3"
-  
+
 CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS:
   displayName: "controlled.shutdown.retry.backoff.ms"
   description: "Before each retry, the system needs time to recover from the state that caused the previous failure (Controller fail over, replica lag etc). This config determines the amount of time to wait before retrying."
   default: "5000"
-  
+
 CONTROLLER_SOCKET_TIMEOUT_MS:
   displayName: "controller.socket.timeout.ms"
   description: "The socket timeout for controller-to-broker channels"
   default: "30000"
-  
+
 DEFAULT_REPLICATION_FACTOR:
   displayName: "default.replication.factor"
   description: "Default replication factors for automatically created topics"
   default: "1"
-  
+
 FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS:
   displayName: "fetch.purgatory.purge.interval.requests"
   description: "The purge interval (in number of requests) of the fetch request purgatory"
   default: "1000"
-  
+
 GROUP_MAX_SESSION_TIMEOUT_MS:
   displayName: "group.max.session.timeout.ms"
   description: "The maximum allowed session timeout for registered consumers. Longer timeouts give consumers more time to process messages in between heartbeats at the cost of a longer time to detect failures."
   default: "300000"
-  
+
 GROUP_MIN_SESSION_TIMEOUT_MS:
   displayName: "group.min.session.timeout.ms"
   description: "The minimum allowed session timeout for registered consumers. Shorter timeouts result in quicker failure detection at the cost of more frequent consumer heartbeating which can overwhelm broker resources."
   default: "6000"
-  
+
 GROUP_INITIAL_REBALANCE_DELAY_MS:
   displayName: "group.initial.rebalance.delay.ms"
   description: "The amount of time the group coordinator will wait for more consumers to join a new group before performing the first rebalance. A longer delay means potentially fewer rebalances, but increases the time until processing begins."
   default: "3000"
-  
+
 INTER_BROKER_PROTOCOL_VERSION:
   displayName: "inter.broker.protocol.version"
   description: "Specify which version of the inter-broker protocol will be used, which must align with log.message.format.version. This is typically bumped *serially* one broker at a time, *after* all brokers were upgraded to a new version. Example of some valid values are: 0.8.0, 0.8.1, 0.8.1.1, 0.8.2, 0.8.2.0, 0.8.2.1, 0.9.0.0, 0.9.0.1, 0.10.0.0, 0.10.1.x, 0.10.2.x, 0.11.0.0, 1.0, 1.1. Check ApiVersion for the full list."
   default: "2.1"
-  
+
 LOG_MESSAGE_FORMAT_VERSION:
   displayName: "log.message.format.version"
   description: "Specify which version of the log message format will be used, which must align with inter.broker.protocol.version. This is a new setting as of 0.10.0.0, and should be left at 0.9.0 until clients are updated to 0.10.0.x. Similarly it should be left at 0.10.0 until all clients are updated to 0.11.0. This is typically bumped *serially* one broker at a time, *after* all inter-protocol versions are updated. Clients on earlier versions may see a performance penalty if this is increased before they've upgraded. See the latest Kafka documentation for details."
   default: "2.1"
-  
+
 LOG_CLEANER_BACKOFF_MS:
   displayName: "log.cleaner.backoff.ms"
   description: "The amount of time to sleep when there are no logs to clean"
@@ -437,22 +437,22 @@ LOG_CLEANER_DEDUPE_BUFFER_SIZE:
   displayName: "log.cleaner.dedupe.buffer.size"
   description: "The total memory used for log deduplication across all cleaner threads"
   default: "134217728"
-  
+
 LOG_CLEANER_DELETE_RETENTION_MS:
   displayName: "log.cleaner.delete.retention.ms"
   description: "How long are delete records retained?"
   default: "86400000"
-  
+
 LOG_CLEANER_ENABLE:
   displayName: "log.cleaner.enable"
   description: "Enable the log cleaner process to run on the server. Should be enabled if using any topics with a cleanup.policy=compact including the internal offsets topic. If disabled those topics will not be compacted and continually grow in size."
   default: "true"
-  
+
 LOG_CLEANER_IO_BUFFER_LOAD_FACTOR:
   displayName: "log.cleaner.io.buffer.load.factor"
   description: "Log cleaner dedupe buffer load factor. The percentage full the dedupe buffer can become. A higher value will allow more log to be cleaned at once but will lead to more hash collisions"
   default: "0.9"
-  
+
 LOG_CLEANER_IO_BUFFER_SIZE:
   displayName: "log.cleaner.io.buffer.size"
   description: "The total memory used for log cleaner I/O buffers across all cleaner threads"
@@ -462,17 +462,17 @@ LOG_CLEANER_IO_MAX_BYTES_PER_SECOND:
   displayName: "log.cleaner.io.max.bytes.per.second"
   description: "The log cleaner will be throttled so that the sum of its read and write i/o will be less than this value on average"
   default: "1.7976931348623157e+308"
-  
+
 LOG_CLEANER_MIN_CLEANABLE_RATIO:
   displayName: "log.cleaner.min.cleanable.ratio"
   description: "The minimum ratio of dirty log to total log for a log to eligible for cleaning"
   default: "0.5"
-  
+
 LOG_CLEANER_MIN_COMPACTION_LAG_MS:
   displayName: "log.cleaner.min.compaction.lag.ms"
   description: "The minimum time a message will remain uncompacted in the log. Only applicable for logs that are being compacted."
   default: "0"
-  
+
 LOG_CLEANER_THREADS:
   displayName: "log.cleaner.threads"
   description: "The number of background threads to use for log cleaning"
@@ -482,7 +482,7 @@ LOG_CLEANUP_POLICY:
   displayName: "log.cleanup.policy"
   description: "The default cleanup policy for segments beyond the retention window. A comma separated list of valid policies. Valid policies are: \"delete\" and \"compact\""
   default: "delete"
-  
+
 LOG_INDEX_INTERVAL_BYTES:
   displayName: "log.index.interval.bytes"
   description: "The interval with which we add an entry to the offset index"
@@ -497,7 +497,7 @@ LOG_PREALLOCATE:
   displayName: "log.preallocate"
   description: "Should pre allocate file when create new segment? If you are using Kafka on Windows you probably need to set it to true."
   default: "false"
-  
+
 LOG_RETENTION_CHECK_INTERVAL_MS:
   displayName: "log.retention.check.interval.ms"
   description: "The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion"
@@ -512,12 +512,12 @@ MAX_CONNECTIONS_PER_IP_OVERRIDES:
   displayName: "max.connections.per.ip.overrides"
   description: "Per-ip or hostname overrides to the default maximum number of connections"
   default: ""
-  
+
 PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS:
   displayName: "producer.purgatory.purge.interval.requests"
   description: "The purge interval (in number of requests) of the producer request purgatory"
   default: "1000"
-  
+
 REPLICA_FETCH_BACKOFF_MS:
   displayName: "replica.fetch.backoff.ms"
   description: "The amount of time to sleep when fetch partition error occurs."
@@ -532,7 +532,7 @@ METRIC_REPORTERS:
   displayName: "metric.reporters"
   description: "Java class to collect/report broker metrics"
   default: ""
-  
+
 METRICS_NUM_SAMPLES:
   displayName: "metrics.num.samples"
   description: "The number of samples maintained to compute metrics."
@@ -557,27 +557,27 @@ SSL_ENDPOINT_IDENTIFICATION_ENABLED:
   displayName: "ssl.endpoint.identification.enabled"
   description: "By default enables the hostname verification when TLS connections are established between Kafka brokers. To disable hostname verification leave this option unchecked"
   default: "true"
-  
+
 TRANSACTION_STATE_LOG_SEGMENT_BYTES:
   displayName: "transaction.state.log.segment.bytes"
   description: "The transaction topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
   default: "104857600"
-  
+
 TRANSACTION_REMOVE_EXPIRED_TRANSACTION_CLEANUP_INTERVAL_MS:
   displayName: "transaction.remove.expired.transaction.cleanup.interval.ms"
   description: "The interval at which to remove transactions that have expired due to transactional.id.expiration.ms passing"
   default: "3600000"
-  
+
 TRANSACTION_MAX_TIMEOUT_MS:
   displayName: "transaction.max.timeout.ms"
   description: "The maximum allowed timeout for transactions. If a client's requested transaction time exceeds this then the broker will return an error in InitProducerIdRequest. This prevents a client from too large of a timeout which can stall consumers reading from topics included in the transaction."
   default: "900000"
-  
+
 TRANSACTION_STATE_LOG_NUM_PARTITIONS:
   displayName: "transaction.state.log.num.partitions"
   description: "The number of partitions for the transaction topic (should not change after deployment)."
   default: "50"
-  
+
 TRANSACTION_ABORT_TIMED_OUT_TRANSACTION_CLEANUP_INTERVAL_MS:
   displayName: "transaction.abort.timed.out.transaction.cleanup.interval.ms"
   description: "The interval at which to rollback transactions that have timed out"
@@ -597,14 +597,13 @@ TRANSACTION_STATE_LOG_MIN_ISR:
   displayName: "transaction.state.log.min.isr"
   description: "Overridden min.insync.replicas config for the transaction topic."
   default: "2"
-  
+
 TRANSACTIONAL_ID_EXPIRATION_MS:
   displayName: "transactional.id.expiration.ms"
   description: "The maximum amount of time in ms that the transaction coordinator will wait before proactively expire a producer's transactional id without receiving any transaction status updates from it."
   default: "604800000"
-  
+
 ZOOKEEPER_SYNC_TIME_MS:
   displayName: "zookeeper.sync.time.ms"
   description: "How far a ZK follower can be behind a ZK leader"
   default: "2000"
-
