@@ -63,9 +63,96 @@ Install the Flink `financial-fraud` demo from the main repository directory.
         instance.kudo.k8s.io/v1alpha1/flink-demo created
         ```
 
-To see if Flink is working properly run:
+To see the status of the deploy plan for the Zookeeper operator we can utilize the CLI via:
 
-`kubectl proxy` and access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
+```bash
+
+$ kubectl kudo plan status --instance flink-demo-zk
+Plan(s) for "flink-demo-zk" in namespace "default":
+.
+└── flink-demo-zk (Operator-Version: "zookeeper-0.1.0" Active-Plan: "flink-demo-zk-deploy-704671932")
+    ├── Plan deploy (serial strategy) [IN_PROGRESS]
+    │   ├── Phase zookeeper (parallel strategy) [IN_PROGRESS]
+    │   │   └── Step everything (IN_PROGRESS)
+    │   └── Phase validation (parallel strategy) [PENDING]
+    │       └── Step validation ()
+    └── Plan validation (serial strategy) [NOT ACTIVE]
+        └── Phase connection (parallel strategy) [NOT ACTIVE]
+            └── Step connection (parallel strategy) [NOT ACTIVE]
+                └── connection [NOT ACTIVE]
+
+
+```
+
+If the Zookeeper Operator was successfully installed its plan status will show `COMPLETE`:
+
+```
+$ kubectl kudo plan status --instance flink-demo-zk
+Plan(s) for "flink-demo-zk" in namespace "default":
+.
+└── flink-demo-zk (Operator-Version: "zookeeper-0.1.0" Active-Plan: "flink-demo-zk-deploy-704671932")
+    ├── Plan deploy (serial strategy) [COMPLETE]
+    │   ├── Phase zookeeper (parallel strategy) [COMPLETE]
+    │   │   └── Step everything (COMPLETE)
+    │   └── Phase validation (parallel strategy) [COMPLETE]
+    │       └── Step validation (COMPLETE)
+    └── Plan validation (serial strategy) [NOT ACTIVE]
+        └── Phase connection (parallel strategy) [NOT ACTIVE]
+            └── Step connection (parallel strategy) [NOT ACTIVE]
+                └── connection [NOT ACTIVE]
+```
+
+Next, the Kafka operator will start its `deploy` plan, when completed we will see its status change to `COMPLETE` as well:
+
+```
+$ kubectl kudo plan status --instance flink-demo-kafka
+Plan(s) for "flink-demo-kafka" in namespace "default":
+.
+└── flink-demo-kafka (Operator-Version: "kafka-0.1.1" Active-Plan: "flink-demo-kafka-deploy-11918518")
+    └── Plan deploy (serial strategy) [COMPLETE]
+        └── Phase deploy-kafka (serial strategy) [COMPLETE]
+            └── Step deploy (COMPLETE)
+
+```
+
+Lastly, the Flink operator needs to be installed. We wait for its status to be completed similar to Zookeeper and Kafka:
+
+```
+$ kubectl kudo plan status --instance flink-demo-flink
+Plan(s) for "flink-demo-flink" in namespace "default":
+.
+└── flink-demo-flink (Operator-Version: "flink-0.1.0" Active-Plan: "flink-demo-flink-deploy-520884487")
+    └── Plan deploy (serial strategy) [COMPLETE]
+        └── Phase flink (serial strategy) [COMPLETE]
+            └── Step jobmanager (COMPLETE)
+```
+
+Now, if we look at the overall Flink-Demo Operator status we see the combined status of all plans and phases run for the
+Flink demo:
+
+```
+$ kubectl kudo plan status --instance flink-demo
+Plan(s) for "flink-demo" in namespace "default":
+.
+└── flink-demo (Operator-Version: "flink-demo-0.1.0" Active-Plan: "flink-demo-deploy-144875020")
+    └── Plan deploy (serial strategy) [COMPLETE]
+        ├── Phase dependencies (serial strategy) [COMPLETE]
+        │   ├── Step zookeeper (COMPLETE)
+        │   └── Step kafka (COMPLETE)
+        ├── Phase flink-cluster (serial strategy) [COMPLETE]
+        │   └── Step flink (COMPLETE)
+        ├── Phase demo (serial strategy) [COMPLETE]
+        │   ├── Step gen (COMPLETE)
+        │   └── Step act (COMPLETE)
+        └── Phase flink-job (serial strategy) [COMPLETE]
+            └── Step submit (COMPLETE)
+```
+
+Wonderful, all phases completed and our Flink job even got submitted. In order to verify it is running, let's have a look
+at the Flink dashboard:
+
+- Run `kubectl proxy` to make the dashboard available
+- Access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
 
 ### Flink Job Output
 
