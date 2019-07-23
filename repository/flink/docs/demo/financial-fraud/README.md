@@ -24,8 +24,8 @@ Before you get started:
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install zookeeper --package-version=0.1.0
-        framework.kudo.k8s.io/v1alpha1/zookeeper created
-        frameworkversion.kudo.k8s.io/v1alpha1/zookeeper-0.1.0 created
+        framework.kudo.dev/v1alpha1/zookeeper created
+        frameworkversion.kudo.dev/v1alpha1/zookeeper-0.1.0 created
         No Instance tied to this "zookeeper" version has been found. Do you want to create one? (Yes/no) no
 
         ```
@@ -34,8 +34,8 @@ Before you get started:
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install kafka --package-version=0.1.0
-        framework.kudo.k8s.io/v1alpha1/kafka created
-        frameworkversion.kudo.k8s.io/v1alpha1/kafka-0.1.0 created
+        framework.kudo.dev/v1alpha1/kafka created
+        frameworkversion.kudo.dev/v1alpha1/kafka-0.1.0 created
         No Instance tied to this "kafka" version has been found. Do you want to create one? (Yes/no) no
 
         ```
@@ -66,7 +66,7 @@ Once everything is up, start the job:
 
 ```bash
 cat <<EOF | kubectl apply -f -
-apiVersion: kudo.k8s.io/v1alpha1
+apiVersion: kudo.dev/v1alpha1
 kind: PlanExecution
 metadata:
   labels:
