@@ -26,32 +26,32 @@ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
 ```
 
 - Have current KUDO `v0.3.x` or higher installed on your cluster:
-    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/00-prereqs.yaml`
-    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/10-crds.yaml`
-    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/20-deployment.yaml`
+    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/00-prereqs.yaml`
+    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/10-crds.yaml`
+    - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/20-deployment.yaml`
 - Have current KUDO CLI `v0.3.x` or higher [installed](https://kudo.dev/docs/cli/#install)
-- Have the `zookeeper` Operator with `0.1.0` as OperatorVersion installed 
+- Have the `zookeeper` Operator with `0.1.0` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install zookeeper --version=0.1.0 --skip-instance
         operator.kudo.k8s.io/v1alpha1/zookeeper created
         operatorversion.kudo.k8s.io/v1alpha1/zookeeper-0.1.0 created
         ```
-- Have the `kafka` Operator with `0.1.1` as OperatorVersion installed 
+- Have the `kafka` Operator with `0.1.1` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install kafka --version=0.1.1 --skip-instance
         operator.kudo.k8s.io/v1alpha1/kafka created
         operatorversion.kudo.k8s.io/v1alpha1/kafka-0.1.1 created
         ```
-- Have the `flink` Operator with `0.1.0` as OperatorVersion installed 
+- Have the `flink` Operator with `0.1.0` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install flink --version=0.1.0 --skip-instance
         operator.kudo.k8s.io/v1alpha1/flink created
         operatorversion.kudo.k8s.io/v1alpha1/flink-0.1.0 created
         ```
-        
+
 Now you should have all required Operators installed.
 
 ## Getting Started
