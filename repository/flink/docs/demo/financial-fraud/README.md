@@ -19,6 +19,12 @@ The architecture follows more or less the [SMACK stack architecture](https://mes
 
 Before you get started:
 
+- Make sure you have a cluster at hand with enough resources, e.g.:
+
+```.
+minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
+```
+
 - Have current KUDO `v0.3.x` or higher installed on your cluster:
     - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/00-prereqs.yaml`
     - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/releases/0.3/docs/deployment/10-crds.yaml`
