@@ -5,7 +5,7 @@ metadata:
   namespace: {{ .Namespace }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Params.flink_storage_accessmodes }}
   resources:
     requests:
       storage: 1Gi
@@ -17,7 +17,7 @@ metadata:
   namespace: {{ .Namespace }}
 spec:
   accessModes:
-    - ReadWriteMany
+    - {{ .Params.flink_storage_accessmodes }}
   resources:
     requests:
       storage: 1Gi
