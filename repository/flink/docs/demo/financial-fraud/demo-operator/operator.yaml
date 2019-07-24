@@ -53,12 +53,9 @@ plans:
           - name: act
             tasks:
               - actor
-  upload:
-    strategy: serial
-    phases:
-      - name: dependencies
+      - name: flink-job
         strategy: serial
         steps:
-          - name: upload
+          - name: submit
             tasks:
               - upload
