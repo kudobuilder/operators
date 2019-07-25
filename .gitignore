@@ -10,3 +10,9 @@
 
 # Output of the go coverage tool, specifically when used with LiteIDE
 *.out
+
+# binaries kind and kubectl from make are in bin
+bin
+# from make create-cluster.  We don't store these.
+go.mod
+go.sum
