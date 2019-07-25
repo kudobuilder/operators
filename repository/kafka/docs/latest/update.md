@@ -8,6 +8,31 @@ Check the limitations to see which parameters can only be set during bootstrap t
 
 
 
+## Changing the configuration
+
+There is a vast number of configuration parameters that can be tuned once the KUDO Kafka cluster is up and running. 
+You can check the full list in the [parameters](https://github.com/kudobuilder/operators/blob/master/repository/kafka/operator/params.yaml).
+
+There are a few constraints related to storage. These constraints are documented in the [limitations](./limitations.md) doc.
+
+#### Examples
+
+Enable the `delete.topic.enable`
+
+```
+> kubectl patch instance kafka -p '{"spec":{"parameters":{"DELETE_TOPIC_ENABLE":"true"}}}' --type=merge
+instance.kudo.k8s.io/kafka patched
+```
+
+Enable the `auto.create.topics.enable`
+
+```
+> kubectl patch instance kafka -p '{"spec":{"parameters":{"AUTO_CREATE_TOPICS_ENABLE":"true"}}}' --type=merge
+instance.kudo.k8s.io/kafka patched
+```
+
+
+
 ## Scaling the brokers
 
 Users should not configure the HPA or VPA for Kafka brokers. 
