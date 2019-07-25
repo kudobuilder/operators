@@ -1,19 +1,19 @@
-# Installing KUDO Kafka operator
+# Installing the KUDO Kafka Operator
 
 Requirements:
 
-- [Install KUDO controller](https://kudo.dev/docs/getting-started/)
-- [Install KUDO cli](https://kudo.dev/docs/cli/)
+- Install the [KUDO controller](https://kudo.dev/docs/getting-started/)
+- Install the [KUDO CLI](https://kudo.dev/docs/cli/)
 
 
 ## Installing the Operator
 
-#### Install the Zookeeper 
+#### Install Zookeeper 
 ```
 kubectl kudo install zookeeper --instance=zk
 ```
 
-#### Install the Kafka 
+#### Install Kafka 
 ```
 kubectl kudo install kafka --instance=kafka
 ```
@@ -29,7 +29,7 @@ Plan(s) for "kafka" in namespace "default":
             └── Step deploy (COMPLETE)
 ```
 
-You can check all [configuration options](./configuration.md)
+You can view all configuration options [here](./configuration.md)
 
 #### Installing multiple Kafka Clusters
 

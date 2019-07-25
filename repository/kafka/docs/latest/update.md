@@ -10,13 +10,13 @@ Check the limitations to see which parameters can only be set during bootstrap t
 
 ## Scaling the brokers
 
-For the stateful workload it is not recommended to configure the HPA or VPA for Kafka brokers. 
+Users should not configure the HPA or VPA for Kafka brokers. 
 
-More controlled scaling is more conveninent considering the nature of stateful workload.  
+It is recommended that users closely monitor and control broker scaling due to the nature of stateful workloads.
 
 #### Horizontally 
 
-To scale horizontally we need to scale our brokers count from default 3 to 5. 
+To scale horizontally, we can increase the broker count.
 
 When checking the kafka instance we can see any custom parameters present in the instance. In this case we only see 1 custom parameter that is `ZOOKEEPER_URI`
 
@@ -103,7 +103,7 @@ kafka-kafka-4   1/1     Running   0          9m21s
 
 **Vertically** 
 
-To scale vertically the brokers statefulset pods we can use the parameters also.
+To scale vertically, we can update the broker's statefulset.
 
 ```
 > kubectl describe statefulset kafka-kafka
@@ -116,13 +116,13 @@ To scale vertically the brokers statefulset pods we can use the parameters also.
 
 
 
-Lets change the cpu request from `500m` to `700m` and double the memory request from `2048` to `4096` and not forget the limits, that cannot be lower than the requested resources. 
+Let's increase the cpu request from `500m` to `700m` and double the memory request from `2048` to `4096`. Also important is increasing the limits as they cannot be lower than the requested resources. 
 
 ```
 kubectl patch instance kafka -p '{"spec":{"parameters":{"BROKER_CPUS":"700m", "BROKER_MEM":"4096m", "BROKER_CPUS_LIMIT":"3000m", "BROKER_MEM_LIMIT":"6144"}}}' --type=merge
 ```
 
-Now we will see a rolling upgrade of the pods towards 
+This will initiate a rolling upgrade of the pods to a new statefulset.
 
 ```
 > kubectl describe statefulset kafka-kafka

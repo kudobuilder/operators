@@ -2,8 +2,8 @@
 
 ### Resources
 
-By default, KUDO Kafka resource configuration is set to be minimal optimal for the production usage. 
-But users can tune the requirements depending on high or low workload of the Kafka cluster.  
+By default, KUDO Kafka resource configuration is set to the minimum recommended values for production usage. 
+But users can and should tune the configurations based on the workload requirements of their Kafka cluster.  
 
 ##### Tuning the resources for the Kafka Cluster
 
@@ -25,7 +25,7 @@ kubectl kudo install kafka --instance=my-kafka-name \
 
 By default, the Kafka operator will use the default storage class of the Kubernetes cluster. 
 
-To deploy the Kafka cluster using a storage class that isn't the default, you can use the parameter `STORAGE_CLASS`
+To deploy Kafka using a different storage class, you can use the parameter `STORAGE_CLASS`
 
 ```
 kubectl kudo install kafka --instance=my-kafka-name -p STORAGE_CLASS=<STORAGE_CLASS_NAME>
@@ -37,24 +37,26 @@ kubectl kudo install kafka --instance=my-kafka-name -p STORAGE_CLASS=<STORAGE_CL
 kubectl kudo install kafka --instance=my-kafka-name -p PERSISTENT_STORAGE=false
 ```
 
-Having `PERSISTENT_STORAGE` value `false` means that any data or logs in broker will be lost after the a pod restart or rescheduling.
+Having `PERSISTENT_STORAGE` value `false` means that any data or logs inside the brokers will be lost after a pod restart or rescheduling.
 Deploying without persistent storage isn't recommended for production usage. 
 
 ##### Metrics
 
-By default, the Kafka cluster will have the JMX Exporter enabled. You can check more information around how KUDO Kafka exposes metrics in [monitoring](./monitoring.md) documentation.
+By default, the Kafka cluster will have the JMX Exporter enabled. You can check more information around how KUDO Kafka exposes metrics in [monitoring](./monitoring.md).
 
 ##### Zookeeper PATH
 
 By default, the Kafka cluster will try to use a zookeeper path same as the instance name.
 
-User can override the default zk path by using `ZOOKEEPER_PATH` parameter.
+To override the default zk path, use the `ZOOKEEPER_PATH` parameter.
 
 ```
-kubectl kudo install kafka --instance=my-kafka-name -p ZOOKEEPER_URI=zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181 -p ZOOKEEPER_PATH=/custom-path
+kubectl kudo install kafka --instance=my-kafka-name \
+  -p ZOOKEEPER_URI=zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181 \
+  -p ZOOKEEPER_PATH=/custom-path
 ```
 
 ##### Docker image
 
-The [Dockerfile](https://github.com/mesosphere/dcos-kafka-service/blob/master/images/Dockerfile) used in the KUDO Kafka operator is hosted in the [dcos-kafka-service](https://github.com/mesosphere/dcos-kafka-service) repo
+The Dockerfile used to build the KUDO Kafka operator is hosted in the [dcos-kafka-service](https://github.com/mesosphere/dcos-kafka-service/blob/master/images/Dockerfile) repo
 
