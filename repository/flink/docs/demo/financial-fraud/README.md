@@ -60,22 +60,22 @@ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install zookeeper --version=0.1.0 --skip-instance
-        operator.kudo.k8s.io/v1alpha1/zookeeper created
-        operatorversion.kudo.k8s.io/v1alpha1/zookeeper-0.1.0 created
+        operator.kudo.dev/v1alpha1/zookeeper created
+        operatorversion.kudo.dev/v1alpha1/zookeeper-0.1.0 created
         ```
 - Have the `kafka` Operator with `0.1.1` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install kafka --version=0.1.1 --skip-instance
-        operator.kudo.k8s.io/v1alpha1/kafka created
-        operatorversion.kudo.k8s.io/v1alpha1/kafka-0.1.1 created
+        operator.kudo.dev/v1alpha1/kafka created
+        operatorversion.kudo.dev/v1alpha1/kafka-0.1.1 created
         ```
 - Have the `flink` Operator with `0.1.0` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
         $ kubectl kudo install flink --version=0.1.0 --skip-instance
-        operator.kudo.k8s.io/v1alpha1/flink created
-        operatorversion.kudo.k8s.io/v1alpha1/flink-0.1.0 created
+        operator.kudo.dev/v1alpha1/flink created
+        operatorversion.kudo.dev/v1alpha1/flink-0.1.0 created
         ```
 
 Now you should have all required Operators installed.
@@ -89,10 +89,10 @@ Install the Flink `financial-fraud` demo from the main repository directory.
     - Install the Flink demo objects straight out of the repository:
         ```
         $ kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
-        operator.kudo.k8s.io/v1alpha1/flink-demo created
-        operatorversion.kudo.k8s.io/v1alpha1/flink-demo-0.1.0 created
+        operator.kudo.dev/v1alpha1/flink-demo created
+        operatorversion.kudo.dev/v1alpha1/flink-demo-0.1.0 created
         No instance named 'flink-demo' tied to this 'flink-demo' version has been found. Do you want to create one? (Yes/no) yes
-        instance.kudo.k8s.io/v1alpha1/flink-demo created
+        instance.kudo.dev/v1alpha1/flink-demo created
         ```
 
 To see the status of the deploy plan for the Zookeeper operator we can utilize the CLI via:

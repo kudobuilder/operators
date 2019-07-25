@@ -1,5 +1,9 @@
-apiVersion: kudo.k8s.io/v1alpha1
+apiVersion: kudo.dev/v1alpha1
 kind: TestSuite
+manifestDirs:
+- ./test/manifests/
 testDirs:
 - ./repository/zookeeper/tests
 startKUDO: true
+startKIND: true
+skipClusterDelete: true
