@@ -21,6 +21,20 @@ Before you get started:
 
 - Make sure you have a cluster at hand with enough resources, e.g.:
 
+For [KinD](https://github.com/kubernetes-sigs/kind):
+```
+# Use make from operators repo:
+make create-cluster
+
+# or modify your own KinD cluster:
+kind create cluster
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+kubectl delete storageclass standard
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
+```
+
+For [minikube](https://github.com/kubernetes/minikube):
 ```.
 minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
 ```
@@ -73,7 +87,7 @@ Install the Flink `financial-fraud` demo from the main repository directory.
  - Get the KUDO Operators repository: `git clone git@github.com:kudobuilder/operators.git`
     - Change directory into the cloned repository: `cd operators`
     - Install the Flink demo objects straight out of the repository:
-        ```bash
+        ```
         $ kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
         operator.kudo.k8s.io/v1alpha1/flink-demo created
         operatorversion.kudo.k8s.io/v1alpha1/flink-demo-0.1.0 created
@@ -83,7 +97,7 @@ Install the Flink `financial-fraud` demo from the main repository directory.
 
 To see the status of the deploy plan for the Zookeeper operator we can utilize the CLI via:
 
-```bash
+```
 
 $ kubectl kudo plan status --instance flink-demo-zk
 Plan(s) for "flink-demo-zk" in namespace "default":
@@ -98,8 +112,6 @@ Plan(s) for "flink-demo-zk" in namespace "default":
         └── Phase connection (parallel strategy) [NOT ACTIVE]
             └── Step connection (parallel strategy) [NOT ACTIVE]
                 └── connection [NOT ACTIVE]
-
-
 ```
 
 If the Zookeeper Operator was successfully installed its plan status will show `COMPLETE`:
@@ -176,7 +188,7 @@ at the Flink dashboard:
 
 To see if the job was submitted successfully:
 
-```bash
+```
 $ kubectl logs $(kubectl get pod -l job-name=flink-demo-submit-flink-job -o jsonpath="{.items[0].metadata.name}")
 DOWNLOAD_URL: https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar FILE: flink-job-1.0.jar JOBMANAGER: flink-demo-flink-jobmanager
 fetch http://dl-cdn.alpinelinux.org/alpine/v3.9/main/x86_64/APKINDEX.tar.gz
@@ -199,13 +211,13 @@ SUBMITTED JOB!
 
 To get the fraud output from the actor:
 
-```bash
+```
 kubectl logs $(kubectl get pod -l actor=flink-demo -o jsonpath="{.items[0].metadata.name}")
 ```
 
 The output will look like:
 
-```bash
+```
 Broker:   flink-demo-kafka-kafka-0.flink-demo-kafka-svc:9093
 Topic:   fraud
 
@@ -228,3 +240,49 @@ To successfully uninstall the demo follow those steps:
 - Delete all PVCs:
     - For Kafka: `kubectl delete pvc -l instance=flink-demo-kafka`
     - For Zookeeper: `kubectl delete pvc -l instance=flink-demo-zk`
+
+### Reference Scripts
+
+The required demo scripts without supportive text.  Please read above for explanations of each of these commands.
+
+```
+# create kind cluster
+kind create cluster
+export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+kubectl delete storageclass standard
+kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
+
+# install KUDO manager
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/00-prereqs.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/10-crds.yaml
+kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/20-deployment.yaml
+
+# verify correct version of manager
+kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
+
+# install o and ov
+kubectl kudo install zookeeper --version=0.1.0 --skip-instance
+kubectl kudo install kafka --version=0.1.1 --skip-instance
+kubectl kudo install flink --version=0.1.0 --skip-instance
+
+# install demo
+kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
+
+# watch plans
+kubectl kudo plan status --instance flink-demo-zk
+kubectl kudo plan status --instance flink-demo-kafka
+kubectl kudo plan status --instance flink-demo-flink
+kubectl kudo plan status --instance flink-demo
+
+# watch pod deployments
+kubectl get pods -w
+
+#kubectl proxy
+open http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
+
+kubectl logs $(kubectl get pod -l job-name=flink-demo-submit-flink-job -o jsonpath="{.items[0].metadata.name}")
+
+kubectl logs $(kubectl get pod -l actor=flink-demo -o jsonpath="{.items[0].metadata.name}")
+
+```
