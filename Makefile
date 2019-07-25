@@ -1,12 +1,11 @@
 KIND_VERSION=0.4.0
 KUBERNETES_VERSION=1.14.2
 
-export GO111MODULE=on
+export GO111MODULES=on
 
 GO ?= go
 OS=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 
-KUDO_MACHINE=$(shell uname -m)
 MACHINE=$(shell uname -m)
 ifeq "$(MACHINE)" "x86_64"
   MACHINE=amd64
@@ -30,12 +29,8 @@ bin/kind_$(KIND_VERSION): bin/
 	curl -Lo bin/kind_$(KIND_VERSION) https://github.com/kubernetes-sigs/kind/releases/download/v$(KIND_VERSION)/kind-$(OS)-$(MACHINE)
 	chmod +x bin/kind_$(KIND_VERSION)
 
-# create a kubernetes-in-docker cluster and replace the standard storage class with the local-path-provisioner.
-# fsGroups are not supported in the standard storage class, so we use the rancher local-path-provisioner.
-# https://github.com/kubernetes/kubernetes/pull/39438
 create-cluster: bin/kind_$(KIND_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
-	bin/kind_$(KIND_VERSION) create cluster --image kindest/node:v$(KUBERNETES_VERSION) && \
-	export KUBECONFIG=$$(bin/kind_$(KIND_VERSION) get kubeconfig-path --name="kind")
+	bin/kind_$(KIND_VERSION) create cluster --image kindest/node:v$(KUBERNETES_VERSION)
 
 install-operators: bin/kind_$(KIND_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
 	bin/kubectl_$(KUBERNETES_VERSION) apply -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs/deployment/10-crds.yaml
