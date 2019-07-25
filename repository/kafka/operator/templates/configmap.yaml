@@ -243,6 +243,8 @@ data:
     zookeeper.session.timeout.ms={{ .Params.ZOOKEEPER_SESSION_TIMEOUT_MS }}
     zookeeper.sync.time.ms={{ .Params.ZOOKEEPER_SYNC_TIME_MS }}
 
+    {{ .Params.CUSTOM_SERVER_PROPERTIES }}
+
 kind: ConfigMap
 metadata:
   creationTimestamp: 2016-03-30T18:14:41Z

@@ -26,14 +26,17 @@ BROKER_PORT:
 DISK_SIZE:
   description: "Disk size for the brokers"
   default: "5Gi"
+  trigger: "not-allowed"
 
 STORAGE_CLASS:
   description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
   required: false
+  trigger: "not-allowed"
 
 PERSISTENT_STORAGE:
   description: "If false, ephemeral storage is used. Not recommended for Production use."
   default: "true"
+  trigger: "not-allowed"
 
 CLIENT_PORT:
   description: "Broker client port"
@@ -607,3 +610,8 @@ ZOOKEEPER_SYNC_TIME_MS:
   displayName: "zookeeper.sync.time.ms"
   description: "How far a ZK follower can be behind a ZK leader"
   default: "2000"
+
+CUSTOM_SERVER_PROPERTIES:
+  displayName: "custom server properties"
+  description: "These properties will be appended to the Kafka server properties"
+  default: ""

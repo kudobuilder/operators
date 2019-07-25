@@ -46,14 +46,22 @@ By default, the Kafka cluster will have the JMX Exporter enabled. You can check 
 
 ##### Zookeeper PATH
 
-By default, the Kafka cluster will try to use a zookeeper path same as the instance name.
+By default, the Kafka cluster will try to use a zookeeper path same as specified in `--instance` flag.
+You can get the instance name by `kubectl get instances` 
 
-To override the default zk path, use the `ZOOKEEPER_PATH` parameter.
+To override the default zk path, use the `ZOOKEEPER_PATH` parameter. In next example the  `ZOOKEEPER_PATH` will be
+`/custom-path`
 
 ```
 kubectl kudo install kafka --instance=my-kafka-name \
   -p ZOOKEEPER_URI=zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181 \
   -p ZOOKEEPER_PATH=/custom-path
+```
+
+In the next example the `ZOOKEEPER_PATH` will be `my-kafka-cluster`
+```
+kubectl kudo install kafka --instance=my-kafka-name \
+  -p ZOOKEEPER_URI=zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181 
 ```
 
 ##### Docker image

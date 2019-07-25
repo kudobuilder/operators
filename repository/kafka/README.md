@@ -15,4 +15,4 @@ For the latest master branch you can check  [docs](./docs/latest) docs
 | KUDO Kafka Version | Apache Kafka Version |
 | ------------------ | -------------------- |
 | 0.1.1              | 2.2.1                |
-| master             | 2.3.0                |
+| latest             | 2.3.0                |
