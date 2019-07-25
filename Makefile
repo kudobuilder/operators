@@ -1,8 +1,6 @@
 KIND_VERSION=0.4.0
 KUBERNETES_VERSION=1.14.2
 
-export GO111MODULES=on
-
 GO ?= go
 OS=$(shell uname -s | tr '[:upper:]' '[:lower:]')
 
@@ -15,6 +13,8 @@ endif
 ifneq "$(USE_KIND)" "0"
 export KUBECONFIG=$(shell bin/kind_$(KIND_VERSION) get kubeconfig-path --name="kind")
 endif
+
+export GO111MODULE=on
 
 KUDOCTL=$(GO) run github.com/kudobuilder/kudo/cmd/kubectl-kudo
 

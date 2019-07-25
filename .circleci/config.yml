@@ -13,7 +13,10 @@ jobs:
     steps:
       - checkout
       - run: make KUBERNETES_VERSION=<< parameters.kubernetes_version >> create-cluster
-      - run: make test
+      - run: |
+          go get golang.org/dl/go1.12.5
+          go1.12.5 download
+      - run: make GO=go1.12.5 test
 
 workflows:
   test-1.15:
