@@ -13,11 +13,11 @@ BROKER_CPUS_LIMIT:
 
 BROKER_MEM:
   description: "Memory (request) for the Kafka Broker pods. spec.containers[].resources.requests.memory"
-  default: "2048m"
+  default: "2048Mi"
 
 BROKER_MEM_LIMIT:
   description: "Memory (limit) for the Kafka Broker pods. spec.containers[].resources.limits.memory"
-  default: "4096m"
+  default: "4096Mi"
 
 BROKER_PORT:
   description: "Port brokers run on"

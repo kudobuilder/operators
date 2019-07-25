@@ -16,47 +16,7 @@ It is recommended that users closely monitor and control broker scaling due to t
 
 #### Horizontally 
 
-To scale horizontally, we can increase the broker count.
-
-When checking the kafka instance we can see any custom parameters present in the instance. In this case we only see 1 custom parameter that is `ZOOKEEPER_URI`
-
-```
-> kubectl describe instances -l operator=kafka
-Name:         kafka
-Namespace:    default
-Labels:       controller-tools.k8s.io=1.0
-              operator=kafka
-Annotations:  <none>
-API Version:  kudo.k8s.io/v1alpha1
-Kind:         Instance
-Metadata:
-  Creation Timestamp:  2019-07-17T15:57:09Z
-  Generation:          10
-  Resource Version:    227951
-  Self Link:           /apis/kudo.k8s.io/v1alpha1/namespaces/default/instances/kafka
-  UID:                 a13d648a-2d58-4672-9be7-63ecf2db55b6
-Spec:
-  Operator Version:
-    Name:  kafka-0.1.1
-  Parameters:
-    ZOOKEEPER_URI:  zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181
-Status:
-  Active Plan:
-    API Version:  kudo.k8s.io/v1alpha1
-    Kind:         PlanExecution
-    Name:         kafka-deploy-351387000
-    Namespace:    default
-    UID:          d34d38e7-1940-4670-83a3-56b486bccff4
-  Status:         COMPLETE
-Events:
-  Type    Reason               Age                 From                      Message
-  ----    ------               ----                ----                      -------
-  Normal  CreatePlanExecution  5m3s (x2 over 20h)  instance-controller       Creating "deploy" plan execution
-  Normal  PlanCreated          5m3s                instance-controller       PlanExecution "kafka-deploy-351387000" created
-  Normal  PlanComplete         3m56s               planexecution-controller  PlanExecution kafka-deploy-351387000 completed
-```
-
-Lets update the broker count from default `3` to `5`
+To scale horizontally, we can increase the broker count. Lets update the broker count from default `3` to `5`
 
 ```
 > kubectl patch instance kafka -p '{"spec":{"parameters":{"BROKER_COUNT":"5"}}}' --type=merge
@@ -110,16 +70,16 @@ To scale vertically, we can update the broker's statefulset.
 [ ... lines removed for clarity ...]
     Requests:
       cpu:      500m
-      memory:   2048m
+      memory:   2048Mi
 [ ... lines removed for clarity ...]
 ```
 
 
 
-Let's increase the cpu request from `500m` to `700m` and double the memory request from `2048` to `4096`. Also important is increasing the limits as they cannot be lower than the requested resources. 
+Let's increase the cpu request from `500m` to `700m` and double the memory request from `2048Mi` to `4096Mi`. Also important is increasing the limits as they cannot be lower than the requested resources. 
 
 ```
-kubectl patch instance kafka -p '{"spec":{"parameters":{"BROKER_CPUS":"700m", "BROKER_MEM":"4096m", "BROKER_CPUS_LIMIT":"3000m", "BROKER_MEM_LIMIT":"6144"}}}' --type=merge
+kubectl patch instance kafka -p '{"spec":{"parameters":{"BROKER_CPUS":"700m", "BROKER_MEM":"4096Mi", "BROKER_CPUS_LIMIT":"3000m", "BROKER_MEM_LIMIT":"6144Mi"}}}' --type=merge
 ```
 
 This will initiate a rolling upgrade of the pods to a new statefulset.
@@ -129,9 +89,6 @@ This will initiate a rolling upgrade of the pods to a new statefulset.
 [ ... lines removed for clarity ...]
     Requests:
       cpu:      700m
-      memory:   4096m
+      memory:   4096Mi
 [ ... lines removed for clarity ...]
 ```
-
-
-

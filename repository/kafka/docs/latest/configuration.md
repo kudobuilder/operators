@@ -9,15 +9,15 @@ But users can and should tune the configurations based on the workload requireme
 
 ```
 kubectl kudo install kafka --instance=my-kafka-name \
-            -p ZOOKEEPER_URI=zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181 \
+            -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
             -p ZOOKEEPER_PATH=/custom-path \
-            -p BROKER_CPUS=3000m
-            -p BROKER_COUNT=5
-            -p BROKER_MEM=4096m
-            -p DISK_SIZE=20Gi
-            -p MIN_INSYNC_REPLICAS=3
-            -p NUM_IO_THREADS=10
-            -p NUM_NETWORK_THREADS=5
+            -p BROKER_CPUS=3000m \
+            -p BROKER_COUNT=5 \
+            -p BROKER_MEM=4096m \
+            -p DISK_SIZE=20Gi \
+            -p MIN_INSYNC_REPLICAS=3 \
+            -p NUM_IO_THREADS=10 \
+            -p NUM_NETWORK_THREADS=5 
           
 ```
 
