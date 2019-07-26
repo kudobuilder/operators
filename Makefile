@@ -1,5 +1,5 @@
 KIND_VERSION=0.4.0
-KUDO_VERSION=0.3.2
+KUDO_VERSION=0.3.3
 KUBERNETES_VERSION=1.14.2
 
 GO ?= go
@@ -42,7 +42,7 @@ create-cluster: bin/kind_$(KIND_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
 	bin/kubectl_$(KUBERNETES_VERSION) annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
 
 install-operators: bin/kudoctl_$(KUDO_VERSION) bin/kind_$(KIND_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
-	bin/kubectl_$(KUBERNETES_VERSION) apply -f https://raw.githubusercontent.com/kudobuilder/kudo/master/docs/deployment/10-crds.yaml
+	bin/kubectl_$(KUBERNETES_VERSION) apply -f https://raw.githubusercontent.com/kudobuilder/kudo/v${KUDO_VERSION}/docs/deployment/10-crds.yaml
 	ls -d repository/*/operator |xargs -n1 bin/kudoctl_$(KUDO_VERSION) install --skip-instance --kubeconfig=$(KUBECONFIG)
 
 # Test runs the test harness using kudoctl test.

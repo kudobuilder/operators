@@ -6,7 +6,7 @@ When Kafka operator deployed with parameter `METRICS_ENABLED=true` (which defaul
 
 - Each broker bootstraps with [JMX Exporter](https://github.com/prometheus/jmx_exporter) java agent exposing the metrics at `9094/metrics`
 - Adds a port named `metrics` to the Kafka Service
-- Adds a label `kubeaddons.mesosphere.io/servicemonitor: "true"` for the service monitor discovery. 
+- Adds a label `kudo.dev/servicemonitor: "true"` for the service monitor discovery. 
 
 
 ```
