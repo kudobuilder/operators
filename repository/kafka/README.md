@@ -4,8 +4,8 @@ The KUDO Kafka operator creates, configures and manages [Apache Kafka](https://k
 
 ## Getting started
 
-The latest stable version of Kafka operator is `0.1.1`
-For more details, please see the [docs](./docs/v0.1) folder.
+The latest stable version of Kafka operator is `0.2.1`
+For more details, please see the [docs](./docs/v0.2) folder.
 
 For the latest master branch you can check  [docs](./docs/latest) docs 
 
@@ -15,4 +15,5 @@ For the latest master branch you can check  [docs](./docs/latest) docs
 | KUDO Kafka Version | Apache Kafka Version |
 | ------------------ | -------------------- |
 | 0.1.1              | 2.2.1                |
+| 0.2.0              | 2.3.0                |
 | latest             | 2.3.0                |
