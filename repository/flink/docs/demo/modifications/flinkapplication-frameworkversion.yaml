@@ -1,4 +1,4 @@
-apiVersion: kudo.k8s.io/v1alpha1
+apiVersion: kudo.dev/v1alpha1
 kind: FrameworkVersion
 metadata:
   labels:
@@ -58,7 +58,7 @@ spec:
     cluster.yaml: |
       #need to create a rolebinding for the service account in use
       {{#DEPLOY_OWN_CLUSTER}}
-      apiVersion: kudo.k8s.io/v1alpha1
+      apiVersion: kudo.dev/v1alpha1
       kind: Instance
       metadata:
         name: {{CLUSTER_NAME}}
