@@ -22,8 +22,8 @@ Install a new operator version:
 ```
 kubectl kudo install kafka --version=0.2.0 --skip-instance
 
-operator.kudo.k8s.io/kafka unchanged
-operatorversion.kudo.k8s.io/v1alpha1/kafka-0.2.0 created
+operator.kudo.dev/kafka unchanged
+operatorversion.kudo.dev/v1alpha1/kafka-0.2.0 created
 ```
 Now there are two operator versions installed:
 ```
