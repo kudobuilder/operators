@@ -6,11 +6,13 @@ metadata:
   labels:
     zookeeper: {{ .OperatorName }}
     app: zookeeper
+    instance: {{ .Name }}
 spec:
   selector:
     matchLabels:
       app: zookeeper
       zookeeper: {{ .OperatorName }}
+      instance: {{ .Name }}
   serviceName: {{ .Name }}-hs
   replicas: 3
   updateStrategy:
@@ -21,6 +23,7 @@ spec:
       labels:
         app: zookeeper
         zookeeper: {{ .OperatorName }}
+        instance: {{ .Name }}
     spec:
       containers:
         - name: kubernetes-zookeeper
