@@ -4,9 +4,7 @@
 
 #### Tuning the configuration 
 
-Check the limitations to see which parameters can only be set during bootstrap time. 
-
-
+Check the [limitations](./limitations.md) to see which parameters can only be set during bootstrap time. 
 
 ## Changing the configuration
 

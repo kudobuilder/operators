@@ -1,7 +1,7 @@
 # Release notes 
 
 ## v0.2.0 
-July 26th, 2019
+July 30th, 2019
 
 - Apache Kafka upgraded to 2.3.0.
 - livenessProbe and readinessProbes made less aggressive. 

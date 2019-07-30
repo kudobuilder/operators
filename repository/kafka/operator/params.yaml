@@ -57,6 +57,7 @@ NUM_PARTITIONS:
   default: "3"
 
 ZOOKEEPER_URI:
+  displayName: "zookeeper cluster URI"
   description: |
     host and port information for Zookeeper connection.
     e.g. zk:2181,zk2:2181,zk3:2181
@@ -64,7 +65,8 @@ ZOOKEEPER_URI:
   required: true
 
 ZOOKEEPER_PATH:
-  description: "Path inside of KAFKA_ZOOKEEPER_URI to host data"
+  displayName: "zookeeper node path"
+  description: "Zookeeper node path. Defaults to Kafka instance name."
   required: false
 
 AUTO_CREATE_TOPICS_ENABLE:

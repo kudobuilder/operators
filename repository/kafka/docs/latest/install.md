@@ -14,6 +14,9 @@ kubectl kudo install zookeeper --instance=zk
 ```
 
 #### Install Kafka 
+
+Please read the [limitations](./limitations.md) docs before creating the KUDO Kafka cluster. 
+
 ```
 kubectl kudo install kafka --instance=kafka
 ```
