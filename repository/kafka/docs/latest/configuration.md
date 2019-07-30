@@ -46,25 +46,25 @@ By default, the Kafka cluster will have the JMX Exporter enabled. You can check 
 
 ##### Zookeeper Configuration
 
-KUDO Kafka requires a running ZooKeeper ensemble to perform its own internal accounting and persist cluster topology. And connectivity to the Zookeeper.
-You can install the KUDO Zookeeper or an alternate Zookeeper to use with KUDO Kafka. 
+KUDO Kafka requires a running ZooKeeper cluster to perform its own internal accounting and persist cluster topology. And connectivity to the Zookeeper.
+You can install the KUDO Zookeeper or you can use any other Zookeeper cluster you're running inside or outside kubernetes to use with KUDO Kafka. 
 
 ###### Configuring the Zookeeper connection:
 
-You can configure KUDO Kafka to use Zookeeper using the KUDO Kafka parameter `ZOOKEEPER_URI`
+You can configure KUDO Kafka to use Zookeeper using the parameter `ZOOKEEPER_URI`
 Let's see this with an example:
 ```
 kubectl kudo install kafka --instance=my-kafka-cluster \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
 ```
-In the above example KUDO Kafka cluster will connect to the Zookeeper cluster present in `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181`
+In the above example KUDO Kafka cluster will connect to the Zookeeper cluster available via following DNS names `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181`
 
 The Kafka cluster topology is persisted in a Zookeeper node. Every node in Zookeeper's namespace is identified by a path.   
 
 Two Kafka clusters can share the same Zookeeper but sharing the same path can lead to a corrupt state for both Kafka clusters. 
 To avoid this to happen, KUDO Kafka persists its cluster topology in zk node with same name as KUDO Kafka instance.
 
-Let's for example see what will the zk path in the above example where we just configured `ZOOKEEPER_URI`:
+Let's for example see what will the zk path look like in the above example where we just configured `ZOOKEEPER_URI`:
 ```
 kubectl kudo install kafka --instance=my-kafka-cluster \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \

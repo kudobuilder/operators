@@ -7,4 +7,4 @@ July 30th, 2019
 - livenessProbe and readinessProbes made less aggressive. 
 - Added CPU/Memory limits for the stateful pods
 - Updated the default value of Zookeeper URI
-- not-allowed plan added for storage parameters
+- not-allowed plan added to prevent updating storage parameters
