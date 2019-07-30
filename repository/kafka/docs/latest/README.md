@@ -1,4 +1,4 @@
-## KUDO Kafka v0.1.1
+## KUDO Kafka latest
 
 - [Installation](./install.md)
 - [Configuration](./configuration.md)
