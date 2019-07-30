@@ -1,7 +1,5 @@
 # Release notes 
 
-## latest
-
 ## v0.2.0 
 July 30th, 2019
 
