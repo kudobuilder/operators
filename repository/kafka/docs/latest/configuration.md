@@ -46,7 +46,7 @@ By default, the Kafka cluster will have the JMX Exporter enabled. You can check 
 
 ##### Zookeeper Configuration
 
-KUDO Kafka requires a running ZooKeeper ensemble to perform its own internal accounting and persist cluster topology. 
+KUDO Kafka requires a running ZooKeeper ensemble to perform its own internal accounting and persist cluster topology. And connectivity to the Zookeeper.
 You can install the KUDO Zookeeper or an alternate Zookeeper to use with KUDO Kafka. 
 
 ###### Configuring the Zookeeper connection:
