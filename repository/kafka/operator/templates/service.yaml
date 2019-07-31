@@ -19,4 +19,4 @@ spec:
   clusterIP: None
   selector:
     app: kafka
-    instance: {{ .Name }}
+    kudo.dev/instance: {{ .Name }}
