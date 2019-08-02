@@ -12,8 +12,7 @@ jobs:
     description: "Run KUDO Operators tests against a Kubernetes cluster."
     steps:
       - checkout
-      - run: make KUBERNETES_VERSION=<< parameters.kubernetes_version >> create-cluster
-      - run: make test
+      - run: make KUBERNETES_VERSION=<< parameters.kubernetes_version >> test
 
 workflows:
   test-1.15:
