@@ -16,3 +16,6 @@ bin
 # from make create-cluster.  We don't store these.
 go.mod
 go.sum
+kubeconfig
+.kube
+artifacts/
