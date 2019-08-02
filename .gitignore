@@ -16,3 +16,9 @@ bin
 # from make create-cluster.  We don't store these.
 go.mod
 go.sum
+
+# OSX files
+.DS_Store
+
+# tarballs
+*.tgz
