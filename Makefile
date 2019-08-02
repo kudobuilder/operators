@@ -11,6 +11,8 @@ ifeq "$(MACHINE)" "x86_64"
   MACHINE=amd64
 endif
 
+export PATH := $(shell pwd)/bin/:$(PATH)
+
 bin/:
 	mkdir -p bin/
 
