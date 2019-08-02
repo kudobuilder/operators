@@ -24,6 +24,11 @@ bin/kubectl-kudo_$(KUDO_VERSION): bin/
 	chmod +x bin/kubectl-kudo_$(KUDO_VERSION)
 	ln -sf ./kubectl-kudo_$(KUDO_VERSION) ./bin/kubectl-kudo
 
+.PHONY: create-cluster
+create-cluster:
+	echo
+
+.PHONY: test
 # Test runs the test harness using kubectl-kudo test.
 test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
 	bin/kubectl-kudo test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
