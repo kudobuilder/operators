@@ -14,4 +14,4 @@ testDirs:
 - ./repository/zookeeper/tests
 startKIND: true
 startKUDO: true
-timeout: 200
+timeout: 300
