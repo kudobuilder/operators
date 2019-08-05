@@ -19,3 +19,9 @@ go.sum
 kubeconfig
 .kube
 artifacts/
+
+# OSX files
+.DS_Store
+
+# tarballs
+*.tgz
