@@ -1,8 +1,4 @@
 apiVersion: kudo.dev/v1alpha1
-kind: TestAssert
-timeout: 120
----
-apiVersion: kudo.dev/v1alpha1
 kind: Instance
 metadata:
   name: zk
