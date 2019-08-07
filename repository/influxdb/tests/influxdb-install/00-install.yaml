@@ -1,0 +1,47 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: influxdb
+spec:
+  operatorVersion:
+    name: influxdb-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: influxdb
+  parameters:
+    INFLUX_SECRET: influxdb
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: influxdb
+stringData:
+  database: mydb
+  username: root
+  password: test
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: influxdb-querier
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: do-query
+        image: quay.io/influxdb/influxdb:1.6
+        imagePullPolicy: "IfNotPresent"
+        # Influx CLI seems to not exit with a proper exit status based on query.
+        command:
+        - bash
+        - -c
+        - |
+          set -eux
+          INFLUX=$(influx -database=mydb -host=influxdb-influxdb -execute "insert hello,location=world value=4")
+          ! grep ERR <(echo $INFLUX)
+        env:
+        - name: INFLUX_USERNAME
+          value: root
+        - name: INFLUX_PASSWORD
+          value: test

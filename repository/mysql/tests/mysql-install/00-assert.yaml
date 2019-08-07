@@ -1,0 +1,13 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: mysql-install
+status:
+  status: COMPLETE
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysql-install-querier
+status:
+  succeeded: 1

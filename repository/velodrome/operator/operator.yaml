@@ -1,0 +1,23 @@
+name: "velodrome"
+version: "0.1.0"
+kudoVersion: 0.5.0
+kubernetesVersion: 1.5.1
+maintainers:
+  - Justin Taylor-Barrick <jbarrick@d2iq.com>
+url: https://github.com/kubernetes/test-infra/tree/master/velodrome
+tasks:
+  deploy:
+    resources:
+      - fetcher.yaml
+      - sqlproxy.yaml
+      - transform.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: velodrome
+        strategy: parallel
+        steps:
+          - name: everything
+            tasks:
+              - deploy

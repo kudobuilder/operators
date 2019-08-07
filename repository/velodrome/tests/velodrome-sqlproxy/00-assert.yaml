@@ -1,0 +1,64 @@
+# This test is unable to actually verify that Velodrome works all the way in this configuration as we do not have a GCS account
+# available for the tests.
+# However, it verifies that sqlproxy is able to start and that all of the components are configured correctly to use it.
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-sqlproxy-velodrome
+---
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-sqlproxy-influxdb
+status:
+  status: COMPLETE
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-sqlproxy-velodrome-sqlproxy
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-sqlproxy-velodrome-fetcher-kudobuilder-kudo
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --organization=kudobuilder
+        - --project=kudo
+        - --token-file=/etc/secret-volume/test-user
+        - --stderrthreshold=0
+        - --host=velodrome-sqlproxy-velodrome-sqlproxy
+        - --user=$(MYSQL_WRITER_USER)
+        - --password=$(MYSQL_WRITER_PASS)
+        - --database=$(MYSQL_DATABASE)
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-sqlproxy-velodrome-transform-kudobuilder-kudo-approved
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --repository=kudobuilder/kudo
+        - --stderrthreshold=0
+        - --host=velodrome-sqlproxy-velodrome-sqlproxy
+        - --user=$(MYSQL_READER_USER)
+        - --password=$(MYSQL_READER_PASS)
+        - --database=$(MYSQL_DATABASE)
+        - --influx-host=http://velodrome-sqlproxy-influxdb-influxdb:8086
+        - --influx-user=$(INFLUXDB_USER)
+        - --influx-password=$(INFLUXDB_PASSWORD)
+        - --influx-database=$(INFLUXDB_DATABASE)
+        - --name=approved
+        - count
+        - --no-issues
+        - --percentiles=50
+        - --state=opened,!labeled:needs-rebase,labeled:approved

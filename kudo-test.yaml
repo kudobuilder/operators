@@ -7,10 +7,15 @@ kubectl:
 - kudo install --skip-instance ./repository/elastic/operator/
 - kudo install --skip-instance ./repository/flink/operator/
 - kudo install --skip-instance ./repository/kafka/operator/
+- kudo install --skip-instance ./repository/influxdb/operator/
 - kudo install --skip-instance ./repository/mysql/operator/
 - kudo install --skip-instance ./repository/redis/operator/
+- kudo install --skip-instance ./repository/velodrome/operator/
 - kudo install --skip-instance ./repository/zookeeper/operator/
 testDirs:
+- ./repository/influxdb/tests
+- ./repository/mysql/tests
+- ./repository/velodrome/tests
 - ./repository/zookeeper/tests
 startKIND: true
 startKUDO: true

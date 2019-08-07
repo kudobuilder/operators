@@ -1,0 +1,132 @@
+{{ $this := . }}
+
+{{ range $repository := (splitList "," .Params.REPOSITORIES) }}
+
+{{ $org := (splitn "/" 2 $repository)._0 }}
+{{ $repo := (splitn "/" 2 $repository)._1 }}
+
+{{ range $metric, $metricArgs := dict "contributions" `
+- --no-issues
+- --event=opened
+- --comments=.*
+- --log-author
+` "approved" `
+- --no-issues
+- --percentiles=50
+- --state=opened,!labeled:needs-rebase,labeled:approved
+` "lgtmed" `
+- --no-issues
+- --percentiles=50
+- --state=opened,!labeled:needs-rebase,labeled:lgtm
+` "merge" `
+- --no-issues
+- --event=merged
+` "open" `
+- --no-issues
+- --state=opened,!merged
+- --percentiles=50
+` "needs-rebase" `
+- --no-issues
+- --percentiles=50
+- --state=opened,labeled:needs-rebase
+` "lgtmer" `
+- --no-issues
+- --ignore-authors=k8s-merge-robot
+- --event=labeled:lgtm
+- --comments=(?m)^/lgtm$
+- --log-author
+` "testthis" `
+- --no-issues
+- --comments=(?m)^@k8s-bot.*test this
+` "approver" `
+- --no-issues
+- --event=labeled:approved
+- --comments=(?m)^/approve$
+- --log-author
+` }}
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: transform-{{ $org }}-{{ $repo }}-{{ $metric }}
+  labels:
+    app: transform
+    instance: {{ $this.Name }}
+    org: {{ $org }}
+    repo: {{ $repo }}
+    metric: {{ $metric }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: transform
+      instance: {{ $this.Name }}
+      org: {{ $org }}
+      repo: {{ $repo }}
+      metric: {{ $metric }}
+  template:
+    metadata:
+      labels:
+        app: transform
+        instance: {{ $this.Name }}
+        org: {{ $org }}
+        repo: {{ $repo }}
+        metric: {{ $metric }}
+    spec:
+      containers:
+      - args:
+        - --repository={{ $org }}/{{ $repo }}
+        - --stderrthreshold=0
+        {{ if $this.Params.MYSQL_HOSTNAME }}
+        - --host={{ $this.Params.MYSQL_HOSTNAME }}
+        {{ else }}
+        - --host={{ $this.Name }}-sqlproxy
+        {{ end }}
+        - --user=$(MYSQL_READER_USER)
+        - --password=$(MYSQL_READER_PASS)
+        - --database=$(MYSQL_DATABASE)
+        - --influx-host={{ $this.Params.INFLUX_HOSTNAME }}
+        - --influx-user=$(INFLUXDB_USER)
+        - --influx-password=$(INFLUXDB_PASSWORD)
+        - --influx-database=$(INFLUXDB_DATABASE)
+        - --name={{ $metric }}
+        - count
+        {{ indent 8 $metricArgs }}
+        env:
+        - name: INFLUXDB_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database
+              name: {{ $this.Params.INFLUX_SECRET }}
+        - name: INFLUXDB_USER
+          valueFrom:
+            secretKeyRef:
+              key: username
+              name: {{ $this.Params.INFLUX_SECRET }}
+        - name: INFLUXDB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              key: password
+              name: {{ $this.Params.INFLUX_SECRET }}
+        - name: MYSQL_READER_USER
+          valueFrom:
+            secretKeyRef:
+              key: reader-user
+              name: {{ $this.Params.MYSQL_SECRET }}
+        - name: MYSQL_READER_PASS
+          valueFrom:
+            secretKeyRef:
+              key: reader-pass
+              name: {{ $this.Params.MYSQL_SECRET }}
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              key: database
+              name: {{ $this.Params.MYSQL_SECRET }}
+        image: k8s.gcr.io/github-transform:v20170323-155737
+        name: transform
+        resources:
+          requests:
+            cpu: 0m
+---
+{{ end }}
+{{ end }}

@@ -1,0 +1,72 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-install-mysql
+spec:
+  operatorVersion:
+    name: mysql-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: velodrome-install-mysql
+  parameters:
+    DATABASE: github-mysql
+---
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-install-influxdb
+spec:
+  operatorVersion:
+    name: influxdb-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: velodrome-install-influxdb
+  parameters:
+    INFLUX_SECRET: influxdb
+---
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-install-velodrome
+spec:
+  operatorVersion:
+    name: velodrome-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: velodrome-install-velodrome
+  parameters:
+    REPOSITORIES: kudobuilder/operators,kudobuilder/kudo
+    GCS_SERVICE_ACCOUNT_SECRET: gcs-service-account
+    GITHUB_USERNAME: test-user
+    GITHUB_SECRET: github
+    INFLUX_HOSTNAME: http://velodrome-install-influxdb-influxdb:8086
+    INFLUX_SECRET: influxdb
+    MYSQL_HOSTNAME: velodrome-install-mysql-mysql
+    MYSQL_SECRET: mysql
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: influxdb
+stringData:
+  database: github-influxdb
+  username: root
+  password: test
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql
+stringData:
+  database: github-mysql
+  reader-user: root
+  reader-pass: password
+  writer-user: root
+  writer-pass: password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github
+stringData:
+  test-user: "1203912039124034123"

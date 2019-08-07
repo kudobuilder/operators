@@ -1,0 +1,36 @@
+REPOSITORIES:
+  description: Comma-delimited list of repositories to collect metrics for.
+  example: "kudobuilder/operators,kudobuilder/kudo"
+  required: true
+SQLPROXY_INSTANCES:
+  default: ""
+  description: Instances for the [SQL proxy](https://github.com/GoogleCloudPlatform/cloudsql-proxy) to connect to.
+MYSQL_HOSTNAME:
+  default: ""
+  description: Hostname of mysql to use. If not set, a sqlproxy instance will be provisioned.
+MYSQL_SECRET:
+  description: |
+    Name of secret containing MySQL connection settings.
+
+    This secret should have the following keys:
+
+      * database: The MySQL database to use.
+      * reader-user: The MySQL username to use when reading.
+      * reader-pass: The MySQL password to use when reading.
+      * writer-user: The MySQL username to use when writing.
+      * writer-pass: The MySQL password to use when writing.
+  required: true
+INFLUX_HOSTNAME:
+  description: Hostname of the influxdb instance to connect to.
+  required: true
+INFLUX_SECRET:
+  description: Name of secret containing credentials for influxdb. Should contain a `username`, `password`, and `database` key.
+  required: true
+GITHUB_SECRET:
+  description: Name of secret containing Github token.
+  required: true
+GITHUB_USERNAME:
+  description: Name of Github user used to collect metrics.
+GCS_SERVICE_ACCOUNT_SECRET:
+  description: Name of secret containing GCS service account token (should have a `credential.json` key).
+  required: true

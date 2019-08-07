@@ -1,0 +1,23 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: mysql-install
+spec:
+  operatorVersion:
+    name: mysql-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: mysql-install
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysql-install-querier
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        command: [mysql, -ppassword, -h, mysql-install-mysql, -e, SELECT 1, kudo]

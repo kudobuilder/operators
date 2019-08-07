@@ -45,7 +45,7 @@ spec:
         - name: MYSQL_ROOT_PASSWORD
           value: {{ .Params.PASSWORD }}
         - name: MYSQL_DATABASE
-          value: kudo
+          value: {{ .Params.DATABASE }}
         ports:
         - containerPort: 3306
           name: mysql

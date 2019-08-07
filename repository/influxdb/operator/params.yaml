@@ -1,0 +1,6 @@
+INFLUX_SECRET:
+  default: ""
+  description: Name of secret containing credentials for influxdb. Should contain a `username`, `password`, and `database` key.
+DISK_SIZE:
+  default: "100Gi"
+  description: Size of disk to provision for influxdb.

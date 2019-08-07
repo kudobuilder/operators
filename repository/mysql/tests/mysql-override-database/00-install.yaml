@@ -1,0 +1,25 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: mysql-override-database
+spec:
+  operatorVersion:
+    name: mysql-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: mysql-override-database
+  parameters:
+    DATABASE: my-database
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mysql-override-database-querier
+spec:
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - image: mysql:5.7
+        name: mysql
+        command: [mysql, -ppassword, -h, mysql-override-database-mysql, -e, SELECT 1, my-database]

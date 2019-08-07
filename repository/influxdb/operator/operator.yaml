@@ -1,0 +1,21 @@
+name: "influxdb"
+version: "0.1.0"
+kudoVersion: 0.5.0
+kubernetesVersion: 1.5.1
+maintainers:
+  - Justin Taylor-Barrick <jbarrick@d2iq.com>
+url: https://www.influxdata.com/products/influxdb-overview/
+tasks:
+  infra:
+    resources:
+      - deploy.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: influxdb
+        strategy: parallel
+        steps:
+          - name: everything
+            tasks:
+              - infra

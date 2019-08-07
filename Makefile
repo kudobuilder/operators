@@ -13,6 +13,19 @@ endif
 
 export PATH := $(shell pwd)/bin/:$(PATH)
 
+# Some host configurations cause MySQLd to consume all of the RAM on the system because it thinks it has an exorbitant amonut
+# of file descriptors available.
+# Before https://github.com/kubernetes-sigs/kind/pull/760 is merged, we need to verify that the tests will not blow up the user's
+# host system.
+# If they will, bail out and recommend the fix.
+.PHONY: verify
+verify:
+	@if [ "$(shell sysctl -n fs.nr_open)" -gt 104857600 ]; then \
+		echo "Very high values of fs.nr_open are known to cause severe system performance issues with certain applications."; \
+		echo "Prior to running the tests, please run: sysctl -w fs.nr_open=1048576"; \
+		exit 1; \
+	fi
+
 bin/:
 	mkdir -p bin/
 
@@ -32,5 +45,5 @@ create-cluster:
 
 .PHONY: test
 # Test runs the test harness using kubectl-kudo test.
-test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
+test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION) verify
 	kubectl kudo test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)

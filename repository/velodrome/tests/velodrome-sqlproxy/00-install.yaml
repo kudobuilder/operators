@@ -1,0 +1,80 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-sqlproxy-influxdb
+spec:
+  operatorVersion:
+    name: influxdb-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: velodrome-sqlproxy-influxdb
+  parameters:
+    INFLUX_SECRET: influxdb
+---
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-sqlproxy-velodrome
+spec:
+  operatorVersion:
+    name: velodrome-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: velodrome-sqlproxy-velodrome
+  parameters:
+    REPOSITORIES: kudobuilder/kudo
+    GITHUB_USERNAME: test-user
+    GITHUB_SECRET: github
+    INFLUX_HOSTNAME: http://velodrome-sqlproxy-influxdb-influxdb:8086
+    INFLUX_SECRET: influxdb
+    SQLPROXY_INSTANCES: example-project:us-central1:velodrome-prow=tcp:0.0.0.0:3306
+    GCS_SERVICE_ACCOUNT_SECRET: gcs-service-account
+    MYSQL_SECRET: mysql
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: influxdb
+stringData:
+  database: github-influxdb
+  username: root
+  password: test
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql
+stringData:
+  database: github-mysql
+  reader-user: root
+  reader-pass: password
+  writer-user: root
+  writer-pass: password
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: github
+stringData:
+  test-user: "1203912039124034123"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: gcs-service-account
+type: Opaque
+stringData:
+  # Mocked data since sqlproxy wants to be able to parse it.
+  credential.json: |
+    {
+      "type": "service_account",
+      "project_id": "example-project",
+      "private_key_id": "f572d396fae9206628714fb2ce00f72e94f2258f",
+      "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEpAIBAAKCAQEAtOLxxcnse6SXckELCbIzzCSTtUQMscXfYiM3hResF3ryNcXk\ny34+jifW/LzBQVvyw9UgDqv6NJvHgdu408BY+5bgHhj3D4oG/stiDAKr4wbs7Lft\nHc4JO0H2dhF1vRn8aXECrAxuHVtPo3SVrAjbyjJOIfcUHD7wzRSxPAIWa8Do32RB\n3gvKN5H7G6W0XEfvbVme7GA01UOLk4ExveQ/otwn05bhEO22uyvwtdVYA4aA9hMQ\ng2U1cdWomQtZ/EquwDSa7KvCj1kmhUCIBRd4YmxwC+PCCIcAepETQ1rl1l9CmrNu\nHFQpj/lIxyK7PvfDDCi7cbuqaikMGqbgL6zzWQIDAQABAoIBAFR+cfs3AD0dPBUF\npvdHg4SHTWvttpRP3rHDy4pi7WMmbf+KSf54IRZcK8NxFEDIh5TMeCYCVWS/o6jY\nDvTys14KMvQ8KyPaELxyGoGLuejZclB89cjnVk6U2GB8dWf4vHwwatQdFk6mOYQb\n0FJE7Q39A5xAAufSyr6xPLzQKNL5xzuhSgGULvprCtqR+2JjBpH8TUTnf/7Pc+fq\noUNXCP5bIpwA7+azXObN0Vi7deHFf5wD3rxk3Jr8HAXV60DDV/VIXtscIwJtAV8M\nHOUzts+FNv7Av7WfIO/z+bqQqHn9oMrmW3HzotukkUqip+NuEnwWY1FgAqeFRekk\nk0WAcwECgYEA4uPcaMAXDh6yd1/XXI5qg6uwVKBWf/CuT9Q+3ZEpw/0s3knvRqJ5\nmMZ7Y/6VlmR2EobApm7jyLq8H8thnkd14W822sw30FKOpDdW31Kon6HweAtTOR5L\nDCdR0SqfRcT/xDU/43haKtgzlR5TxBBCbSekOLqgRf/ZH/ZLKMGGqDkCgYEAzBgb\n80jFLDuTv5houynwx8bjjsaGWZSiUrDLwYfm4GLxXiIfdG963mzAeHUUGWIoPpbD\nfl+jJGGYkYaf2RpjavGKEkivTU7t2bd59CYbFpLXe7Pu4nUE2Xba7ZTA2fj0KdKD\nZvr8vU3qrDtaR57ISRroev2GR+2lLrZLvaJzZCECgYEAzGac7R2IZ6cN/m8wVGjU\n2nQ08bhU1QPd9Xrve6pIJxGRd1zCHC9JPnIpPUdgOdGdcUlGi2nA+dgInNgbxHz6\nXLJVh72M1rdZW+Wi9KPB17YLLgp92ipJT9SoZ7hvLmqwRHH4cZO+H3UQ21kr+6ju\nPuoEjzrKIuXAFIRM55WZGzkCgYEAt1ddHHKdtbubYX1Pb/sgMscHOwY6QJTWMQRj\nNeqYy6/2dgKfUSCoNtFpIYzDTn4v+vHCkm7lhlQqE2jlhck/0B1FVGF5ITCrWG6L\nHnlw0hl9e8HK8iH/Bj/QMab0i5sp87wJkOQdUQ2Cp8/1rOsFry5986Z2D317avgW\nGDesAyECgYAVSCbfxAhsCMfMbAOrBYq+zuqPNn1xCZfelS7dWNHd8bgLmzI1PGF+\nFVOWbel9kI7BBOm79yku59RHg0iUmucPv1cddNZ1D/lFvmTsEcdkCDviEoiu/ZLp\nwus5DS4tdx5PdYA8dLWeu021Scrwpu89HHHXqm9ahuI0iOtUbpahMg==\n-----END PRIVATE KEY-----\n",
+      "client_email": "prowservice@example-project.iam.gserviceaccount.com",
+      "client_id": "12304912039401234",
+      "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+      "token_uri": "https://oauth2.googleapis.com/token",
+      "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+      "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/prowservice%40example-project.iam.gserviceaccount.com"
+    }

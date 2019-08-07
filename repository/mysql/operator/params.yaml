@@ -5,3 +5,6 @@ BACKUP_FILE:
   trigger: backup
 PASSWORD:
   default: "password"
+DATABASE:
+  default: "kudo"
+  description: "Database name to provision."

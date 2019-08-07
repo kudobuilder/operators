@@ -1,0 +1,261 @@
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-install-mysql
+status:
+  status: COMPLETE
+---
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-install-influxdb
+status:
+  status: COMPLETE
+---
+apiVersion: kudo.dev/v1alpha1
+kind: Instance
+metadata:
+  name: velodrome-install-velodrome
+status:
+  status: COMPLETE
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-influxdb-influxdb
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-mysql-mysql
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-fetcher-kudobuilder-kudo
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --organization=kudobuilder
+        - --project=kudo
+        - --token-file=/etc/secret-volume/test-user
+        - --stderrthreshold=0
+        - --host=velodrome-install-mysql-mysql
+        - --user=$(MYSQL_WRITER_USER)
+        - --password=$(MYSQL_WRITER_PASS)
+        - --database=$(MYSQL_DATABASE)
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-fetcher-kudobuilder-operators
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --organization=kudobuilder
+        - --project=operators
+        - --token-file=/etc/secret-volume/test-user
+        - --stderrthreshold=0
+        - --host=velodrome-install-mysql-mysql
+        - --user=$(MYSQL_WRITER_USER)
+        - --password=$(MYSQL_WRITER_PASS)
+        - --database=$(MYSQL_DATABASE)
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-approved
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --repository=kudobuilder/kudo
+        - --stderrthreshold=0
+        - --host=velodrome-install-mysql-mysql
+        - --user=$(MYSQL_READER_USER)
+        - --password=$(MYSQL_READER_PASS)
+        - --database=$(MYSQL_DATABASE)
+        - --influx-host=http://velodrome-install-influxdb-influxdb:8086
+        - --influx-user=$(INFLUXDB_USER)
+        - --influx-password=$(INFLUXDB_PASSWORD)
+        - --influx-database=$(INFLUXDB_DATABASE)
+        - --name=approved
+        - count
+        - --no-issues
+        - --percentiles=50
+        - --state=opened,!labeled:needs-rebase,labeled:approved
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-approver
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --repository=kudobuilder/kudo
+        - --stderrthreshold=0
+        - --host=velodrome-install-mysql-mysql
+        - --user=$(MYSQL_READER_USER)
+        - --password=$(MYSQL_READER_PASS)
+        - --database=$(MYSQL_DATABASE)
+        - --influx-host=http://velodrome-install-influxdb-influxdb:8086
+        - --influx-user=$(INFLUXDB_USER)
+        - --influx-password=$(INFLUXDB_PASSWORD)
+        - --influx-database=$(INFLUXDB_DATABASE)
+        - --name=approver
+        - count
+        - --no-issues
+        - --event=labeled:approved
+        - --comments=(?m)^/approve$
+        - --log-author
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-contributions
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-lgtmed
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-lgtmer
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-merge
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-needs-rebase
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-open
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-kudo-testthis
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-approved
+spec:
+  template:
+    spec:
+      containers:
+      - args:
+        - --repository=kudobuilder/operators
+        - --stderrthreshold=0
+        - --host=velodrome-install-mysql-mysql
+        - --user=$(MYSQL_READER_USER)
+        - --password=$(MYSQL_READER_PASS)
+        - --database=$(MYSQL_DATABASE)
+        - --influx-host=http://velodrome-install-influxdb-influxdb:8086
+        - --influx-user=$(INFLUXDB_USER)
+        - --influx-password=$(INFLUXDB_PASSWORD)
+        - --influx-database=$(INFLUXDB_DATABASE)
+        - --name=approved
+        - count
+        - --no-issues
+        - --percentiles=50
+        - --state=opened,!labeled:needs-rebase,labeled:approved
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-approver
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-contributions
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-lgtmed
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-lgtmer
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-merge
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-needs-rebase
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-open
+status:
+  readyReplicas: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: velodrome-install-velodrome-transform-kudobuilder-operators-testthis
+status:
+  readyReplicas: 1

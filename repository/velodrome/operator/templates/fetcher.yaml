@@ -1,0 +1,77 @@
+{{ $this := . }}
+
+{{ range $repository := (splitList "," .Params.REPOSITORIES) }}
+
+{{ $org := (splitn "/" 2 $repository)._0 }}
+{{ $repo := (splitn "/" 2 $repository)._1 }}
+
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: fetcher-{{ $org }}-{{ $repo }}
+  labels:
+    app: fetcher
+    instance: {{ $this.Name }}
+    org: {{ $org }}
+    repo: {{ $repo }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: fetcher
+      instance: {{ $this.Name }}
+      org: {{ $org }}
+      repo: {{ $repo }}
+  template:
+    metadata:
+      labels:
+        app: fetcher
+        instance: {{ $this.Name }}
+        org: {{ $org }}
+        repo: {{ $repo }}
+    spec:
+      containers:
+      - name: fetcher
+        args:
+        - --organization={{ $org }}
+        - --project={{ $repo }}
+        - --token-file=/etc/secret-volume/{{ $this.Params.GITHUB_USERNAME }}
+        - --stderrthreshold=0
+        {{ if $this.Params.MYSQL_HOSTNAME }}
+        - --host={{ $this.Params.MYSQL_HOSTNAME }}
+        {{ else if $this.Params.SQLPROXY_INSTANCES }}
+        - --host={{ $this.Name }}-sqlproxy
+        {{ end }}
+        - --user=$(MYSQL_WRITER_USER)
+        - --password=$(MYSQL_WRITER_PASS)
+        - --database=$(MYSQL_DATABASE)
+        image: k8s.gcr.io/github-fetcher:v20170327-143731
+        resources:
+          requests:
+            cpu: 0m
+        volumeMounts:
+        - mountPath: /etc/secret-volume
+          readOnly: true
+          name: github-tokens-secret
+        env:
+        - name: MYSQL_DATABASE
+          valueFrom:
+            secretKeyRef:
+              name: {{ $this.Params.MYSQL_SECRET }}
+              key: database
+        - name: MYSQL_WRITER_USER
+          valueFrom:
+            secretKeyRef:
+              name: {{ $this.Params.MYSQL_SECRET }}
+              key: writer-user
+        - name: MYSQL_WRITER_PASS
+          valueFrom:
+            secretKeyRef:
+              name: {{ $this.Params.MYSQL_SECRET }}
+              key: writer-pass
+      volumes:
+      - name: github-tokens-secret
+        secret:
+          secretName: {{ $this.Params.GITHUB_SECRET }}
+---
+{{ end }}

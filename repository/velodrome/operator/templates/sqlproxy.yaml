@@ -1,0 +1,65 @@
+{{ if eq .Params.MYSQL_HOSTNAME "" }}
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: sqlproxy
+  labels:
+    app: sqlproxy
+    instance: {{ .Name }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sqlproxy
+      instance: {{ .Name }}
+  template:
+    metadata:
+      labels:
+        app: sqlproxy
+        instance: {{ .Name }}
+    spec:
+      containers:
+      - image: gcr.io/cloudsql-docker/gce-proxy:1.14
+        name: sqlproxy
+        command:
+        - /cloud_sql_proxy
+        - -dir=/cloudsql
+        - -credential_file=/credentials/credential.json
+        resources:
+          requests:
+            cpu: 0m
+        env:
+          - name: INSTANCES
+            value: {{ .Params.SQLPROXY_INSTANCES }}
+        ports:
+        - name: sqlproxy-port
+          containerPort: 3306
+        volumeMounts:
+        - mountPath: /cloudsql
+          name: cloudsql
+        - mountPath: /credentials
+          name: service-account-token
+          readOnly: true
+      volumes:
+      - name: cloudsql
+        emptyDir:
+      - name: service-account-token
+        secret:
+          secretName: {{ .Params.GCS_SERVICE_ACCOUNT_SECRET }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: sqlproxy
+  labels:
+    app: sqlproxy
+    instance: {{ .Name }}
+spec:
+  ports:
+  - name: sqlport
+    port: 3306
+    targetPort: sqlproxy-port
+  selector:
+    app: sqlproxy
+    instance: {{ .Name }}
+{{ end }}

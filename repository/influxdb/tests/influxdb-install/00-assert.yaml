@@ -1,0 +1,13 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: influxdb-querier
+status:
+  succeeded: 1
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: influxdb-influxdb
+status:
+  readyReplicas: 1
