@@ -15,7 +15,7 @@ Upgrading can be done by patching the Kafka Instance that holds all the configur
 
 ![operator-upgrade-1](./resources/images/operator-upgrade-2.png)
 
-The following upgrade procedure assumes one running Kafka cluster and one Kafka operator version already installed (version `kafka-0.1.1`). It also assumes one is running KUDO 0.5.0:
+The following upgrade procedure assumes one running Kafka cluster and one Kafka operator version already installed (version `kafka-0.1.1`). It also assumes one is running KUDO 0.5.0 or later:
 
 Check for running instances:
 
