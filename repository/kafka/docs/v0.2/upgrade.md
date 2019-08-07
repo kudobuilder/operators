@@ -39,8 +39,6 @@ Plan(s) for "kafka-fc6vzn" in namespace "default":
 
 To update the Kafka cluster from version `0.1.1` to `0.2.0`:
 
-Upgrade operator version from current to 0.2.0:
-
 ```
 kubectl kudo upgrade kafka --version=0.2.0 --instance kafka
 
