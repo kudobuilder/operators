@@ -7,6 +7,7 @@ kubectl:
 - kudo install --skip-instance ./repository/elastic/operator/
 - kudo install --skip-instance ./repository/flink/operator/
 - kudo install --skip-instance ./repository/kafka/operator/
+- kudo install --skip-instance ./repository/mariadb/operator/
 - kudo install --skip-instance ./repository/mysql/operator/
 - kudo install --skip-instance ./repository/redis/operator/
 - kudo install --skip-instance ./repository/zookeeper/operator/

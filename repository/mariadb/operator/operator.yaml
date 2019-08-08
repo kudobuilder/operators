@@ -1,0 +1,69 @@
+name: "mariadb"
+version: "0.1.0"
+kudoVersion: 0.3.0
+kubernetesVersion: 1.5.1
+maintainers:
+- Nick Jones <nick@dischord.org>
+url: https://mariadb.com/
+tasks:
+  deploy:
+    resources:
+      - mariadb.yaml
+  init:
+    resources:
+      - init.yaml
+  pv:
+    resources:
+      - backup-pv.yaml
+  backup:
+    resources:
+      - backup.yaml
+  restore:
+    resources:
+      - restore.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - deploy
+          - name: init
+            tasks:
+              - init
+          - name: cleanup
+            tasks:
+              - init
+            delete: true
+  backup:
+    strategy: serial
+    phases:
+      - name: backup
+        strategy: serial
+        steps:
+          - name: pv
+            tasks:
+              - pv
+          - name: backup
+            tasks:
+              - backup
+          - name: cleanup
+            tasks:
+              - backup
+            delete: true
+  restore:
+    strategy: serial
+    phases:
+      - name: restore
+        strategy: serial
+        steps:
+          - name: restore
+            tasks:
+              - restore
+          - name: cleanup
+            tasks:
+              - restore
+            delete: true

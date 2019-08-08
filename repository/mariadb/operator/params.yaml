@@ -1,0 +1,7 @@
+BACKUP_FILE:
+  description: "Filename to save the backups to"
+  default: "backup.sql"
+  displayName: "BackupFile"
+  trigger: backup
+PASSWORD:
+  default: "password"
