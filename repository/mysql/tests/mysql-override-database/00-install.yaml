@@ -8,8 +8,8 @@ spec:
     namespace: default
     kind: OperatorVersion
   name: mysql-override-database
-parameters:
-  DATABASE: my-database
+  parameters:
+    DATABASE: my-database
 ---
 apiVersion: batch/v1
 kind: Job
