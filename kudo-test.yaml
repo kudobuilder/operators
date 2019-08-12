@@ -20,3 +20,4 @@ testDirs:
 startKIND: true
 startKUDO: true
 timeout: 300
+parallel: 2
