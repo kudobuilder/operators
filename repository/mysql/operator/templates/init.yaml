@@ -16,4 +16,4 @@ spec:
         command:
         - /bin/sh
         - -c
-        - "mysql -u root -h {{ .Name }}-mysql -p{{ .Params.PASSWORD }} -e \"CREATE TABLE example ( id smallint unsigned not null auto_increment, name varchar(20) not null, constraint pk_example primary key (id) );\" {{ .Params.DATABASE }} "
+        - "mysql -u root -h {{ .Name }}-mysql -p{{ .Params.PASSWORD }} -e \"CREATE TABLE IF NOT EXISTS example ( id smallint unsigned not null auto_increment, name varchar(20) not null, constraint pk_example primary key (id) );\" {{ .Params.DATABASE }} "
