@@ -1,7 +1,7 @@
 name: "flink"
 version: "0.1.0"
 kudoVersion: 0.3.0
-kubernetesVersion: 1.5.1
+kubernetesVersion: 1.15.0
 maintainers:
   - Fabian Baier <fabian@mesosphere.io>
   - Tom Runyon <runyontr@gmail.com>
