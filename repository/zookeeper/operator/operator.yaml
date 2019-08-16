@@ -2,9 +2,11 @@ name: "zookeeper"
 version: "0.1.0"
 kudoVersion: 0.3.0
 kubernetesVersion: 1.15.0
+appVersion: "3.4.10"
 maintainers:
   - Alena Varkockova <avarkockova@mesosphere.com>
   - Tom Runyon <runyontr@gmail.com>
+  - Ken Sipe <kensipe@gmail.com>
 url: https://zookeeper.apache.org/
 tasks:
   infra:
