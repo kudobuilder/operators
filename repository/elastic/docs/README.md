@@ -172,12 +172,12 @@ git clone https://github.com/kudobuilder/operators.git
 Change to the elastic operator folder.
 
 ```sh
-cd cd operators/repository/elastic/operator/
+cd operators/repository/elastic/operator/
 ```
 
 Make the following changes:
-* operator.yaml - change version to `0.2.0`
-* coordinator.yaml, data.yaml, ingest.yaml, master.yaml - change the elasticsearch image version tag to `7.2.0`
+* `operator.yaml` - change version to `0.2.0`
+* `coordinator.yaml, data.yaml, ingest.yaml, master.yaml` - change the elasticsearch image version tag to `7.2.0`
 
 Use the following command to upgrade the operator version.
 
