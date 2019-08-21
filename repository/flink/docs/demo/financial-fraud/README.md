@@ -68,7 +68,7 @@ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
         ```bash
         $ kubectl kudo install kafka --version=0.1.1 --skip-instance
         operator.kudo.dev/v1alpha1/kafka created
-        operatorversion.kudo.dev/v1alpha1/kafka-0.1.1 created
+        operatorversion.kudo.dev/v1alpha1/kafka-0.1.2 created
         ```
 - Have the `flink` Operator with `0.1.0` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
@@ -138,7 +138,7 @@ Next, the Kafka operator will start its `deploy` plan, when completed we will se
 $ kubectl kudo plan status --instance flink-demo-kafka
 Plan(s) for "flink-demo-kafka" in namespace "default":
 .
-└── flink-demo-kafka (Operator-Version: "kafka-0.1.1" Active-Plan: "flink-demo-kafka-deploy-11918518")
+└── flink-demo-kafka (Operator-Version: "kafka-0.1.2" Active-Plan: "flink-demo-kafka-deploy-11918518")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase deploy-kafka (serial strategy) [COMPLETE]
             └── Step deploy (COMPLETE)

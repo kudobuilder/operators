@@ -15,24 +15,7 @@ Upgrading can be done by patching the Kafka Instance that holds all the configur
 
 ![operator-upgrade-1](./resources/images/operator-upgrade-2.png)
 
-The following upgrade procedure assumes one running Kafka cluster and one Kafka operator version already installed (version `kafka-0.1.1`):
-
-Install a new operator version:
-
-```
-kubectl kudo install kafka --version=0.2.0 --skip-instance
-
-operator.kudo.dev/kafka unchanged
-operatorversion.kudo.dev/v1alpha1/kafka-0.2.0 created
-```
-Now there are two operator versions installed:
-```
-kubectl  get operatorversions.kudo.k8s.io
-
-NAME              AGE
-kafka-0.1.1       2d2h
-kafka-0.2.0       2m6s
-```
+The following upgrade procedure assumes one running Kafka cluster and one Kafka operator version already installed (version `kafka-0.1.2`). It also assumes one is running KUDO 0.5.0 or later:
 
 Check for running instances:
 
@@ -47,18 +30,28 @@ We can check the plan status of our Kafka cluster `kafka-fc6vzn` with:
 kubectl kudo plan status --instance=kafka-fc6vzn
 Plan(s) for "kafka-fc6vzn" in namespace "default":
 .
-└── kafka-fc6vzn (Operator-Version: "kafka-0.1.1" Active-Plan: "kafka-fc6vzn-deploy-414458000")
+└── kafka-fc6vzn (Operator-Version: "kafka-0.1.2" Active-Plan: "kafka-fc6vzn-deploy-414458000")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase deploy-kafka (serial strategy) [COMPLETE]
             └── Step deploy (COMPLETE)
 ```
-**Note:** the operator version is `kafka-0.1.1`
+**Note:** the operator version is `kafka-0.1.2`
 
-To update the Kafka cluster from version `0.1.1` to `0.2.0`:
+To update the Kafka cluster from version `0.1.2` to `0.2.0`:
 
 ```
-> kubectl patch instance kafka  -p '{"spec":{"operatorVersion":{"name":"kafka-0.2.0"}}}' --type=merge
-instance.kudo.k8s.io/kafka patched
+kubectl kudo upgrade kafka --version=0.2.0 --instance kafka
+
+operator.kudo.dev/kafka unchanged
+operatorversion.kudo.dev/v1alpha1/kafka-0.2.0 created
+```
+Now there are two operator versions installed:
+```
+kubectl  get operatorversions.kudo.k8s.io
+
+NAME              AGE
+kafka-0.1.2       2d2h
+kafka-0.2.0       2m6s
 ```
 
 Check the plan status again:
