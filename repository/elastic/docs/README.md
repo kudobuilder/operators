@@ -10,7 +10,7 @@ You need a `Kubernetes cluster` up and running and `Persistent Storage` availabl
 
 If you use `minikube` then launch it with the following resource options.
 
-```
+```sh
 minikube start --vm-driver=hyperkit --cpus=3 --memory=9216 --disk-size=10g
 ```
 
@@ -18,12 +18,14 @@ minikube start --vm-driver=hyperkit --cpus=3 --memory=9216 --disk-size=10g
 ## Deploy an Instance
 
 Deploy the `Instance` using the following command:
-```
+
+```sh
 kubectl kudo install elastic --instance myes
 ```
 
 Once the deployment has finished use the following command.
-```
+
+```sh
 kubectl get pods
 ```
 
@@ -42,17 +44,20 @@ myes-master-2        1/1     Running   0          24m
 ## Use the Instance
 
 Exec into one of the POD's.
-```
+
+```sh
 kubectl exec -ti myes-master-0 bash
 ```
 
 Use the following curl command to check the health of the cluster.
-```
+
+```sh
 curl myes-coordinator-0.myes-coordinator-hs:9200/_cluster/health?pretty
 ```
 
 You should see the following output.
-```
+
+```json
 {
   "cluster_name" : "myes-cluster",
   "status" : "green",
@@ -73,7 +78,8 @@ You should see the following output.
 ```
 
 Lets add some data.
-```
+
+```sh
 curl -X POST "myes-coordinator-0.myes-coordinator-hs:9200/twitter/_doc/" -H 'Content-Type: application/json' -d'
 {
     "user" : "kimchy",
@@ -84,12 +90,14 @@ curl -X POST "myes-coordinator-0.myes-coordinator-hs:9200/twitter/_doc/" -H 'Con
 ```
 
 Lets search for the entry.
-```
+
+```sh
 curl -X GET "myes-coordinator-0.myes-coordinator-hs:9200/twitter/_search?q=user:kimchy&pretty"
 ```
 
 You should see the following output.
-```
+
+```json
 {
   "took" : 6,
   "timed_out" : false,
@@ -128,12 +136,13 @@ You can learn more on how to use elasticsearch from the [elasticsearch documenta
 
 Lets increase the `DATA_NODE_COUNT` to `3` using the following command.
 
-```
-kubectl patch instance myes -p '{"spec":{"parameters":{"DATA_NODE_COUNT":"3"}}}' --type=merge
+```sh
+kubectl kudo update myes -p DATA_NODE_COUNT=3
 ```
 
 Lets check on the pods.
-```
+
+```sh
 kubectl get pods
 ```
 
@@ -152,4 +161,45 @@ myes-master-2        1/1     Running   0          4m13s
 
 ## Upgrade the Instance
 
-... more to come ...
+Let's create a `newer version` of the elastic operator locally that leverages a `newer version of elasticsearch`.
+
+Start with cloning the `operator` repository.
+
+```sh
+git clone https://github.com/kudobuilder/operators.git
+```
+
+Change to the elastic operator folder.
+
+```sh
+cd cd operators/repository/elastic/operator/
+```
+
+Make the following changes:
+* operator.yaml - change version to `0.2.0`
+* coordinator.yaml, data.yaml, ingest.yaml, master.yaml - change the elasticsearch image version tag to `7.2.0`
+
+Use the following command to upgrade the operator version.
+
+```
+kubectl kudo upgrade . --instance myes
+
+operatorversion.kudo.dev/v1alpha1/elastic-0.2.0 successfully created
+instance./myes successfully updated
+```
+
+Check on the versions available.
+
+```
+kubectl get operatorversion
+NAME            AGE
+elastic-0.1.0   33m
+elastic-0.2.0   4s
+```
+
+Lets see whether the myes pods use the newer `elasticsearch container image`, you should see that version `7.2.0` is used after the upgrade.
+
+```
+kubectl get pod myes-data-0 -o yaml | grep "docker.io/library/elasticsearch:"
+    image: docker.io/library/elasticsearch:7.2.0
+```
