@@ -18,18 +18,14 @@ There are a few constraints related to storage. These constraints are documented
 Enable the `delete.topic.enable`
 
 ```
-> kubectl patch instance kafka -p '{"spec":{"parameters":{"DELETE_TOPIC_ENABLE":"true"}}}' --type=merge
-instance.kudo.k8s.io/kafka patched
+> kubectl kudo update kafka -p DELETE_TOPIC_ENABLE=true 
 ```
 
 Enable the `auto.create.topics.enable`
 
 ```
-> kubectl patch instance kafka -p '{"spec":{"parameters":{"AUTO_CREATE_TOPICS_ENABLE":"true"}}}' --type=merge
-instance.kudo.k8s.io/kafka patched
+> kubectl kudo update kafka -p  AUTO_CREATE_TOPICS_ENABLE=true
 ```
-
-
 
 ## Scaling the brokers
 
@@ -42,8 +38,7 @@ It is recommended that users closely monitor and control broker scaling due to t
 To scale horizontally, we can increase the broker count. Lets update the broker count from default `3` to `5`
 
 ```
-> kubectl patch instance kafka -p '{"spec":{"parameters":{"BROKER_COUNT":"5"}}}' --type=merge
-instance.kudo.k8s.io/kafka patched
+> kubectl kudo update kafka -p BROKER_COUNT=4
 ```
 
 Check the plan status:
@@ -102,7 +97,7 @@ To scale vertically, we can update the broker's statefulset.
 Let's increase the cpu request from `500m` to `700m` and double the memory request from `2048Mi` to `4096Mi`. Also important is increasing the limits as they cannot be lower than the requested resources. 
 
 ```
-kubectl patch instance kafka -p '{"spec":{"parameters":{"BROKER_CPUS":"700m", "BROKER_MEM":"4096Mi", "BROKER_CPUS_LIMIT":"3000m", "BROKER_MEM_LIMIT":"6144Mi"}}}' --type=merge
+kubectl kudo update kafka -p BROKER_CPUS=700m -p BROKER_MEM=4096Mi -p BROKER_CPUS_LIMIT=3000m -p BROKER_MEM_LIMIT=6144Mi
 ```
 
 This will initiate a rolling upgrade of the pods to a new statefulset.

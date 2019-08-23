@@ -26,7 +26,7 @@ Verify the if the deploy plan for `--instance=kafka` is complete.
 kubectl kudo plan status --instance=kafka
 Plan(s) for "kafka" in namespace "default":
 .
-└── kafka (Operator-Version: "kafka-0.1.1" Active-Plan: "kafka-deploy-177524647")
+└── kafka (Operator-Version: "kafka-0.1.2" Active-Plan: "kafka-deploy-177524647")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase deploy-kafka (serial strategy) [COMPLETE]
             └── Step deploy (COMPLETE)
