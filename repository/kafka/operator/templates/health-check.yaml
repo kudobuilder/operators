@@ -1,0 +1,54 @@
+apiVersion: v1
+data:
+  health-check.sh: |
+    #!/usr/bin/env bash
+    
+    set -e
+    
+    POD_INSTANCE_INDEX=${HOSTNAME##*-}
+    KAFKA_BROKER_ADDRESS=$HOSTNAME
+    KAFKA_BROKER_PORT=$KAFKA_BROKER_PORT
+    KAFKA_HEALTH_CHECK_TOPIC_PREFIX={{ .Params.LIVENESS_TOPIC_PREFIX }}
+
+    if ! ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper $KAFKA_ZK_URI | grep -q ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}
+    then
+      ${KAFKA_HOME}/bin/kafka-topics.sh --create \
+        --zookeeper $KAFKA_ZK_URI --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} \
+        --replica-assignment $POD_INSTANCE_INDEX 2>&1
+    fi
+    
+    # Create a random message
+    random_message=$(head /dev/urandom | tr -dc A-Za-z0-9 | head -c 13 ; echo '')
+    echo $random_message > /tmp/kafka_health_check_msg
+  
+    # Publish the message to topic
+    if [ $( ${KAFKA_HOME}/bin/kafka-console-producer.sh \
+      --broker-list ${KAFKA_BROKER_ADDRESS}:${KAFKA_BROKER_PORT} \
+      --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} 2>&1 < /tmp/kafka_health_check_msg | grep -c ">>" ) -ne 1 ]
+    then
+      echo "Health check falied as the message cannot be published! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} msg: $random_message"
+      exit 1
+    fi
+  
+    # Get the number of messages in the topic
+    message_count=$(${KAFKA_HOME}/bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
+      --broker-list $KAFKA_BROKER_ADDRESS:$KAFKA_BROKER_PORT \
+      --partitions 0 --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} | awk -F: '{print $NF}')
+  
+    # Check if the last message is the one we published
+    if ${KAFKA_HOME}/bin/kafka-console-consumer.sh \
+      --bootstrap-server $KAFKA_BROKER_ADDRESS:$KAFKA_BROKER_PORT \
+      --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} \
+      --offset $(( message_count - 1 )) \
+      --partition 0 --max-messages 1 | grep -q $random_message
+    then
+      echo "Health check passed! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} msg: $random_message"
+      exit 0
+    else
+      echo "Health check falied due to message mismatch! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} msg: $random_message"
+      exit 1
+    fi
+
+kind: ConfigMap
+metadata:
+  name: health-check-script

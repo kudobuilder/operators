@@ -104,13 +104,33 @@ LEADER_IMBALANCE_PER_BROKER_PERCENTAGE:
 
 LIVENESS_INITIAL_DELAY_SECONDS:
   displayName: "livenessProbe initial delay timeout seconds"
-  description: "livenessProbe initial delay in seconds"
+  description: "Number of seconds after the container has started before liveness probes is initiated."
   default: "30"
 
 LIVENESS_PERIOD_SECONDS:
   displayName: "livenessProbe period seconds"
-  description: "livenessProbe period in seconds"
+  description: "How often (in seconds) to perform the probe. Default to 30 seconds. Minimum value is 1."
   default: "30"
+
+LIVENESS_TIMEOUT_SECONDS:
+  displayName: "livenessProbe timeout seconds"
+  description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
+  default: "30"
+
+LIVENESS_FAILURE_THRESHOLD:
+  displayName: "livenessProbe timeout seconds"
+  description: "When the Pod starts and the probe fails, Kubernetes will try failureThreshold times before restarting the Pod. Defaults to 3. Minimum value is 1."
+  default: "3"
+
+LIVENESS_METHOD:
+  displayName: "livenessProbe method"
+  description: "livenessProbe method values 'PORT' or 'FUNCTIONAL'"
+  default: "PORT"
+
+LIVENESS_TOPIC_PREFIX:
+  displayName: "livenessProbe topic prefix"
+  description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
+  default: "LivenessProbeTopicPrefix"
 
 LOG_FLUSH_INTERVAL_MESSAGES:
   default: "9223372036854775807"
@@ -288,10 +308,30 @@ QUOTA_PRODUCER_DEFAULT:
   description: "Used only when dynamic default quotas are not configured for , or in Zookeeper. Any producer distinguished by clientId will get throttled if it produces more bytes than this value per-second"
   default: "9223372036854775807"
 
+READINESS_INITIAL_DELAY_SECONDS:
+  displayName: "livenessProbe initial delay timeout seconds"
+  description: "Number of seconds after the container has started before liveness probes is initiated. Defaults to 10."
+  default: "10"
+
+READINESS_PERIOD_SECONDS:
+  displayName: "livenessProbe period seconds"
+  description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
+  default: "10"
+
 READINESS_TIMEOUT_SECONDS:
   displayName: "readinessProbe timeout seconds"
-  description: "readinessProbe timeout in seconds"
+  description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
   default: "30"
+
+READINESS_SUCCESS_THRESHOLD:
+  displayName: "livenessProbe timeout seconds"
+  description: "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Minimum value is 1."
+  default: "1"
+
+READINESS_FAILURE_THRESHOLD:
+  displayName: "livenessProbe timeout seconds"
+  description: "When a Pod starts and the probe fails, Kubernetes will try failureThreshold times before the Pod will be marked Unready. Defaults to 3. Minimum value is 1."
+  default: "3"
 
 REPLICA_FETCH_MAX_BYTES:
   displayName: "replica.fetch.max.bytes"
