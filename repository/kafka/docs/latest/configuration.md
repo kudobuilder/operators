@@ -21,6 +21,17 @@ kubectl kudo install kafka --instance=my-kafka-name \
           
 ```
 
+##### Health Checks
+
+By default, the Kafka operator will use livenessProbe of type tcpSocket to check the broker port. This is a simple port based health check.
+
+For using a more robust health check based on broker functionality you can set the parameter `LIVENESS_METHOD` to `FUNCTIONAL`. 
+This check is a producer-consumer check based on a custom heartbeat topic which you can set using the parameter `LIVENESS_TOPIC_PREFIX`.
+
+```
+kubectl kudo install kafka --instance=my-kafka-name -p LIVENESS_METHOD=FUNCTIONAL -p LIVENESS_TOPIC_PREFIX=MyHealthCheckTopic
+```
+
 ##### Storage
 
 By default, the Kafka operator will use the default storage class of the Kubernetes cluster. 
