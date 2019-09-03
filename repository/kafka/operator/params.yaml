@@ -130,7 +130,7 @@ LIVENESS_METHOD:
 LIVENESS_TOPIC_PREFIX:
   displayName: "livenessProbe topic prefix"
   description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
-  default: "LivenessProbeTopicPrefix"
+  default: "KafkaLivenessTopic"
 
 LOG_FLUSH_INTERVAL_MESSAGES:
   default: "9223372036854775807"
