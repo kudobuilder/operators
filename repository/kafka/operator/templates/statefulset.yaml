@@ -37,7 +37,7 @@ spec:
           command:
             - sh
             - -c
-            - "exec $KAFKA_HOME/bin/start-kafka.sh"
+            - "cp /health-check-script/health-check.sh health-check.sh; chmod +x health-check.sh; exec $KAFKA_HOME/bin/start-kafka.sh"
           env:
             - name: KAFKA_HEAP_OPTS
               value : "-Xmx512M -Xms512M"
@@ -72,6 +72,8 @@ spec:
           {{ end }}
             - name: config
               mountPath: /config
+            - name: health-check-script
+              mountPath: /health-check-script
           {{ if eq .Params.METRICS_ENABLED "true" }}
             - name: metrics
               mountPath: /metrics
@@ -82,15 +84,26 @@ spec:
                 - sh
                 - -c
                 - "$KAFKA_HOME/readiness-check.sh"
+            initialDelaySeconds: {{ .Params.READINESS_INITIAL_DELAY_SECONDS }}
+            periodSeconds: {{ .Params.READINESS_PERIOD_SECONDS }}
             timeoutSeconds: {{ .Params.READINESS_TIMEOUT_SECONDS }}
+            successThreshold: {{ .Params.READINESS_SUCCESS_THRESHOLD }}
+            failureThreshold: {{ .Params.READINESS_FAILURE_THRESHOLD }}
           livenessProbe:
+            {{ if eq .Params.LIVENESS_METHOD "FUNCTIONAL" }}
             exec:
               command:
               - sh
               - -c
-              - "$KAFKA_HOME/readiness-check.sh"
+              - "$KAFKA_HOME/health-check.sh"
+            {{ else }}
+            tcpSocket:
+              port: {{ .Params.BROKER_PORT }}
+            {{ end }}
             initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
             periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
+            timeoutSeconds: {{ .Params.LIVENESS_TIMEOUT_SECONDS }}
+            failureThreshold: {{ .Params.LIVENESS_FAILURE_THRESHOLD }}
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
@@ -101,6 +114,9 @@ spec:
         - name: metrics
           configMap:
             name: {{ .Name }}-metrics-config
+        - name: health-check-script
+          configMap:
+            name: {{ .Name }}-health-check-script
   volumeClaimTemplates:
     {{ if eq .Params.PERSISTENT_STORAGE "true" }}
     - metadata:
