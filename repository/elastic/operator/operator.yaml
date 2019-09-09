@@ -1,6 +1,6 @@
 name: "elastic"
 version: "0.1.0"
-kudoVersion: 0.3.0
+kudoVersion: 0.5.0
 kubernetesVersion: 1.15.0
 maintainers:
   - Michael Beisiegel <michael.beisiegel@gmail.com>
