@@ -1,6 +1,6 @@
 name: "zookeeper"
-version: "0.1.0"
-kudoVersion: 0.3.0
+version: "0.2.0"
+kudoVersion: 0.5.0
 kubernetesVersion: 1.15.0
 maintainers:
   - Alena Varkockova <avarkockova@mesosphere.com>
@@ -9,6 +9,8 @@ url: https://zookeeper.apache.org/
 tasks:
   infra:
     resources:
+      - bootstrap.sh.yaml
+      - healthcheck.sh.yaml
       - services.yaml
       - pdb.yaml
   app:
@@ -24,7 +26,7 @@ plans:
       - name: zookeeper
         strategy: parallel
         steps:
-          - name: everything
+          - name: deploy
             tasks:
               - infra
               - app

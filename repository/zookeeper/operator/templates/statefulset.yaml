@@ -14,7 +14,7 @@ spec:
       zookeeper: {{ .OperatorName }}
       instance: {{ .Name }}
   serviceName: {{ .Name }}-hs
-  replicas: 3
+  replicas: {{ .Params.NODE_COUNT }}
   updateStrategy:
     type: RollingUpdate
   podManagementPolicy: Parallel
@@ -28,29 +28,29 @@ spec:
       containers:
         - name: kubernetes-zookeeper
           imagePullPolicy: Always
-          image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"
+          image: "zookeeper:3.4.14"
           resources:
             requests:
-              memory: "{{ .Params.memory }}"
-              cpu: "{{ .Params.cpus }}"
+              memory: "{{ .Params.MEMORY }}"
+              cpu: "{{ .Params.CPUS }}"
           ports:
-            - containerPort: 2181
+            - containerPort: {{ .Params.CLIENT_PORT }}
               name: client
-            - containerPort: 2888
+            - containerPort: {{ .Params.SERVER_PORT }}
               name: server
             - containerPort: 3888
               name: leader-election
           command:
             - sh
             - -c
-            - "start-zookeeper \
+            - "ZOOKEEPERPATH=`pwd` /etc/zookeeper/bootstrap.sh \
               --servers=3 \
               --data_dir=/var/lib/zookeeper/data \
-              --data_log_dir=/var/lib/zookeeper/data/log \
-              --conf_dir=/opt/zookeeper/conf \
-              --client_port=2181 \
-              --election_port=3888 \
-              --server_port=2888 \
+              --data_log_dir=/logs \
+              --conf_dir=/conf \
+              --client_port={{ .Params.CLIENT_PORT }} \
+              --election_port={{ .Params.ELECTION_PORT }} \
+              --server_port={{ .Params.SERVER_PORT }} \
               --tick_time=2000 \
               --init_limit=10 \
               --sync_limit=5 \
@@ -66,7 +66,7 @@ spec:
               command:
                 - sh
                 - -c
-                - "zookeeper-ready 2181"
+                - "/etc/healthcheck/healthcheck.sh {{ .Params.CLIENT_PORT }}"
             initialDelaySeconds: 10
             timeoutSeconds: 5
           livenessProbe:
@@ -74,20 +74,37 @@ spec:
               command:
                 - sh
                 - -c
-                - "zookeeper-ready 2181"
+                - "/etc/healthcheck/healthcheck.sh {{ .Params.CLIENT_PORT }}"
             initialDelaySeconds: 10
             timeoutSeconds: 5
+            periodSeconds: 30
           volumeMounts:
             - name: datadir
               mountPath: /var/lib/zookeeper
+            - name: bootstrap
+              mountPath: /etc/zookeeper
+            - name: healthcheck
+              mountPath: /etc/healthcheck
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
+      volumes:
+      - name: bootstrap
+        configMap:
+          name: {{ .Name }}-bootstrap
+          defaultMode: 0777
+      - name: healthcheck
+        configMap:
+          name: {{ .Name }}-healthcheck
+          defaultMode: 0777
   volumeClaimTemplates:
-    - metadata:
-        name: datadir
-      spec:
-        accessModes: ["ReadWriteOnce"]
-        resources:
-          requests:
-            storage: 2Gi
+  - metadata:
+      name: datadir
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Params.DISK_SIZE }}
+      {{ if .Params.STORAGE_CLASS }}
+      storageClassName: {{ .Params.STORAGE_CLASS }}
+      {{ end }}

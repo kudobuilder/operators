@@ -11,15 +11,15 @@ spec:
       containers:
         - name: kubernetes-zookeeper
           imagePullPolicy: Always
-          image: "k8s.gcr.io/kubernetes-zookeeper:1.0-3.4.10"
+          image: "zookeeper:3.4.14"
           env:
             - name: CONN
-              value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-1.{{ .Name }}-hs:2181,{{ .Name }}-zookeeper-2.{{ .Name }}-hs:2181
+              value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-1.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-2.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }}
           resources:
             requests:
-              memory: "{{ .Params.memory }}"
-              cpu: "{{ .Params.cpus }}"
+              memory: "{{ .Params.MEMORY }}"
+              cpu: "{{ .Params.CPUS }}"
           command:
             - bash
             - -c
-            - "until /opt/zookeeper/bin/zkCli.sh -server $CONN ls /; do sleep 5; done"
+            - "until bin/zkCli.sh -server $CONN ls /; do sleep 5; done"
