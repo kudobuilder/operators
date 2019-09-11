@@ -2,9 +2,12 @@ name: "flink"
 version: "0.1.0"
 kudoVersion: 0.3.0
 kubernetesVersion: 1.15.0
+appVersion: 1.7.2
 maintainers:
-  - Fabian Baier <fabian@mesosphere.io>
-  - Tom Runyon <runyontr@gmail.com>
+  - name: Fabian Baier
+    email: fabian@mesosphere.io
+  - name: Tom Runyon
+    email: runyontr@gmail.com
 url: https://zookeeper.apache.org/
 tasks:
   storage:
