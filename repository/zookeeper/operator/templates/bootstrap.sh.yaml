@@ -178,7 +178,7 @@ data:
 
     function create_config() {
         rm -f $CONFIG_FILE
-        echo "Zookeeper configuration..." >> $CONFIG_FILE
+        echo "Zookeeper configuration..."
         echo "clientPort=$CLIENT_PORT" >> $CONFIG_FILE
         echo "dataDir=$DATA_DIR" >> $CONFIG_FILE
         echo "dataLogDir=$DATA_LOG_DIR" >> $CONFIG_FILE

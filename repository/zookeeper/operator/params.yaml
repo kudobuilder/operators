@@ -16,7 +16,7 @@ STORAGE_CLASS:
   required: false
 
 DISK_SIZE:
-  description: "Disk size for the brokers"
+  description: "Disk size for the Zookeeper servers"
   default: "5Gi"
 
 CLIENT_PORT:

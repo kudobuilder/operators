@@ -38,7 +38,7 @@ spec:
               name: client
             - containerPort: {{ .Params.SERVER_PORT }}
               name: server
-            - containerPort: 3888
+            - containerPort: {{ .Params.ELECTION_PORT }}
               name: leader-election
           command:
             - sh
