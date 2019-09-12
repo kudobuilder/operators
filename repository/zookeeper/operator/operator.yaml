@@ -1,6 +1,7 @@
 name: "zookeeper"
 version: "0.2.0"
 kudoVersion: 0.5.0
+appVersion: 3.4.14
 kubernetesVersion: 1.15.0
 maintainers:
   - Alena Varkockova <avarkockova@mesosphere.com>
