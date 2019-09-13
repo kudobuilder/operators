@@ -1,6 +1,36 @@
-memory:
+NODE_COUNT:
+  description: "Number of nodes spun up for Zookeeper"
+  default: 3
+  displayName: "Node Count"
+
+MEMORY:
   description: Amount of memory to provide to Zookeeper pods
   default: "1Gi"
-cpus:
+
+CPUS:
   description: Amount of cpu to provide to Zookeeper pods
   default: "0.25"
+
+STORAGE_CLASS:
+  description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
+  required: false
+
+DISK_SIZE:
+  description: "Disk size for the Zookeeper servers"
+  default: "5Gi"
+
+CLIENT_PORT:
+  default: "2181"
+  description: |
+    The port on which the Zookeeper process will listen for client requests. The default is 2181.
+
+SERVER_PORT:
+  default: "2888"
+  description: |
+    The port on which the Zookeeper process will listen for requests from other servers in the ensemble.
+    The default is 2888.
+
+ELECTION_PORT:
+  description: |
+    The port on which the Zookeeper process will perform leader election. The default is 3888.
+  default: "3888"

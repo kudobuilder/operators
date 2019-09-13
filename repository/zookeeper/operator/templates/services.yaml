@@ -8,9 +8,9 @@ metadata:
     zookeeper: {{ .Name }}
 spec:
   ports:
-    - port: 2888
+    - port: {{ .Params.SERVER_PORT }}
       name: server
-    - port: 3888
+    - port: {{ .Params.ELECTION_PORT }}
       name: leader-election
   clusterIP: None
   selector:
@@ -27,7 +27,7 @@ metadata:
     zookeeper: {{ .Name }}
 spec:
   ports:
-    - port: 2181
+    - port: {{ .Params.CLIENT_PORT }}
       name: client
   selector:
     app: zookeeper
