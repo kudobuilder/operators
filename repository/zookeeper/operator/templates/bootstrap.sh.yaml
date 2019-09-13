@@ -179,18 +179,22 @@ data:
     function create_config() {
         rm -f $CONFIG_FILE
         echo "Zookeeper configuration..."
-        echo "clientPort=$CLIENT_PORT" >> $CONFIG_FILE
-        echo "dataDir=$DATA_DIR" >> $CONFIG_FILE
-        echo "dataLogDir=$DATA_LOG_DIR" >> $CONFIG_FILE
-        echo "tickTime=$TICK_TIME" >> $CONFIG_FILE
-        echo "initLimit=$INIT_LIMIT" >> $CONFIG_FILE
-        echo "syncLimit=$SYNC_LIMIT" >> $CONFIG_FILE
-        echo "maxClientCnxns=$MAX_CLIENT_CNXNS" >> $CONFIG_FILE
-        echo "minSessionTimeout=$MIN_SESSION_TIMEOUT" >> $CONFIG_FILE
-        echo "maxSessionTimeout=$MAX_SESSION_TIMEOUT" >> $CONFIG_FILE
-        echo "autopurge.snapRetainCount=$SNAP_RETAIN_COUNT" >> $CONFIG_FILE
-        echo "autopurge.purgeInteval=$PURGE_INTERVAL" >> $CONFIG_FILE
-         if [ $SERVERS -gt 1 ]; then
+        tee $CONFIG_FILE <<EOF >/dev/null
+
+    clientPort=$CLIENT_PORT
+    dataDir=$DATA_DIR
+    dataLogDir=$DATA_LOG_DIR
+    tickTime=$TICK_TIME
+    initLimit=$INIT_LIMIT
+    syncLimit=$SYNC_LIMIT
+    maxClientCnxns=$MAX_CLIENT_CNXNS
+    minSessionTimeout=$MIN_SESSION_TIMEOUT
+    maxSessionTimeout=$MAX_SESSION_TIMEOUT
+    autopurge.snapRetainCount=$SNAP_RETAIN_COUNT
+    autopurge.purgeInteval=$PURGE_INTERVAL
+
+    EOF
+        if [ $SERVERS -gt 1 ]; then
             print_servers >> $CONFIG_FILE
         fi
         cat $CONFIG_FILE >&2
@@ -205,17 +209,22 @@ data:
     function create_log_props() {
         rm -f $LOGGER_PROPS_FILE
         echo "Creating ZooKeeper log4j configuration"
-        echo "zookeeper.root.logger=CONSOLE,ROLLINGFILE" >> $LOGGER_PROPS_FILE
-        echo "zookeeper.console.threshold="$LOG_LEVEL >> $LOGGER_PROPS_FILE
-        echo "zookeeper.log.dir="$LOG_DIR >> $LOGGER_PROPS_FILE
-        echo "log4j.rootLogger=\${zookeeper.root.logger}" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.CONSOLE.Threshold=\${zookeeper.console.threshold}" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.CONSOLE.layout.ConversionPattern=%d{ISO8601} [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.ROLLINGFILE.File=\${zookeeper.log.dir}/zookeeper.log" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.ROLLINGFILE.MaxFileSize=10MB" >> $LOGGER_PROPS_FILE
-        echo "log4j.appender.ROLLINGFILE.MaxBackupIndex=10" >> $LOGGER_PROPS_FILE
+        tee $LOGGER_PROPS_FILE <<EOF >/dev/null
+
+    zookeeper.root.logger=CONSOLE,ROLLINGFILE
+    zookeeper.console.threshold=$LOG_LEVEL
+    zookeeper.log.dir=$LOG_DIR
+    log4j.rootLogger=\${zookeeper.root.logger}
+    log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+    log4j.appender.CONSOLE.Threshold=\${zookeeper.console.threshold}
+    log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+    log4j.appender.CONSOLE.layout.ConversionPattern="%d{ISO8601} [myid:%X{myid}] - %-5p [%t:%C{1}@%L] - %m%n"
+    log4j.appender.ROLLINGFILE.File=\${zookeeper.log.dir}/zookeeper.log
+    log4j.appender.ROLLINGFILE.MaxFileSize=10MB
+    log4j.appender.ROLLINGFILE.MaxBackupIndex=10
+
+    EOF
+
     }
 
     optspec=":hv-:"
