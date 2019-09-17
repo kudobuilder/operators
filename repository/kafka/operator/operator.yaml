@@ -11,17 +11,23 @@ tasks:
     resources:
       - service.yaml
       - pdb.yaml
-      - configmap.yaml
+      - server.properties.yaml
+      - bootstrap.yaml
       - metrics-config.yaml
       - health-check.yaml
+      - jaas-config.yaml
+      - krb5-config.yaml
       - statefulset.yaml
   update:
     resources:
     - service.yaml
     - pdb.yaml
-    - configmap.yaml
+    - server.properties.yaml
+    - bootstrap.yaml
     - metrics-config.yaml
     - health-check.yaml
+    - jaas-config.yaml
+    - krb5-config.yaml
     - statefulset.yaml
   not-allowed:
     resources:

@@ -23,7 +23,7 @@ spec:
       containers:
         - name: k8skafka
           imagePullPolicy: Always
-          image: mesosphere/kafka:0.2.0-2.3.0
+          image: shubhanilbag/kafka:0.2.1-2.3.0
           resources:
             requests:
               memory: {{ .Params.BROKER_MEM }}
@@ -35,9 +35,13 @@ spec:
             - containerPort: {{ .Params.BROKER_PORT }}
               name: server
           command:
-            - sh
+            - bash
             - -c
-            - "cp /health-check-script/health-check.sh health-check.sh; chmod +x health-check.sh; exec $KAFKA_HOME/bin/start-kafka.sh"
+          args:
+            - bash -c /bootstrap/bootstrap.sh;
+              source ${KAFKA_HOME}/.env;
+              echo "Starting the kafka broker using broker.id ${HOSTNAME##*-}...";
+              KAFKA_OPTS="${KAFKA_OPTS} ${METRICS_OPTS}" exec ${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_HOME}/server.properties;
           env:
             - name: KAFKA_HEAP_OPTS
               value : "-Xmx512M -Xms512M"
@@ -70,6 +74,8 @@ spec:
             - name: datadir
               mountPath: /var/lib/kafka
           {{ end }}
+            - name: bootstrap
+              mountPath: /bootstrap
             - name: config
               mountPath: /config
             - name: health-check-script
@@ -78,12 +84,18 @@ spec:
             - name: metrics
               mountPath: /metrics
           {{ end }}
+          {{ if eq .Params.KERBEROS_ENABLED "true" }}
+            - name: jass-config
+              mountPath: /jass-config
+            - name: krb5-config
+              mountPath: /krb5-config
+            - name: kafka-keytab
+              mountPath: /kafka-keytab
+              readOnly: true
+          {{ end }}
           readinessProbe:
-            exec:
-              command:
-                - sh
-                - -c
-                - "$KAFKA_HOME/readiness-check.sh"
+            tcpSocket:
+              port: {{ .Params.BROKER_PORT }}
             initialDelaySeconds: {{ .Params.READINESS_INITIAL_DELAY_SECONDS }}
             periodSeconds: {{ .Params.READINESS_PERIOD_SECONDS }}
             timeoutSeconds: {{ .Params.READINESS_TIMEOUT_SECONDS }}
@@ -108,6 +120,10 @@ spec:
         runAsUser: 1000
         fsGroup: 1000
       volumes:
+        - name: bootstrap
+          configMap:
+            name: {{ .Name }}-bootstrap
+            defaultMode: 0777
         - name: config
           configMap:
             name: {{ .Name }}-serverproperties
@@ -117,6 +133,17 @@ spec:
         - name: health-check-script
           configMap:
             name: {{ .Name }}-health-check-script
+        {{ if eq .Params.KERBEROS_ENABLED "true" }}
+        - name: jass-config
+          configMap:
+            name: {{ .Name }}-jaas-config
+        - name: krb5-config
+          configMap:
+            name: {{ .Name }}-krb5-config
+        - name: kafka-keytab
+          secret:
+            secretName: {{ .Params.KERBEROS_KEYTAB_SECRET }}
+        {{ end }}
   volumeClaimTemplates:
     {{ if eq .Params.PERSISTENT_STORAGE "true" }}
     - metadata:

@@ -6,15 +6,44 @@ data:
     set -e
     
     POD_INSTANCE_INDEX=${HOSTNAME##*-}
-    KAFKA_BROKER_ADDRESS=$HOSTNAME
+    KAFKA_BROKER_ADDRESS=$(hostname -f)
     KAFKA_BROKER_PORT=$KAFKA_BROKER_PORT
     KAFKA_HEALTH_CHECK_TOPIC_PREFIX={{ .Params.LIVENESS_TOPIC_PREFIX }}
 
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    
+    printf 'KafkaClient {\ncom.sun.security.auth.module.Krb5LoginModule required\nuseKeyTab=true\nstoreKey=true\nuseTicketCache=false\nkeyTab="kafka.keytab"\nprincipal="{{ .Params.LIVENESS_KERBEROS_PRIMARY }}/%s@{{ .Params.KERBEROS_REALM }}";\n};' $(hostname -f) > /tmp/kafka_health_check_client_jaas.conf
+    {{ if eq .Params.KERBEROS_ENABLED_FOR_ZOOKEEPER "true" }}
+    printf '\nClient {\ncom.sun.security.auth.module.Krb5LoginModule required\nuseKeyTab=true\nstoreKey=true\nuseTicketCache=false\nkeyTab="kafka.keytab"\nprincipal="{{ .Params.LIVENESS_KERBEROS_PRIMARY }}/%s@{{ .Params.KERBEROS_REALM }}";\n};' $(hostname -f) >> /tmp/kafka_health_check_client_jaas.conf
+    {{ end }}
+    
+    export KAFKA_OPTS="-Djava.security.auth.login.config=/tmp/kafka_health_check_client_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf"
+    SECURITY_PROTOCOL=SASL_PLAINTEXT
+    
+    KAFKA_PRODUCER_CONFIG_OPTIONS="--producer-property sasl.mechanism=GSSAPI --producer-property security.protocol=$SECURITY_PROTOCOL --producer-property sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}"
+    KAFKA_CONSUMER_CONFIG_OPTIONS="--consumer-property sasl.mechanism=GSSAPI --consumer-property security.protocol=$SECURITY_PROTOCOL --consumer-property sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}"
+    {{ end }}
+
     if ! ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper $KAFKA_ZK_URI | grep -q ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}
     then
+      {{ if eq .Params.KERBEROS_ENABLED "true" }}
+        export KAFKA_OPTS="-Djava.security.auth.login.config=${KAFKA_HOME}/config/kafka_server_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf"
+      {{ end }}
+      
       ${KAFKA_HOME}/bin/kafka-topics.sh --create \
         --zookeeper $KAFKA_ZK_URI --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} \
         --replica-assignment $POD_INSTANCE_INDEX 2>&1
+      
+      {{ if eq .Params.KERBEROS_ENABLED "true" }}
+      ${KAFKA_HOME}/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$KAFKA_ZK_URI \
+        --add --allow-principal User:{{ .Params.LIVENESS_KERBEROS_PRIMARY }} \
+        --producer --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}
+      ${KAFKA_HOME}/bin/kafka-acls.sh --authorizer-properties zookeeper.connect=$KAFKA_ZK_URI \
+        --add --allow-principal User:{{ .Params.LIVENESS_KERBEROS_PRIMARY }} \
+        --consumer --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} \
+        --group ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}Group
+      export KAFKA_OPTS="-Djava.security.auth.login.config=/tmp/kafka_health_check_client_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf"
+      {{ end }}
     fi
     
     # Create a random message
@@ -22,14 +51,28 @@ data:
     echo $random_message > /tmp/kafka_health_check_msg
   
     # Publish the message to topic
-    if [ $( ${KAFKA_HOME}/bin/kafka-console-producer.sh \
+    if [ $( ${KAFKA_HOME}/bin/kafka-console-producer.sh $KAFKA_PRODUCER_CONFIG_OPTIONS \
       --broker-list ${KAFKA_BROKER_ADDRESS}:${KAFKA_BROKER_PORT} \
       --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} 2>&1 < /tmp/kafka_health_check_msg | grep -c ">>" ) -ne 1 ]
     then
       echo "Health check falied as the message cannot be published! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} msg: $random_message"
       exit 1
     fi
-  
+    
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    if ${KAFKA_HOME}/bin/kafka-console-consumer.sh $KAFKA_CONSUMER_CONFIG_OPTIONS \
+        --bootstrap-server ${KAFKA_BROKER_ADDRESS}:${KAFKA_BROKER_PORT} \
+        --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} \
+        --group ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}Group \
+        --from-beginning --max-messages 1 2>&1 | grep -q "Processed a total of 1 messages"
+    then
+      echo "Health check passed! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}"
+      exit 0
+    else
+      echo "Health check falied as consumer cannot read any messages! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}"
+      exit 1
+    fi
+    {{ else }}
     # Get the number of messages in the topic
     message_count=$(${KAFKA_HOME}/bin/kafka-run-class.sh kafka.tools.GetOffsetShell \
       --broker-list $KAFKA_BROKER_ADDRESS:$KAFKA_BROKER_PORT \
@@ -48,6 +91,7 @@ data:
       echo "Health check falied due to message mismatch! topic: ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} msg: $random_message"
       exit 1
     fi
+    {{ end }}
 
 kind: ConfigMap
 metadata:

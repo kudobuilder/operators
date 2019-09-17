@@ -1,3 +1,42 @@
+AUTHORIZATION_ENABLED:
+  description: "Enable authorization."
+  default: false
+  displayName: "Authorization Enabled"
+
+AUTHORIZATION_SUPER_USERS:
+  description: "Semi-colon delimited list of principals. For Kerberos principals, these will be of the form User:<Kerberos-Primary>. For TLS, they will be of the form User:<CN of TLS cert> (for the TLS cert CN=test-user,OU=,O=Confluent,L=London,ST=London,C=GB, the user would be test-user)"
+  default: ""
+  displayName: "Super Users"
+
+AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND:
+  description: "Allow any user to perform an action if no ACL is found for the resource."
+  default: false
+  displayName: "Allow everyone if no acl found"
+
+KERBEROS_ENABLED:
+  default: "true"
+
+KERBEROS_ENABLED_FOR_ZOOKEEPER:
+  default: "false"
+
+KERBEROS_PRIMARY:
+  default: "kafka"
+
+KERBEROS_KEYTAB_SECRET:
+  default: "mysecret"
+
+KERBEROS_REALM:
+  default: "LOCAL"
+
+KERBEROS_KDC_HOSTNAME:
+  default: "kdc-service.kudo-kafka.svc.cluster.local"
+
+KERBEROS_KDC_PORT:
+  default: "2500"
+
+KERBEROS_DEBUG:
+  default: "true"
+
 BROKER_COUNT:
   description: "Number of brokers spun up for Kafka"
   default: "3"
@@ -131,6 +170,9 @@ LIVENESS_TOPIC_PREFIX:
   displayName: "livenessProbe topic prefix"
   description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
   default: "KafkaLivenessTopic"
+
+LIVENESS_KERBEROS_PRIMARY:
+  default: "livenessProbe"
 
 LOG_FLUSH_INTERVAL_MESSAGES:
   default: "9223372036854775807"

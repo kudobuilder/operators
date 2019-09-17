@@ -1,0 +1,100 @@
+apiVersion: v1
+data:
+  bootstrap.sh: |
+    #!/usr/bin/env bash
+
+    cp /health-check-script/health-check.sh health-check.sh;
+    chmod +x health-check.sh;
+
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    
+    cat /kafka-keytab/kafka.keytab | base64 --decode > kafka.keytab;
+    cp /jass-config/kafka_server_jaas.conf $KAFKA_HOME/config/kafka_server_jaas.conf;
+    cp /krb5-config/krb5.conf $KAFKA_HOME/config/krb5.conf;
+    sed -i "s/<HOSTNAME>/$(hostname -f)/g" $KAFKA_HOME/config/kafka_server_jaas.conf;
+    export KAFKA_OPTS="-Djava.security.auth.login.config=${KAFKA_HOME}/config/kafka_server_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf $KAFKA_OPTS"
+    
+    {{ if eq .Params.KERBEROS_DEBUG "true" }}
+    export KAFKA_OPTS="-Dsun.security.krb5.debug=true $KAFKA_OPTS"
+    {{ end }}
+    
+    {{ end }}
+    
+    KAFKA_BROKER_ID=${HOSTNAME##*-}
+    
+    # LISTENERS CONFIGURATION
+    LISTENERS="INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}"
+    # ADVERTISED LISTENERS
+    ADVERTISED_LISTENERS="INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}"
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+      LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_PLAINTEXT"
+      # INTER_BROKER_SECURITY_PROTOCOL="SASL_PLAINTEXT"
+    {{ else }}
+      LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT"
+      # INTER_BROKER_SECURITY_PROTOCOL="PLAINTEXT"
+    {{ end }}
+    SASL_ENABLED_MECHANISMS=""
+    
+    if [[ "$KAFKA_CLIENT_ENABLED" = "true" ]]; then
+      LISTENERS="${LISTENERS},CLIENT://0.0.0.0:${KAFKA_CLIENT_PORT}"
+      ADVERTISED_LISTENERS="${ADVERTISED_LISTENERS},CLIENT://$(hostname -f):${KAFKA_CLIENT_PORT}"
+    
+      if [[ "$KAFKA_CLIENT_AUTHENTICATION" = "scram-sha-512" ]]; then
+        SASL_ENABLED_MECHANISMS="SCRAM-SHA-512\n$SASL_ENABLED_MECHANISMS"
+        LISTENER_SECURITY_PROTOCOL_MAP="${LISTENER_SECURITY_PROTOCOL_MAP},CLIENT:SASL_PLAINTEXT"
+        CLIENT_LISTENER=$(cat <<EOF
+    # CLIENT listener authentication
+    listener.name.client.scram-sha-512.sasl.jaas.config=org.apache.kafka.common.security.scram.ScramLoginModule required;
+    EOF
+    )
+      else
+        LISTENER_SECURITY_PROTOCOL_MAP="${LISTENER_SECURITY_PROTOCOL_MAP},CLIENT:PLAINTEXT"
+      fi
+    fi
+    
+    export KAFKA_LOG_DIR_PATH="${LOG_DIR}/log${KAFKA_BROKER_ID}"
+    
+    if [[ -e ${KAFKA_HOME}/init/rack.id ]]; then
+      export RACK_ID=$(cat ${KAFKA_HOME}/init/rack.id)
+    fi
+
+    {{ if eq .Params.AUTHORIZATION_ENABLED "true" }}
+    # Calculate Kafka Authorization Super Users
+    SUPER_USERS=()
+    {{ if .Params.AUTHORIZATION_SUPER_USERS }}
+    SUPER_USERS="{{ .Params.AUTHORIZATION_SUPER_USERS }}"
+    SUPER_USERS=(${SUPER_USERS//;/ })
+    {{ end }}
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    SUPER_USERS=("${SUPER_USERS[@]}" "User:{{ .Params.KERBEROS_PRIMARY }}")
+    {{ end }}
+    SUPER_USERS=$(printf ";%s" "${SUPER_USERS[@]}")
+    SUPER_USERS=${SUPER_USERS:1}
+    {{ end }}
+
+    # Set Environment
+    echo "KAFKA_OPTS=\"$KAFKA_OPTS\"" > ${KAFKA_HOME}/.env
+    
+    KAFKA_CONFIGURATION=$(cat /config/server.properties)
+    # Write the config file
+    cat > ${KAFKA_HOME}/server.properties <<EOF
+    broker.id=${KAFKA_BROKER_ID}
+    broker.rack=${RACK_ID}
+    # Listeners
+    listeners=${LISTENERS}
+    advertised.listeners=${ADVERTISED_LISTENERS}
+    listener.security.protocol.map=${LISTENER_SECURITY_PROTOCOL_MAP}
+    inter.broker.listener.name=INTERNAL
+    #security.inter.broker.protocol=${INTER_BROKER_SECURITY_PROTOCOL}
+    {{ if eq .Params.AUTHORIZATION_ENABLED "true" }}
+    super.users=${SUPER_USERS}
+    {{ end }}
+    # Logs
+    log.dirs=${KAFKA_LOG_DIR_PATH}
+    # Provided configuration
+    ${KAFKA_CONFIGURATION}
+    EOF
+
+kind: ConfigMap
+metadata:
+  name: bootstrap
