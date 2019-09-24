@@ -39,23 +39,21 @@ For [minikube](https://github.com/kubernetes/minikube):
 minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
 ```
 
-- Have current KUDO `v0.3.x` or higher installed on your cluster:
+- Have current KUDO CLI `v0.6.x` or higher [installed](https://kudo.dev/docs/cli/#install)
+    - Run `kubectl kudo version`, the output should look like:
+    ```bash
+    KUDO Version: version.Info{GitVersion:"0.6.0", GitCommit:"c048b759", BuildDate:"2019-09-17T14:03:04Z", GoVersion:"go1.13", Compiler:"gc", Platform:"darwin/amd64"}
+    ```
+    - If not, upgrade to the latest version via `brew upgrade kudo-cli`
+- Have current KUDO `v0.6.x` or higher installed on your cluster:
     - If you have KUDO already installed to the `kudo-system` namespace check its current Docker image tag to verify the version you are running:
         - Make sure the output of `kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'` shows at least `v0.3.3` as Docker tag:
         ```bash
         $ kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
         kudobuilder/controller:v0.3.3
         ```
-    - If not, use the following commands to install KUDO `v0.3.3` to your cluster:
-        - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/00-prereqs.yaml`
-        - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/10-crds.yaml`
-        - `kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/20-deployment.yaml`
-- Have current KUDO CLI `v0.3.x` or higher [installed](https://kudo.dev/docs/cli/#install)
-    - Run `kubectl kudo version`, the output should look like:
-    ```bash
-    KUDO Version: version.Info{GitVersion:"0.3.3", GitCommit:"fc29a79f", BuildDate:"2019-07-22T15:21:32Z", GoVersion:"go1.12.5", Compiler:"gc", Platform:"darwin/amd64"}
-    ```
-    - If not, upgrade to the latest version via `brew upgrade kudo-cli`
+    - If not, use the following commands to install KUDO `v0.6.0` to your cluster:
+        - `kubectl kudo init`
 - Have the `zookeeper` Operator with `0.1.0` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
@@ -254,9 +252,7 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
 
 # install KUDO manager
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/00-prereqs.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/10-crds.yaml
-kubectl create -f https://raw.githubusercontent.com/kudobuilder/kudo/v0.3.3/docs/deployment/20-deployment.yaml
+kubectl init --wait
 
 # verify correct version of manager
 kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
