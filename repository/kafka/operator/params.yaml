@@ -111,7 +111,7 @@ DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS:
 
 KERBEROS_ENABLED:
   description: "Enable kerberos authentication."
-  default: "true"
+  default: "false"
   displayName: "Kerberos Enabled"
 
 KERBEROS_ENABLED_FOR_ZOOKEEPER:
@@ -146,7 +146,7 @@ KERBEROS_KDC_PORT:
 
 KERBEROS_DEBUG:
   description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
-  default: "true"
+  default: "false"
   displayName: "Kerberos Debug"
 
 LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS:

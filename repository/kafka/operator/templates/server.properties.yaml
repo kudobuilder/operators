@@ -1,4 +1,8 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-03-30T18:14:41Z
+  name: serverproperties
 data:
   server.properties: |
     # Licensed to the Apache Software Foundation (ASF) under one or more
@@ -255,8 +259,3 @@ data:
     zookeeper.sync.time.ms={{ .Params.ZOOKEEPER_SYNC_TIME_MS }}
 
     {{ .Params.CUSTOM_SERVER_PROPERTIES }}
-
-kind: ConfigMap
-metadata:
-  creationTimestamp: 2016-03-30T18:14:41Z
-  name: serverproperties

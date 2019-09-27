@@ -1,4 +1,8 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-03-30T18:14:41Z
+  name: metrics-config
 data:
   metrics.properties: |
     rules:
@@ -331,9 +335,3 @@ data:
       name: kafka_server_zookeeper_expired_per_sec
       help: The ZooKeeper session has expired. When a session expires, we can have leader changes and even a new controller. Alert if value of such events across a Kafka cluster and if the overall number is high
       type: UNTYPED
-
-
-kind: ConfigMap
-metadata:
-  creationTimestamp: 2016-03-30T18:14:41Z
-  name: metrics-config

@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: krb5-config
 data:
   krb5.conf: |
     [libdefaults]
@@ -8,7 +11,3 @@ data:
     {{ .Params.KERBEROS_REALM }} = {
     kdc = {{ .Params.KERBEROS_KDC_HOSTNAME }}:{{ .Params.KERBEROS_KDC_PORT }}
     }
-
-kind: ConfigMap
-metadata:
-  name: krb5-config

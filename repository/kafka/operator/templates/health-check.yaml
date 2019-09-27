@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: health-check-script
 data:
   health-check.sh: |
     #!/usr/bin/env bash
@@ -27,7 +30,7 @@ data:
     if ! ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper $KAFKA_ZK_URI | grep -q ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}
     then
       {{ if eq .Params.KERBEROS_ENABLED "true" }}
-        export KAFKA_OPTS="-Djava.security.auth.login.config=${KAFKA_HOME}/config/kafka_server_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf"
+      export KAFKA_OPTS="-Djava.security.auth.login.config=${KAFKA_HOME}/config/kafka_server_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf"
       {{ end }}
       
       ${KAFKA_HOME}/bin/kafka-topics.sh --create \
@@ -92,7 +95,3 @@ data:
       exit 1
     fi
     {{ end }}
-
-kind: ConfigMap
-metadata:
-  name: health-check-script

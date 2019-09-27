@@ -23,7 +23,7 @@ spec:
       containers:
         - name: k8skafka
           imagePullPolicy: Always
-          image: mesosphere/kafka:0.2.1-2.3.0
+          image: mesosphere/kafka:0.3.0-2.3.0
           resources:
             requests:
               memory: {{ .Params.BROKER_MEM }}
@@ -38,7 +38,7 @@ spec:
             - bash
             - -c
           args:
-            - bash -c /bootstrap/bootstrap.sh;
+            - /bootstrap/bootstrap.sh;
               source ${KAFKA_HOME}/.env;
               echo "Starting the kafka broker using broker.id ${HOSTNAME##*-}...";
               KAFKA_OPTS="${KAFKA_OPTS} ${METRICS_OPTS}" exec ${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_HOME}/server.properties;

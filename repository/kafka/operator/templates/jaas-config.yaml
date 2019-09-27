@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaas-config
 data:
   kafka_server_jaas.conf: |
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
@@ -23,7 +26,3 @@ data:
     };
     {{ end }}    
     {{ end }}
-
-kind: ConfigMap
-metadata:
-  name: jaas-config

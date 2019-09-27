@@ -1,4 +1,7 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: bootstrap
 data:
   bootstrap.sh: |
     #!/usr/bin/env bash
@@ -27,11 +30,11 @@ data:
     # ADVERTISED LISTENERS
     ADVERTISED_LISTENERS="INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}"
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
-      LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_PLAINTEXT"
-      # INTER_BROKER_SECURITY_PROTOCOL="SASL_PLAINTEXT"
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_PLAINTEXT"
+    # INTER_BROKER_SECURITY_PROTOCOL="SASL_PLAINTEXT"
     {{ else }}
-      LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT"
-      # INTER_BROKER_SECURITY_PROTOCOL="PLAINTEXT"
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT"
+    # INTER_BROKER_SECURITY_PROTOCOL="PLAINTEXT"
     {{ end }}
     SASL_ENABLED_MECHANISMS=""
     
@@ -94,7 +97,3 @@ data:
     # Provided configuration
     ${KAFKA_CONFIGURATION}
     EOF
-
-kind: ConfigMap
-metadata:
-  name: bootstrap
