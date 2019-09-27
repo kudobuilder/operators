@@ -31,6 +31,16 @@ This check is a producer-consumer check based on a custom heartbeat topic which 
 ```
 kubectl kudo install kafka --instance=my-kafka-name -p LIVENESS_METHOD=FUNCTIONAL -p LIVENESS_TOPIC_PREFIX=MyHealthCheckTopic
 ```
+###### Using Kerberos with health checks
+
+Health checks can be enabled when using [Kerberos with KUDO Kafka](security.md). 
+When using `FUNCTIONAL` method then additional principals needs to be  created. Assuming `livenessProbe` as the principal name the principals will be: 
+```
+livenessProbe/kafka-kafka-0.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+livenessProbe/kafka-kafka-1.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+livenessProbe/kafka-kafka-2.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+```
+You need to create one principal per broker for each individual livenessProbe.
 
 ##### Storage
 
