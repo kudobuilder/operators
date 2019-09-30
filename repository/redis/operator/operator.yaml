@@ -1,10 +1,13 @@
 name: redis
 version: 0.1.0
 kudoVersion: 0.3.0
+kubernetesVersion: 1.15.0
+appVersion: 5.0.1
 maintainers:
-  - Denis Jannot <djannot@mesosphere.io>
-  - Fabian Baier <fabian@mesosphere.io>
-  - Gastón Kleiman <gaston@mesosphere.io>
+  - name: Denis Jannot
+    email: djannot@mesosphere.io
+  - name: Fabian Baier
+    email: fabian@mesosphere.io
 url: https://redis.io/
 tasks:
   deploy:

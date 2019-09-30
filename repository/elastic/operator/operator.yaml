@@ -2,8 +2,10 @@ name: "elastic"
 version: "0.1.0"
 kudoVersion: 0.5.0
 kubernetesVersion: 1.15.0
+appVersion: 7.0.0
 maintainers:
-  - Michael Beisiegel <michael.beisiegel@gmail.com>
+  - name: Michael Beisiegel
+    email: michael.beisiegel@gmail.com
 url: https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html
 tasks:
   deploy-master:

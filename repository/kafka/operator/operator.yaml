@@ -2,9 +2,10 @@ name: "kafka"
 version: "0.2.1"
 kudoVersion: 0.5.0
 kubernetesVersion: 1.15.0
-appVersion: "2.3.0"
+appVersion: 2.3.0
 maintainers:
-  - Zain Malik <zmalikshxil@gmail.com>
+  - name: Zain Malik
+    email: zmalikshxil@gmail.com
 url: https://kafka.apache.org/
 tasks:
   deploy:
