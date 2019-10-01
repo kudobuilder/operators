@@ -21,6 +21,7 @@ Before you get started:
 
 - Make sure you have a cluster at hand with enough resources, e.g.:
 
+
 For [KinD](https://github.com/kubernetes-sigs/kind):
 ```
 # Use make from operators repo:
@@ -33,6 +34,7 @@ kubectl delete storageclass standard
 kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
 kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
 ```
+*note:* cpus: 4 and mem: 8Gb was sufficient resources on docker for KinD to work (which is not the default)
 
 For [minikube](https://github.com/kubernetes/minikube):
 ```.
@@ -61,10 +63,10 @@ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
         operator.kudo.dev/v1alpha1/zookeeper created
         operatorversion.kudo.dev/v1alpha1/zookeeper-0.1.0 created
         ```
-- Have the `kafka` Operator with `0.1.1` as OperatorVersion installed
+- Have the `kafka` Operator with `0.1.2` as OperatorVersion installed
     - Use the KUDO CLI with the following command:
         ```bash
-        $ kubectl kudo install kafka --version=0.1.1 --skip-instance
+        $ kubectl kudo install kafka --version=0.1.2 --skip-instance
         operator.kudo.dev/v1alpha1/kafka created
         operatorversion.kudo.dev/v1alpha1/kafka-0.1.2 created
         ```
@@ -261,6 +263,7 @@ kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.con
 kubectl kudo install zookeeper --version=0.1.0 --skip-instance
 kubectl kudo install kafka --version=0.1.2 --skip-instance
 kubectl kudo install flink --version=0.1.0 --skip-instance
+
 
 # install demo
 kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
