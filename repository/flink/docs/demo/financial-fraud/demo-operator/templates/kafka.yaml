@@ -15,3 +15,4 @@ spec:
     ZOOKEEPER_PATH: "/flink-demo-kafka"
     BROKER_COUNT: "3"
     AUTO_CREATE_TOPICS_ENABLE: "true"
+    BROKER_MEM: "1024Mi"
