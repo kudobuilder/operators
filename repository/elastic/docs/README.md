@@ -137,7 +137,7 @@ You can learn more on how to use elasticsearch from the [elasticsearch documenta
 Lets increase the `DATA_NODE_COUNT` to `3` using the following command.
 
 ```sh
-kubectl kudo update myes -p DATA_NODE_COUNT=3
+kubectl kudo update --instance myes -p DATA_NODE_COUNT=3
 ```
 
 Lets check on the pods.
