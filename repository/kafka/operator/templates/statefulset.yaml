@@ -67,6 +67,8 @@ spec:
               value: "{{ .Params.CLIENT_PORT_ENABLED }}"
             - name: KAFKA_BROKER_PORT
               value: "{{ .Params.BROKER_PORT }}"
+            - name: KAFKA_BROKER_PORT_TLS
+              value: "{{ .Params.BROKER_PORT_TLS }}"
             - name: KAFKA_CLIENT_PORT
               value: "{{ .Params.CLIENT_PORT }}"
           volumeMounts:
@@ -93,9 +95,19 @@ spec:
               mountPath: /kafka-keytab
               readOnly: true
           {{ end }}
+          {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+            - name: kafka-tls
+              mountPath: /etc/tls/certs
+            - name: enable-tls
+              mountPath: /etc/tls/bin
+          {{ end }}
           readinessProbe:
             tcpSocket:
+              {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+              port: {{ .Params.BROKER_PORT_TLS }}
+              {{ else }}
               port: {{ .Params.BROKER_PORT }}
+              {{ end }}
             initialDelaySeconds: {{ .Params.READINESS_INITIAL_DELAY_SECONDS }}
             periodSeconds: {{ .Params.READINESS_PERIOD_SECONDS }}
             timeoutSeconds: {{ .Params.READINESS_TIMEOUT_SECONDS }}
@@ -110,7 +122,11 @@ spec:
               - "$KAFKA_HOME/health-check.sh"
             {{ else }}
             tcpSocket:
+              {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+              port: {{ .Params.BROKER_PORT_TLS }}
+              {{ else }}
               port: {{ .Params.BROKER_PORT }}
+              {{ end }}
             {{ end }}
             initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
             periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
@@ -143,6 +159,15 @@ spec:
         - name: kafka-keytab
           secret:
             secretName: {{ .Params.KERBEROS_KEYTAB_SECRET }}
+        {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        - name: kafka-tls
+          secret:
+            secretName: kafka-tls
+        - name: enable-tls
+          configMap:
+            name:  {{ .Name }}-enable-tls
+            defaultMode: 0777
         {{ end }}
   volumeClaimTemplates:
     {{ if eq .Params.PERSISTENT_STORAGE "true" }}

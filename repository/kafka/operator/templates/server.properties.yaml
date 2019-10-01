@@ -36,13 +36,35 @@ data:
     # The maximum size of a request that the socket server will accept (protection against OOM)
     socket.request.max.bytes={{ .Params.SOCKET_REQUEST_MAX_BYTES }}
 
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    ############################# TLS Settings #############################
+    ssl.keystore.location=/home/kafka/tls/kafka.server.keystore.jks
+    ssl.keystore.password=changeit
+    ssl.key.password=changeit
+
+    ssl.truststore.location=/home/kafka/tls/kafka.server.truststore.jks
+    ssl.truststore.password=changeit
+    
+    ssl.enabled.protocols=TLSv1.2
+    
+    {{ if .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    {{ end }}
+    
+    # If Kerberos is NOT enabled, then SSL authentication can be turned on.
+    {{ if ne .Params.KERBEROS_ENABLED "true" }}
+    {{ if eq .Params.SSL_AUTHENTICATION_ENABLED "true" }}
+    ssl.client.auth=required
+    {{ end }}
+    {{ end }}
+    {{ end }}
+
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
     ############################# Kerberos Settings #############################
     sasl.mechanism.inter.broker.protocol=GSSAPI
     sasl.enabled.mechanisms=GSSAPI
     sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}
     {{ end }}
-
 
     ############################# Authorization Settings #############################
     {{ if eq .Params.AUTHORIZATION_ENABLED "true" }}

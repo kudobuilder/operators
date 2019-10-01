@@ -38,6 +38,10 @@ BROKER_PORT:
   description: "Port brokers run on"
   default: "9093"
 
+BROKER_PORT_TLS:
+  description: "Port tls enabled brokers run on"
+  default: "9095"
+
 DISK_SIZE:
   description: "Disk size for the brokers"
   default: "5Gi"
@@ -712,6 +716,18 @@ ZOOKEEPER_SYNC_TIME_MS:
   displayName: "zookeeper.sync.time.ms"
   description: "How far a ZK follower can be behind a ZK leader"
   default: "2000"
+
+TRANSPORT_ENCRYPTION_ENABLED:
+  default: "false"
+
+TRANSPORT_ENCRYPTION_CIPHERS:
+  default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+
+TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT:
+  default: "false"
+
+SSL_AUTHENTICATION_ENABLED:
+  default: "false"
 
 CUSTOM_SERVER_PROPERTIES:
   displayName: "custom server properties"
