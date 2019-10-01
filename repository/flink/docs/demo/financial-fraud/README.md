@@ -252,14 +252,14 @@ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisione
 kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
 
 # install KUDO manager
-kubectl init --wait
+kubectl kudo init --wait
 
 # verify correct version of manager
 kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
 
 # install o and ov
 kubectl kudo install zookeeper --version=0.1.0 --skip-instance
-kubectl kudo install kafka --version=0.1.1 --skip-instance
+kubectl kudo install kafka --version=0.1.2 --skip-instance
 kubectl kudo install flink --version=0.1.0 --skip-instance
 
 # install demo
