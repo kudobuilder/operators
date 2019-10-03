@@ -3,7 +3,8 @@ kind: Instance
 metadata:
   name: zk
 status:
-  status: COMPLETE
+  aggregatedStatus:
+    status: COMPLETE
 ---
 apiVersion: apps/v1
 kind: StatefulSet
