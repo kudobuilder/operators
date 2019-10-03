@@ -15,22 +15,12 @@ jobs:
       - run: make KUBERNETES_VERSION=<< parameters.kubernetes_version >> test
 
 workflows:
+  test-1.16:
+    jobs:
+      - test:
+          kubernetes_version: 1.16.0
+
   test-1.15:
     jobs:
     - test:
         kubernetes_version: 1.15.0
-
-  test-1.14:
-    jobs:
-    - test:
-        kubernetes_version: 1.14.3
-
-  test-1.13:
-    jobs:
-    - test:
-        kubernetes_version: 1.13.7
-
-  test-1.12:
-    jobs:
-    - test:
-        kubernetes_version: 1.12.9
