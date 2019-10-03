@@ -136,7 +136,7 @@ KERBEROS_REALM:
 
 KERBEROS_KDC_HOSTNAME:
   description: "The name or address of a host running a KDC for the realm."
-  default: "kdc-service.kudo-kafka.svc.cluster.local"
+  default: "kdc-service"
   displayName: "Kerberos Hostname"
 
 KERBEROS_KDC_PORT:

@@ -81,6 +81,6 @@ kubectl kudo install kafka \
     -p AUTHORIZATION_SUPER_USERS="User:User1"
 ```
 
-The format of the list is User:user1;User:user2;.... Using Kerberos authentication, the “user” value is the Kerberos primary. The Kafka brokers themselves are automatically designated as super users.
+The format of the list is `User:user1;User:user2;....` Using Kerberos authentication, the “user” value is the Kerberos primary. The Kafka brokers themselves are automatically designated as super users.
 
->NOTE: It is possible to enable Authorization after initial installation, but the service may be unavailable during the transition. Additionally, Kafka clients may fail to function if they do not have the correct ACLs assigned to their principals. During the transition `AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND` can be set to `true` to prevent clients from being failing until their ACLs can be set correctly. After the transition, `AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND` should be reversed to `false`
+NOTE: It is possible to enable Authorization after initial installation but the service may become unavailable during the transition. Additionally, Kafka clients may fail to function if they do not have the correct ACLs assigned to their principals. During the transition `AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND` can be set to `true` to prevent clients from failing until their ACLs can be set correctly. After the transition, `AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND` should be reset back to `false`.
