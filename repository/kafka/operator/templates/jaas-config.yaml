@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jaas-config
+data:
+  kafka_server_jaas.conf: |
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    KafkaServer {
+        com.sun.security.auth.module.Krb5LoginModule required
+        useKeyTab=true
+        storeKey=true
+        useTicketCache=false
+        keyTab="kafka.keytab"
+        principal="{{ .Params.KERBEROS_PRIMARY }}/<HOSTNAME>@{{ .Params.KERBEROS_REALM }}";
+    };
+    
+    {{ if eq .Params.KERBEROS_ENABLED_FOR_ZOOKEEPER "true" }}
+    // Zookeeper client authentication
+    Client {
+        com.sun.security.auth.module.Krb5LoginModule required
+        useKeyTab=true
+        storeKey=true
+        useTicketCache=false
+        keyTab="kafka.keytab"
+        principal="{{ .Params.KERBEROS_PRIMARY }}/<HOSTNAME>@{{ .Params.KERBEROS_REALM }}";
+    };
+    {{ end }}    
+    {{ end }}

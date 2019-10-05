@@ -1,4 +1,8 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  creationTimestamp: 2016-03-30T18:14:41Z
+  name: serverproperties
 data:
   server.properties: |
     # Licensed to the Apache Software Foundation (ASF) under one or more
@@ -32,8 +36,19 @@ data:
     # The maximum size of a request that the socket server will accept (protection against OOM)
     socket.request.max.bytes={{ .Params.SOCKET_REQUEST_MAX_BYTES }}
 
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    ############################# Kerberos Settings #############################
+    sasl.mechanism.inter.broker.protocol=GSSAPI
+    sasl.enabled.mechanisms=GSSAPI
+    sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}
+    {{ end }}
+
+
     ############################# Authorization Settings #############################
-    # TODO support Security settings
+    {{ if eq .Params.AUTHORIZATION_ENABLED "true" }}
+    authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer
+    allow.everyone.if.no.acl.found={{ .Params.AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND }}
+    {{ end }}
 
     ############################# Log Basics #############################
 
@@ -244,8 +259,3 @@ data:
     zookeeper.sync.time.ms={{ .Params.ZOOKEEPER_SYNC_TIME_MS }}
 
     {{ .Params.CUSTOM_SERVER_PROPERTIES }}
-
-kind: ConfigMap
-metadata:
-  creationTimestamp: 2016-03-30T18:14:41Z
-  name: serverproperties

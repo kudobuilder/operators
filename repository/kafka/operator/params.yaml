@@ -1,3 +1,18 @@
+AUTHORIZATION_ENABLED:
+  description: "Enable authorization."
+  default: "false"
+  displayName: "Authorization Enabled"
+
+AUTHORIZATION_SUPER_USERS:
+  description: "Semi-colon delimited list of principals. For Kerberos principals, these will be of the form User:<Kerberos-Primary>. For TLS, they will be of the form User:<CN of TLS cert> (for the TLS cert CN=test-user,OU=,O=Confluent,L=London,ST=London,C=GB, the user would be test-user)"
+  default: ""
+  displayName: "Super Users"
+
+AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND:
+  description: "Allow any user to perform an action if no ACL is found for the resource."
+  default: "false"
+  displayName: "Allow everyone if no acl found"
+
 BROKER_COUNT:
   description: "Number of brokers spun up for Kafka"
   default: "3"
@@ -94,6 +109,46 @@ DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS:
   default: "1"
   description: "The purge interval (in number of requests) of the delete records request purgatory"
 
+KERBEROS_ENABLED:
+  description: "Enable kerberos authentication."
+  default: "false"
+  displayName: "Kerberos Enabled"
+
+KERBEROS_ENABLED_FOR_ZOOKEEPER:
+  description: "Enable Kerberos authentication for communication with Apache Zookeeper."
+  default: "false"
+  displayName: "Zookeeper Kerberos Enabled"
+
+KERBEROS_PRIMARY:
+  description: "The Kerberos primary used by Kafka tasks."
+  default: "kafka"
+  displayName: "Kerberos Primary"
+
+KERBEROS_KEYTAB_SECRET:
+  description: "The name of the Kubernetes secret storing the keytab."
+  default: "base64-kafka-keytab-secret"
+  displayName: "Kerberos Keytab Secret"
+
+KERBEROS_REALM:
+  description: "The Kerberos realm used to render the principal of Kafka broker pods."
+  default: "LOCAL"
+  displayName: "Kerberos Realm"
+
+KERBEROS_KDC_HOSTNAME:
+  description: "The name or address of a host running a KDC for the realm."
+  default: "kdc-service"
+  displayName: "Kerberos Hostname"
+
+KERBEROS_KDC_PORT:
+  description: "The port of the host running a KDC for that realm."
+  default: "2500"
+  displayName: "Kerberos Port"
+
+KERBEROS_DEBUG:
+  description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
+  default: "false"
+  displayName: "Kerberos Debug"
+
 LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS:
   default: "300"
   description: "The frequency with which the partition rebalance check is triggered by the controller"
@@ -131,6 +186,11 @@ LIVENESS_TOPIC_PREFIX:
   displayName: "livenessProbe topic prefix"
   description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
   default: "KafkaLivenessTopic"
+
+LIVENESS_KERBEROS_PRIMARY:
+  default: "livenessProbe"
+  description: "The Kerberos primary used by the liveness probe when using FUNCTIONAL livenessProbe method."
+  displayName: "Liveness Probe Kerberos Primary"
 
 LOG_FLUSH_INTERVAL_MESSAGES:
   default: "9223372036854775807"
