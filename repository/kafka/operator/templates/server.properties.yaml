@@ -70,6 +70,11 @@ data:
     {{ if eq .Params.AUTHORIZATION_ENABLED "true" }}
     authorizer.class.name=kafka.security.auth.SimpleAclAuthorizer
     allow.everyone.if.no.acl.found={{ .Params.AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND }}
+    {{ if ne .Params.KERBEROS_ENABLED "true" }}
+    {{ if eq .Params.SSL_AUTHENTICATION_ENABLED "true" }}
+    principal.builder.class=de.thmshmm.kafka.CustomPrincipalBuilder
+    {{ end }}
+    {{ end }}
     {{ end }}
 
     ############################# Log Basics #############################

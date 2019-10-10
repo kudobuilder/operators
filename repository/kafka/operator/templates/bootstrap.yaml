@@ -97,6 +97,14 @@ data:
     {{ end }}
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
     SUPER_USERS=("${SUPER_USERS[@]}" "User:{{ .Params.KERBEROS_PRIMARY }}")
+    {{ else if eq .Params.SSL_AUTHENTICATION_ENABLED "true" }}
+    #TODO: Minify!
+    POD_INSTANCE_INDEX=${HOSTNAME##*-}
+    for i in $(seq 0 2)
+    do
+      dns=$(hostname -f | sed s/$POD_INSTANCE_INDEX/$i/)
+      SUPER_USERS=("${SUPER_USERS[@]}" "User:$dns")
+    done
     {{ end }}
     SUPER_USERS=$(printf ";%s" "${SUPER_USERS[@]}")
     SUPER_USERS=${SUPER_USERS:1}

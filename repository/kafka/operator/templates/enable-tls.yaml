@@ -18,7 +18,7 @@ data:
             -validity 900 \
             -genkey \
             -keyalg RSA \
-            -dname "CN=kafka" \
+            -dname "CN=$(hostname -f)" \
             -storepass changeit \
             -keypass changeit \
             -noprompt
