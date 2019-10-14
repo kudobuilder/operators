@@ -23,7 +23,7 @@ spec:
       containers:
         - name: k8skafka
           imagePullPolicy: Always
-          image: mesosphere/kafka:0.3.0-2.3.0
+          image: shubhanilbag/kafka:0.2.1-2.3.0
           resources:
             requests:
               memory: {{ .Params.BROKER_MEM }}

@@ -13,6 +13,12 @@ data:
     KAFKA_BROKER_PORT=$KAFKA_BROKER_PORT
     KAFKA_HEALTH_CHECK_TOPIC_PREFIX={{ .Params.LIVENESS_TOPIC_PREFIX }}
 
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    KAFKA_BROKER_PORT=$KAFKA_BROKER_PORT_TLS
+    KAFKA_PRODUCER_CONFIG_OPTIONS="--producer-property security.protocol=SSL --producer-property ssl.keystore.location=/home/kafka/tls/kafka.server.keystore.jks --producer-property ssl.keystore.password=changeit --producer-property ssl.key.password=changeit --producer-property ssl.truststore.location=/home/kafka/tls/kafka.server.truststore.jks --producer-property ssl.truststore.password=changeit"
+    KAFKA_CONSUMER_CONFIG_OPTIONS="--consumer-property security.protocol=SSL --consumer-property ssl.keystore.location=/home/kafka/tls/kafka.server.keystore.jks --consumer-property ssl.keystore.password=changeit --consumer-property ssl.key.password=changeit --consumer-property ssl.truststore.location=/home/kafka/tls/kafka.server.truststore.jks --consumer-property ssl.truststore.password=changeit"
+    {{ end }}
+
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
     
     printf 'KafkaClient {\ncom.sun.security.auth.module.Krb5LoginModule required\nuseKeyTab=true\nstoreKey=true\nuseTicketCache=false\nkeyTab="kafka.keytab"\nprincipal="{{ .Params.LIVENESS_KERBEROS_PRIMARY }}/%s@{{ .Params.KERBEROS_REALM }}";\n};' $(hostname -f) > /tmp/kafka_health_check_client_jaas.conf
@@ -21,10 +27,14 @@ data:
     {{ end }}
     
     export KAFKA_OPTS="-Djava.security.auth.login.config=/tmp/kafka_health_check_client_jaas.conf -Djava.security.krb5.conf=${KAFKA_HOME}/config/krb5.conf"
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    SECURITY_PROTOCOL=SASL_SSL
+    {{ else }}
     SECURITY_PROTOCOL=SASL_PLAINTEXT
+    {{ end }}
     
-    KAFKA_PRODUCER_CONFIG_OPTIONS="--producer-property sasl.mechanism=GSSAPI --producer-property security.protocol=$SECURITY_PROTOCOL --producer-property sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}"
-    KAFKA_CONSUMER_CONFIG_OPTIONS="--consumer-property sasl.mechanism=GSSAPI --consumer-property security.protocol=$SECURITY_PROTOCOL --consumer-property sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}"
+    KAFKA_PRODUCER_CONFIG_OPTIONS="$KAFKA_PRODUCER_CONFIG_OPTIONS --producer-property sasl.mechanism=GSSAPI --producer-property security.protocol=$SECURITY_PROTOCOL --producer-property sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}"
+    KAFKA_CONSUMER_CONFIG_OPTIONS="$KAFKA_CONSUMER_CONFIG_OPTIONS --consumer-property sasl.mechanism=GSSAPI --consumer-property security.protocol=$SECURITY_PROTOCOL --consumer-property sasl.kerberos.service.name={{ .Params.KERBEROS_PRIMARY }}"
     {{ end }}
 
     if ! ${KAFKA_HOME}/bin/kafka-topics.sh --list --zookeeper $KAFKA_ZK_URI | grep -q ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX}
@@ -62,7 +72,7 @@ data:
       exit 1
     fi
     
-    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    {{ if or (eq .Params.KERBEROS_ENABLED "true") (eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true") }}
     if ${KAFKA_HOME}/bin/kafka-console-consumer.sh $KAFKA_CONSUMER_CONFIG_OPTIONS \
         --bootstrap-server ${KAFKA_BROKER_ADDRESS}:${KAFKA_BROKER_PORT} \
         --topic ${KAFKA_HEALTH_CHECK_TOPIC_PREFIX}${POD_INSTANCE_INDEX} \
