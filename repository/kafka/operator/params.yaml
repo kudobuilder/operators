@@ -746,3 +746,13 @@ CUSTOM_SERVER_PROPERTIES:
   displayName: "custom server properties"
   description: "These properties will be appended to the Kafka server properties"
   default: ""
+
+CUSTOM_SERVER_PROPERTIES_CM_NAME:
+  displayName: "custom server properties configmap name"
+  description: "The properties present in this configmap will be appended to the Kafka server properties"
+  required: false
+
+CUSTOM_METRICS_CM_NAME:
+  displayName: "custom metrics properties and rules"
+  description: "These metrics prometheus rules to be used instead of the default metrics rules."
+  required: false
