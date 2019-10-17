@@ -48,7 +48,7 @@ kubectl kudo install kafka \
   --instance=kafka --namespace=kudo-kafka \
     -p AUTHORIZATION_ENABLED=true \
     -p AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND=false \
-    -p AUTHORIZATION_SUPER_USERS="User:livenessProbe;User:User1" \
+    -p AUTHORIZATION_SUPER_USERS="User:User1" \
     -p TRANSPORT_ENCRYPTION_ENABLED=true \
     -p TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT=false \
     -p SSL_AUTHENTICATION_ENABLED=true
@@ -147,11 +147,9 @@ kubectl kudo install kafka \
     -p BROKER_COUNT=3 \
     -p BROKER_MEM=800m \
     -p DISK_SIZE=10Gi \
-    -p KERBEROS_ENABLED=false \
-    -p KERBEROS_DEBUG=false \
     -p AUTHORIZATION_ENABLED=true \
     -p AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND=false \
-    -p AUTHORIZATION_SUPER_USERS="User:livenessProbe;User:User1" \
+    -p AUTHORIZATION_SUPER_USERS="User:User1" \
     -p TRANSPORT_ENCRYPTION_ENABLED=true \
     -p TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT=false \
     -p SSL_AUTHENTICATION_ENABLED=true
