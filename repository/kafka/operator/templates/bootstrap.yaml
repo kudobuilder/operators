@@ -29,34 +29,41 @@ data:
     LISTENERS=()
     ADVERTISED_LISTENERS=()
 
-    # TODO: Fix indentation before final PR
-    {{ if eq .Params.KERBEROS_ENABLED "true" }} # Kerberos enabled
-        {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }} # Transport encryption on
-            LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT_TLS}")
-            ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT_TLS}")
-            {{ if eq .Params.TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT "true" }} # Allow plaintext as well
-                LISTENERS=("${LISTENERS[@]}" "EXTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
-                ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "EXTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
-            {{ end }}
-            LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_SSL,EXTERNAL:SASL_PLAINTEXT"
-        {{ else }} # Plaintext only
-            LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
-            ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
-            LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_PLAINTEXT"
-        {{ end }}
-    {{ else if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }} # No kerberos, but Transport encryption is on
-        LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT_TLS}")
-        ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT_TLS}")
-        {{ if eq .Params.TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT "true" }} # Plaintext allowed
-            LISTENERS=("${LISTENERS[@]}" "EXTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
-            ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "EXTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
-        {{ end }}
-        LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SSL,EXTERNAL:PLAINTEXT"
-    {{ else }} # No TLS, no Kerberos, Plaintext only
-        LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
-        ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
-        LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT"
-        # TODO: Ask ZM if need to support legacy behaviour in AL
+    {{ if eq .Params.KERBEROS_ENABLED "true" }}
+    # Kerberos enabled
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    # Transport encryption on
+    LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT_TLS}")
+    ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT_TLS}")
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT "true" }}
+    # Allow plaintext as well
+    LISTENERS=("${LISTENERS[@]}" "EXTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
+    ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "EXTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
+    {{ end }}
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_SSL,EXTERNAL:SASL_PLAINTEXT"
+    {{ else }}
+    # Plaintext only
+    LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
+    ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SASL_PLAINTEXT"
+    {{ end }}
+    #
+    {{ else if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    # No kerberos, but Transport encryption is on
+    LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT_TLS}")
+    ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT_TLS}")
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT "true" }}
+    # Plaintext allowed
+    LISTENERS=("${LISTENERS[@]}" "EXTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
+    ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "EXTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
+    {{ end }}
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SSL,EXTERNAL:PLAINTEXT"
+    #
+    {{ else }}
+    # No TLS, no Kerberos, Plaintext only
+    LISTENERS=("${LISTENERS[@]}" "INTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
+    ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "INTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:PLAINTEXT"
     {{ end }}
 
     LISTENERS=$(printf ",%s" "${LISTENERS[@]}")
@@ -98,12 +105,9 @@ data:
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
     SUPER_USERS=("${SUPER_USERS[@]}" "User:{{ .Params.KERBEROS_PRIMARY }}")
     {{ else if eq .Params.SSL_AUTHENTICATION_ENABLED "true" }}
-    #TODO: Minify!
-    POD_INSTANCE_INDEX=${HOSTNAME##*-}
-    for i in $(seq 0 2)
+    for i in $(seq 0 $(( {{ .Params.BROKER_COUNT }} - 1 )))
     do
-      dns=$(hostname -f | sed s/$POD_INSTANCE_INDEX/$i/)
-      SUPER_USERS=("${SUPER_USERS[@]}" "User:$dns")
+      SUPER_USERS=("${SUPER_USERS[@]}" "User:$(hostname -f | sed s/$KAFKA_BROKER_ID/$i/)")
     done
     {{ end }}
     SUPER_USERS=$(printf ";%s" "${SUPER_USERS[@]}")

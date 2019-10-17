@@ -164,7 +164,7 @@ spec:
         {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
         - name: kafka-tls
           secret:
-            secretName: kafka-tls
+            secretName: {{ .Params.TLS_SECRET_NAME }}
         - name: enable-tls
           configMap:
             name:  {{ .Name }}-enable-tls
