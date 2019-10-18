@@ -4,8 +4,6 @@ jobs:
   test:
     machine:
       enabled: true
-      # enabled to make kind cluster start faster.
-      docker_layer_caching: true
     parameters:
       kubernetes_version:
         type: string
