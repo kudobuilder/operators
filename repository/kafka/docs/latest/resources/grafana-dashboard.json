@@ -56,12 +56,12 @@
       }
     ]
   },
-  "description": "Kafka Clusters Overview Dashboard for DC/OS versions >= 1.13",
+  "description": "KUDO Kafka Cluster Dashboard",
   "editable": true,
   "gnetId": 9018,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1562333480534,
+  "iteration": 1571402248787,
   "links": [],
   "panels": [
     {
@@ -221,7 +221,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\"})",
+          "expr": "sum(kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\", topic=\"\"})",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -302,7 +302,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kafka_server_BrokerTopicMetrics_BytesIn_total{namespace=\"$namespace\",service=\"$service\"})",
+          "expr": "sum(kafka_server_BrokerTopicMetrics_BytesIn_total{namespace=\"$namespace\",service=\"$service\", topic=\"\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -488,6 +488,87 @@
     {
       "cacheTimeout": null,
       "colorBackground": false,
+      "colorValue": true,
+      "colors": [
+        "#299c46",
+        "#962d82",
+        "#d44a3a"
+      ],
+      "datasource": "${DS_PROMETHEUS}",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": false,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 1
+      },
+      "id": 167,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "postfix": "",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "#705da0",
+        "full": false,
+        "lineColor": "#962d82",
+        "show": true
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "count(count by (topic) (kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\"}))",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "refId": "A"
+        }
+      ],
+      "thresholds": "",
+      "title": "Total Topic Count",
+      "type": "singlestat",
+      "valueFontSize": "80%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "0",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
+      "cacheTimeout": null,
+      "colorBackground": false,
       "colorValue": false,
       "colors": [
         "#299c46",
@@ -628,7 +709,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "sum(kafka_server_ReplicaManager_UnderReplicatedPartitions{service=\"$service\"})",
+          "expr": "sum(kafka_server_ReplicaManager_UnderReplicatedPartitions{service=\"$service\", namespace=\"$namespace\"})",
           "format": "time_series",
           "instant": false,
           "intervalFactor": 1,
@@ -813,171 +894,6 @@
       "valueName": "current"
     },
     {
-      "cacheTimeout": null,
-      "colorBackground": false,
-      "colorValue": true,
-      "colors": [
-        "#299c46",
-        "#962d82",
-        "#d44a3a"
-      ],
-      "datasource": "${DS_PROMETHEUS}",
-      "format": "none",
-      "gauge": {
-        "maxValue": 100,
-        "minValue": 0,
-        "show": false,
-        "thresholdLabels": false,
-        "thresholdMarkers": true
-      },
-      "gridPos": {
-        "h": 4,
-        "w": 4,
-        "x": 16,
-        "y": 5
-      },
-      "id": 167,
-      "interval": null,
-      "links": [],
-      "mappingType": 1,
-      "mappingTypes": [
-        {
-          "name": "value to text",
-          "value": 1
-        },
-        {
-          "name": "range to text",
-          "value": 2
-        }
-      ],
-      "maxDataPoints": 100,
-      "nullPointMode": "connected",
-      "nullText": null,
-      "postfix": "",
-      "postfixFontSize": "50%",
-      "prefix": "",
-      "prefixFontSize": "50%",
-      "rangeMaps": [
-        {
-          "from": "null",
-          "text": "N/A",
-          "to": "null"
-        }
-      ],
-      "sparkline": {
-        "fillColor": "#705da0",
-        "full": false,
-        "lineColor": "#962d82",
-        "show": true
-      },
-      "tableColumn": "",
-      "targets": [
-        {
-          "expr": "count(count by (topic) (kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\"}))",
-          "format": "time_series",
-          "instant": false,
-          "intervalFactor": 1,
-          "refId": "A"
-        }
-      ],
-      "thresholds": "",
-      "title": "Total Topic Count",
-      "type": "singlestat",
-      "valueFontSize": "80%",
-      "valueMaps": [
-        {
-          "op": "=",
-          "text": "0",
-          "value": "null"
-        }
-      ],
-      "valueName": "current"
-    },
-    {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "fill": 1,
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 0,
-        "y": 9
-      },
-      "id": 171,
-      "legend": {
-        "avg": false,
-        "current": false,
-        "max": false,
-        "min": false,
-        "show": true,
-        "total": false,
-        "values": false
-      },
-      "lines": true,
-      "linewidth": 1,
-      "links": [],
-      "nullPointMode": "null",
-      "percentage": false,
-      "pointradius": 2,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": false,
-      "steppedLine": false,
-      "targets": [
-        {
-          "expr": "jvm_memory_bytes_used{namespace=\"$namespace\",service=\"$service\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "{{pod}} {{area}}",
-          "refId": "A"
-        }
-      ],
-      "thresholds": [],
-      "timeFrom": null,
-      "timeRegions": [],
-      "timeShift": null,
-      "title": "Memory Used / Broker",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "decbytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        },
-        {
-          "format": "decbytes",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
-    },
-    {
       "alert": {
         "conditions": [
           {
@@ -1043,10 +959,10 @@
       "description": "The first node to boot in a Kafka cluster automatically becomes the controller, and there can be only one. The controller in a Kafka cluster is responsible for maintaining the list of partition leaders, and coordinating leadership transitions (in the event a partition leader becomes unavailable). If it becomes necessary to replace the controller, a new controller is randomly chosen by ZooKeeper from the pool of brokers. In general, it is not possible for this value to be greater than one, but you should definitely alert on a value of zero that lasts for more than a short period (< 1s) of time.",
       "fill": 10,
       "gridPos": {
-        "h": 8,
+        "h": 4,
         "w": 8,
-        "x": 12,
-        "y": 9
+        "x": 16,
+        "y": 5
       },
       "id": 114,
       "legend": {
@@ -1134,12 +1050,536 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 9
+      },
+      "id": 171,
+      "legend": {
+        "avg": false,
+        "current": false,
+        "max": false,
+        "min": false,
+        "show": true,
+        "total": false,
+        "values": false
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 2,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "jvm_memory_bytes_used{namespace=\"$namespace\",service=\"$service\"}",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}} {{area}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Memory Used / Broker",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "Generally, disk throughput tends to be the main bottleneck in Kafka performance. However, that’s not to say that the network is never a bottleneck. Depending on your use case, hardware, and configuration, the network can quickly become the slowest segment of a message’s trip, especially if you are sending messages across data centers. Tracking network throughput on your brokers gives you more information as to where potential bottlenecks may lie, and can inform decisions like whether or not you should enable end-to-end compression of your messages.",
+      "fill": 1,
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 9
+      },
+      "id": 179,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum by(topic) (kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\", topic=~\".+\"})",
+          "format": "time_series",
+          "interval": "15s",
+          "intervalFactor": 1,
+          "legendFormat": "{{topic}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Messages / Topic",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 17
+      },
+      "id": 174,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(kafka_server_BrokerTopicMetrics_MessagesIn_total{service=\"$service\", namespace=\"$namespace\", topic=\"\"}[1m]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "messages/second",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "messages in / sec",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 17
+      },
+      "id": 177,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(kafka_server_BrokerTopicMetrics_BytesIn_total{service=\"$service\", namespace=\"$namespace\", topic=\"\"}[1m]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "bytes in /second",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "bytes in / sec",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "Generally, disk throughput tends to be the main bottleneck in Kafka performance. However, that’s not to say that the network is never a bottleneck. Depending on your use case, hardware, and configuration, the network can quickly become the slowest segment of a message’s trip, especially if you are sending messages across data centers. Tracking network throughput on your brokers gives you more information as to where potential bottlenecks may lie, and can inform decisions like whether or not you should enable end-to-end compression of your messages.",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 0,
+        "y": 24
+      },
+      "id": 172,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(kafka_server_BrokerTopicMetrics_BytesIn_total{namespace=\"$namespace\",service=\"$service\", topic=\"\"})",
+          "format": "time_series",
+          "interval": "15s",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "All Bytes In",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "Generally, disk throughput tends to be the main bottleneck in Kafka performance. However, that’s not to say that the network is never a bottleneck. Depending on your use case, hardware, and configuration, the network can quickly become the slowest segment of a message’s trip, especially if you are sending messages across data centers. Tracking network throughput on your brokers gives you more information as to where potential bottlenecks may lie, and can inform decisions like whether or not you should enable end-to-end compression of your messages.",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 12,
+        "x": 12,
+        "y": 24
+      },
+      "id": 173,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(kafka_server_BrokerTopicMetrics_BytesOut_total{namespace=\"$namespace\",service=\"$service\", topic=\"\"})",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "All Bytes Out",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 31
       },
       "id": 40,
       "panels": [],
@@ -1159,7 +1599,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 18
+        "y": 32
       },
       "id": 117,
       "legend": {
@@ -1248,9 +1688,9 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 18
+        "y": 32
       },
-      "id": 118,
+      "id": 119,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -1276,7 +1716,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "kafka_server_ReplicaManager_IsrExpands_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"}",
+          "expr": "(kafka_server_ReplicaManager_IsrShrinks_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"})",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -1287,7 +1727,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "ISR Expansion Rate (Broker) for ($service) broker ($broker)",
+      "title": "ISR Shrink Rate (Broker) for ($service) broker ($broker)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1316,7 +1756,7 @@
           "logBase": 1,
           "max": null,
           "min": null,
-          "show": false
+          "show": true
         }
       ],
       "yaxis": {
@@ -1337,7 +1777,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 18
+        "y": 32
       },
       "id": 116,
       "legend": {
@@ -1425,8 +1865,8 @@
       "gridPos": {
         "h": 7,
         "w": 8,
-        "x": 8,
-        "y": 25
+        "x": 0,
+        "y": 39
       },
       "id": 120,
       "legend": {
@@ -1514,10 +1954,10 @@
       "gridPos": {
         "h": 7,
         "w": 8,
-        "x": 16,
-        "y": 25
+        "x": 8,
+        "y": 39
       },
-      "id": 119,
+      "id": 118,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -1543,7 +1983,7 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(kafka_server_ReplicaManager_IsrShrinks_total{service=\"$service\",pod=~\"$broker\"})",
+          "expr": "kafka_server_ReplicaManager_IsrExpands_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -1554,7 +1994,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "ISR Shrink Rate (Broker) for ($service) broker ($broker)",
+      "title": "ISR Expansion Rate (Broker) for ($service) broker ($broker)",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1571,6 +2011,95 @@
       "yaxes": [
         {
           "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "decimals": 0,
+      "description": "",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 8,
+        "x": 16,
+        "y": 39
+      },
+      "id": 121,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(kafka_server_DelayedOperationPurgatory_PurgatorySize{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"})by(pod)",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "{{pod}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Delayed Fetch Operation Purgatory Size for ($service) broker ($broker)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -1603,7 +2132,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 32
+        "y": 46
       },
       "id": 60,
       "legend": {
@@ -1685,16 +2214,14 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
-      "decimals": 0,
-      "description": "",
       "fill": 1,
       "gridPos": {
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 32
+        "y": 46
       },
-      "id": 121,
+      "id": 135,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -1716,14 +2243,14 @@
       "renderer": "flot",
       "seriesOverrides": [],
       "spaceLength": 10,
-      "stack": false,
+      "stack": true,
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(kafka_server_DelayedOperationPurgatory_PurgatorySize{service=\"$service\",pod=~\"$broker\"})by(pod)",
+          "expr": "rate(kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\", service=\"$service\", pod=~\"$broker\", topic=~\".+\"}[2m])",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
+          "legendFormat": "{{topic}}",
           "refId": "A"
         }
       ],
@@ -1731,7 +2258,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Delayed Fetch Operation Purgatory Size for ($service) broker ($broker)",
+      "title": "Derivative messages/sec for ($broker) / topic",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1747,7 +2274,7 @@
       },
       "yaxes": [
         {
-          "format": "decbytes",
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -1778,9 +2305,9 @@
       "fill": 1,
       "gridPos": {
         "h": 7,
-        "w": 8,
+        "w": 12,
         "x": 0,
-        "y": 39
+        "y": 53
       },
       "id": 20,
       "legend": {
@@ -1808,11 +2335,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(kafka_server_BrokerTopicMetrics_BytesIn_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"})",
+          "expr": "(kafka_server_BrokerTopicMetrics_BytesIn_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\", topic=~\".+\"})",
           "format": "time_series",
           "interval": "15s",
           "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
+          "legendFormat": "{{topic}}",
           "refId": "A"
         }
       ],
@@ -1867,9 +2394,9 @@
       "fill": 1,
       "gridPos": {
         "h": 7,
-        "w": 8,
-        "x": 8,
-        "y": 39
+        "w": 12,
+        "x": 12,
+        "y": 53
       },
       "id": 22,
       "legend": {
@@ -1897,10 +2424,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(kafka_server_BrokerTopicMetrics_BytesOut_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"})",
+          "expr": "(kafka_server_BrokerTopicMetrics_BytesOut_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\", topic=~\".+\"})",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
+          "legendFormat": "{{topic}}",
           "refId": "A"
         }
       ],
@@ -1953,12 +2480,12 @@
       "datasource": "${DS_PROMETHEUS}",
       "fill": 1,
       "gridPos": {
-        "h": 7,
-        "w": 8,
-        "x": 16,
-        "y": 39
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 60
       },
-      "id": 135,
+      "id": 178,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -1984,10 +2511,10 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "(kafka_server_BrokerTopicMetrics_MessagesIn_total{service=\"$service\", pod=~\"$broker\"})",
+          "expr": "sum(rate(kafka_server_BrokerTopicMetrics_BytesIn_total{namespace=\"$namespace\",service=\"$service\",pod=~\"$broker\"}[1m]))",
           "format": "time_series",
           "intervalFactor": 1,
-          "legendFormat": "{{pod}}",
+          "legendFormat": "{{ $broker }} - bytes in /second ",
           "refId": "A"
         }
       ],
@@ -1995,7 +2522,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "Messages in per sec for ($broker) count",
+      "title": "bytes in / sec",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -2011,7 +2538,7 @@
       },
       "yaxes": [
         {
-          "format": "short",
+          "format": "decbytes",
           "label": null,
           "logBase": 1,
           "max": null,
@@ -2040,7 +2567,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 60
       },
       "id": 153,
       "links": [],
@@ -2094,7 +2621,7 @@
       ],
       "targets": [
         {
-          "expr": "sum by(topic) (kafka_cluster_Partition_UnderReplicated{namespace=\"$namespace\",service=\"$service\"})",
+          "expr": "sum by(topic) (kafka_cluster_Partition_UnderReplicated{namespace=\"$namespace\",namespace=\"$namespace\",service=\"$service\"})",
           "format": "table",
           "instant": true,
           "intervalFactor": 1,
@@ -2216,5 +2743,5 @@
   "timezone": "",
   "title": "KUDO Kafka: Cluster Summary",
   "uid": "otWaoQkZj",
-  "version": 6
+  "version": 1
 }
