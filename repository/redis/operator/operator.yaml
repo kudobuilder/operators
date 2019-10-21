@@ -10,15 +10,19 @@ maintainers:
     email: fabian@mesosphere.io
 url: https://redis.io/
 tasks:
-  deploy:
-    resources:
-      - service.yaml
-      - pdb.yaml
-      - configmap.yaml
-      - statefulset.yaml
-  init:
-    resources:
-      - init.yaml
+  - name: deploy
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+        - pdb.yaml
+        - configmap.yaml
+        - statefulset.yaml
+  - name: init
+    kind: Apply
+    spec:
+      resources:
+        - init.yaml
 plans:
   deploy:
     strategy: serial

@@ -8,31 +8,36 @@ maintainers:
     email: zmalikshxil@gmail.com
 url: https://kafka.apache.org/
 tasks:
-  deploy:
-    resources:
-      - service.yaml
-      - pdb.yaml
-      - server.properties.yaml
-      - bootstrap.yaml
-      - metrics-config.yaml
-      - health-check.yaml
-      - jaas-config.yaml
-      - krb5-config.yaml
-      - statefulset.yaml
-  update:
-    resources:
-    - service.yaml
-    - pdb.yaml
-    - server.properties.yaml
-    - bootstrap.yaml
-    - metrics-config.yaml
-    - health-check.yaml
-    - jaas-config.yaml
-    - krb5-config.yaml
-    - statefulset.yaml
-  not-allowed:
-    resources:
-
+  - name: deploy
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+        - pdb.yaml
+        - server.properties.yaml
+        - bootstrap.yaml
+        - metrics-config.yaml
+        - health-check.yaml
+        - jaas-config.yaml
+        - krb5-config.yaml
+        - statefulset.yaml
+  - name: update
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+        - pdb.yaml
+        - server.properties.yaml
+        - bootstrap.yaml
+        - metrics-config.yaml
+        - health-check.yaml
+        - jaas-config.yaml
+        - krb5-config.yaml
+        - statefulset.yaml
+  - name: not-allowed
+    kind: Apply
+    spec:
+      resources:
 plans:
   deploy:
     strategy: serial
