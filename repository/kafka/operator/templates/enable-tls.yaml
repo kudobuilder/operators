@@ -6,7 +6,7 @@ data:
   enable-tls.sh: |
     #!/usr/bin/env bash
     set -e
-    mkdir -p home/kafka/tls
+    mkdir -p /home/kafka/tls
     pushd /home/kafka/tls
     # COPY CA AUTHORITY CERTIFICATE AND KEY OBTAINED FROM SECRETS
     cp /etc/tls/certs/tls.crt /home/kafka/tls/tls.crt

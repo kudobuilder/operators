@@ -47,9 +47,7 @@ data:
     
     ssl.enabled.protocols=TLSv1.2
     
-    {{ if .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
     ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
-    {{ end }}
     
     # If Kerberos is NOT enabled, then SSL authentication can be turned on.
     {{ if ne .Params.KERBEROS_ENABLED "true" }}

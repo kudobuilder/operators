@@ -34,6 +34,10 @@ spec:
           ports:
             - containerPort: {{ .Params.BROKER_PORT }}
               name: server
+            {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+            - containerPort: {{ .Params.BROKER_PORT_TLS }}
+              name: server-tls
+            {{ end }}
           command:
             - bash
             - -c
