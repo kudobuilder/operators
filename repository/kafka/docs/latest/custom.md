@@ -2,9 +2,11 @@
 
 KUDO Kafka is aiming to provide out of the box optimized Kafka clusters on Kubernetes, which can be tuned and configured using the parameters. 
 
-Advanced custom configuration is to empower the advanced users of the Kafka, so they aren't restricted by the parameters we expose in the KUDO Kafka configuration. 
+Custom configurations empower the advanced Kafka user so they aren't restricted by the parameters currently exposed in the KUDO Kafka configuration. 
 
-KUDO Kafka allows configuring the custom broker configuration using **CUSTOM_SERVER_PROPERTIES_CM_NAME** and custom metrics reporter configuration using **CUSTOM_METRICS_CM_NAME**
+KUDO Kafka allows configuring the following:
+- custom broker configurations using **CUSTOM_SERVER_PROPERTIES_CM_NAME** 
+- custom metrics-reporter configurations using **CUSTOM_METRICS_CM_NAME**
 
 ## Custom broker configuration
 
@@ -76,7 +78,7 @@ Starting the kafka broker using broker.id 0...
 ```
 #### Updating the custom configuration
 
-The KUDO Kafka custom configuration ConfigMap isn't watched by the KUDO controller. Therefore any updates done in the custom configuration will need a later rolling restart.
+The KUDO Kafka custom configuration ConfigMap isn't watched by the KUDO controller. Therefore any updates to the custom configurations will need a rolling restart of the statefulset.
 
 Edit the configmap with changes we want to rollout:
 
@@ -119,7 +121,7 @@ data:
         partition: "$5"
 ```
 
-To have the KUDO Kafka detect correctly the custom metrics reporter configuration `data` should have `metrics.properties` 
+To have KUDO Kafka detect correctly the custom metrics reporter configuration `data` should have `metrics.properties` 
 
 Create the ConfigMap in the namespace we will have the KUDO Kafka cluster
 
@@ -181,7 +183,7 @@ rules:
 
 #### Updating the custom metrics reporter 
 
-Like the custom configuration the custom metrics reporter is also not watched by the KUDO controller. Therefore to any updates done in the custom configuration will need a later rolling restart.
+Like the custom configuration the custom metrics reporter is also not watched by the KUDO controller. Therefore, any updates to the custom configurations will need a rolling restart to the statefulset.
 
 Edit the configmap with changes we want to rollout:
 

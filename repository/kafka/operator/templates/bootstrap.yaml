@@ -145,8 +145,8 @@ data:
     skip_properties=("broker.id" "listeners" "advertised.listeners" "advertised.host.name" "listener.security.protocol.map" "log.dirs")
     for property in "${skip_properties[@]}"; do
     	if grep -q $property /tmp/custom-configuration; then
-      		echo "WARN: cannot override the $property using custom properties configmap.";
-      		echo "Removing property $property"
+      		echo "WARN: cannot override '$property' using custom properties configmap.";
+      		echo "Removing property '$property'"
       		sed -i "/^$property/d" /tmp/custom-configuration
     	fi
     done
