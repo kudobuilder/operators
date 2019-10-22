@@ -8,22 +8,30 @@ maintainers:
     email: michael.beisiegel@gmail.com
 url: https://www.elastic.co/guide/en/elasticsearch/reference/current/index.html
 tasks:
-  deploy-master:
-    resources:
-      - master-service.yaml
-      - master.yaml
-  deploy-data:
-    resources:
-      - data-service.yaml
-      - data.yaml
-  deploy-coordinator:
-    resources:
-      - coordinator-service.yaml
-      - coordinator.yaml
-  deploy-ingest:
-    resources:
-      - ingest-service.yaml
-      - ingest.yaml
+  - name: deploy-master
+    kind: Apply
+    spec:
+      resources:
+        - master-service.yaml
+        - master.yaml
+  - name: deploy-data
+    kind: Apply
+    spec:
+      resources:
+        - data-service.yaml
+        - data.yaml
+  - name: deploy-coordinator
+    kind: Apply
+    spec:
+      resources:
+        - coordinator-service.yaml
+        - coordinator.yaml
+  - name: deploy-ingest
+    kind: Apply
+    spec:
+      resources:
+        - ingest-service.yaml
+        - ingest.yaml
 plans:
   deploy:
     strategy: serial
