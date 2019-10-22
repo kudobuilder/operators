@@ -10,19 +10,27 @@ maintainers:
     email: runyontr@gmail.com
 url: https://zookeeper.apache.org/
 tasks:
-  storage:
-    resources:
-      - storage.yaml
-  jobmanager:
-    resources:
-      - jobmanager-pdb.yaml
-      - jobmanager-statefulset.yaml
-  jobmanager-service:
-    resources:
-      - services.yaml
-  taskmanager:
-    resources:
-      - taskmanager-deployment.yaml
+  - name: storage
+    kind: Apply
+    spec:
+      resources:
+        - storage.yaml
+  - name: jobmanager
+    kind: Apply
+    spec:
+      resources:
+        - jobmanager-pdb.yaml
+        - jobmanager-statefulset.yaml
+  - name: jobmanager-service
+    kind: Apply
+    spec:
+      resources:
+        - services.yaml
+  - name: taskmanager
+    kind: Apply
+    spec:
+      resources:
+        - taskmanager-deployment.yaml
 plans:
   deploy:
     strategy: serial
