@@ -18,7 +18,7 @@ spec:
           resources:
             requests:
               memory: "64Mi"
-              cpu: "{{ .Params.CPUS }}"
+              cpu: "0.1"
           command:
             - bash
             - -c
