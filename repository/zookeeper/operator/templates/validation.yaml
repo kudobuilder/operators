@@ -17,7 +17,7 @@ spec:
               value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-1.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-2.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }}
           resources:
             requests:
-              memory: "{{ .Params.MEMORY }}"
+              memory: "64Mi"
               cpu: "{{ .Params.CPUS }}"
           command:
             - bash
