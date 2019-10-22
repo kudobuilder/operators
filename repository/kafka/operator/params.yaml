@@ -39,7 +39,7 @@ BROKER_PORT:
   default: "9093"
 
 BROKER_PORT_TLS:
-  description: "Port tls enabled brokers run on"
+  description: "Port TLS-enabled brokers run on"
   default: "9095"
 
 DISK_SIZE:
