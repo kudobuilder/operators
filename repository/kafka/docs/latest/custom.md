@@ -96,7 +96,14 @@ statefulset.apps/kafka-kafka restarted
 
 #### :warning: Excludelist of the custom configuration
 
-Users can update all the broker configuration properties except the `broker.id`, `listeners`,`advertised.listeners`,  `advertised.host.name`,  `listener.security.protocol.map` `log.dirs`
+Users can update all the broker configuration properties except the following:
+ - `broker.id`
+ - `listeners`
+ - `advertised.listeners`
+ - `advertised.host.name`
+ - `listener.security.protocol.map`
+ - `log.dirs`
+ 
 ## Custom metrics reporter 
 
 To use the custom metrics reporter configuration we need to create a configmap with the `metrics.yaml` we want to override.

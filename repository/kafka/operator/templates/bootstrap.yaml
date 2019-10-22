@@ -152,7 +152,7 @@ data:
     done
 
     KAFKA_CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration)
-    cat /tmp/custom-configuration
+    echo ${KAFKA_CUSTOM_CONFIGURATION}
     cat >> ${KAFKA_HOME}/server.properties <<EOF
     ${KAFKA_CUSTOM_CONFIGURATION}
     EOF
