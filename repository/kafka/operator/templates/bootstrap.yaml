@@ -142,7 +142,7 @@ data:
     echo "Appending custom configuration file to the server.properties..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1
 
     # remove blacklisted properties that users cannot override
-    skip_properties=("broker.id" "listeners" "advertised.listeners" "advertised.host.name" "listener.security.protocol.map" "log.dirs")
+    skip_properties=("broker.id=" "listeners=" "advertised.listeners=" "advertised.host.name=" "listener.security.protocol.map=" "log.dirs=")
     for property in "${skip_properties[@]}"; do
     	if grep -q $property /tmp/custom-configuration; then
       		echo "WARN: cannot override '$property' using custom properties configmap.";
