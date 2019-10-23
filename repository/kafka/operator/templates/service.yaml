@@ -10,6 +10,10 @@ spec:
   ports:
     - port: {{ .Params.BROKER_PORT }}
       name: server
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    - port: {{ .Params.BROKER_PORT_TLS }}
+      name: server-tls
+    {{ end }}
     - port: {{ .Params.CLIENT_PORT }}
       name: client
     {{ if eq .Params.METRICS_ENABLED "true" }}
