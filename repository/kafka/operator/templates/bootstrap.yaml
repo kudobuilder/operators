@@ -135,3 +135,28 @@ data:
     # Provided configuration
     ${KAFKA_CONFIGURATION}
     EOF
+
+    {{ if .Params.CUSTOM_SERVER_PROPERTIES_CM_NAME }}
+    KAFKA_CUSTOM_CONFIGURATION_FILE=$(ls -d /custom-configuration/* | head -n 1)
+    cp $KAFKA_CUSTOM_CONFIGURATION_FILE /tmp/custom-configuration
+    echo "Appending custom configuration file to the server.properties..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1
+
+    # remove blacklisted properties that users cannot override
+    skip_properties=("broker.id" "listeners" "advertised.listeners" "advertised.host.name" "listener.security.protocol.map" "log.dirs")
+    for property in "${skip_properties[@]}"; do
+      # grep and sed commands are using the '=' suffix to make sure we don't remove any
+      # properties containing the 'skip_properties' strings
+      # e.g 'broker.id=1' should be removed but 'broker.id.subkey=a' should not be removed
+      if grep -q "${property}=" /tmp/custom-configuration; then
+        echo "WARN: cannot override '$property' using custom properties configmap.";
+        echo "Removing property '$property'"
+        sed -i "/^${property}=/d" /tmp/custom-configuration
+      fi
+    done
+
+    KAFKA_CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration)
+    echo ${KAFKA_CUSTOM_CONFIGURATION}
+    cat >> ${KAFKA_HOME}/server.properties <<EOF
+    ${KAFKA_CUSTOM_CONFIGURATION}
+    EOF
+    {{ end }}

@@ -90,6 +90,10 @@ spec:
             - name: metrics
               mountPath: /metrics
           {{ end }}
+          {{ if .Params.CUSTOM_SERVER_PROPERTIES_CM_NAME }}
+            - name: custom-configuration
+              mountPath: /custom-configuration
+          {{ end }}
           {{ if eq .Params.KERBEROS_ENABLED "true" }}
             - name: jass-config
               mountPath: /jass-config
@@ -149,10 +153,19 @@ spec:
             name: {{ .Name }}-serverproperties
         - name: metrics
           configMap:
+            {{ if .Params.CUSTOM_METRICS_CM_NAME }}
+            name: {{ .Params.CUSTOM_METRICS_CM_NAME }}
+            {{ else }}
             name: {{ .Name }}-metrics-config
+            {{ end }}
         - name: health-check-script
           configMap:
             name: {{ .Name }}-health-check-script
+        {{ if .Params.CUSTOM_SERVER_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          configMap:
+            name: {{ .Params.CUSTOM_SERVER_PROPERTIES_CM_NAME }}
+        {{ end }}
         {{ if eq .Params.KERBEROS_ENABLED "true" }}
         - name: jass-config
           configMap:
