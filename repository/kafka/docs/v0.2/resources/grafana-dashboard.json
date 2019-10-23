@@ -56,7 +56,7 @@
       }
     ]
   },
-  "description": "Kafka Clusters Overview Dashboard for DC/OS versions >= 1.13",
+  "description": "Kafka Clusters Overview Dashboard for KUDO",
   "editable": true,
   "gnetId": 9018,
   "graphTooltip": 0,
