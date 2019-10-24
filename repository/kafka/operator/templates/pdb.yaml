@@ -2,6 +2,7 @@ apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
   name: pdb
+  namespace: {{ .Namespace }}
 spec:
   selector:
     matchLabels:
