@@ -6,6 +6,8 @@ metadata:
   labels:
     kafka: {{ .OperatorName }}
     app: kafka
+  annotations:
+    reloader.kudo.dev/auto: "true"
 spec:
   selector:
     matchLabels:
