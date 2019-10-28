@@ -15,7 +15,7 @@ spec:
       app: zookeeper
       zookeeper: {{ .OperatorName }}
       instance: {{ .Name }}
-  serviceName: {{ .Name }}-hs
+  serviceName: hs
   replicas: {{ .Params.NODE_COUNT }}
   updateStrategy:
     type: RollingUpdate
