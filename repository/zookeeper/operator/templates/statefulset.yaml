@@ -91,11 +91,11 @@ spec:
       volumes:
       - name: bootstrap
         configMap:
-          name: {{ .Name }}-bootstrap
+          name: bootstrap
           defaultMode: 0777
       - name: healthcheck
         configMap:
-          name: {{ .Name }}-healthcheck
+          name: healthcheck
           defaultMode: 0777
   volumeClaimTemplates:
   - metadata:
