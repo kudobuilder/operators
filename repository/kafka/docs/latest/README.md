@@ -1,6 +1,8 @@
 ## KUDO Kafka latest
 
 - [Installation](./install.md)
+- [Running in Production](./production.md)
+- [Concepts](./concepts.md)
 - [Configuration](./configuration.md)
 - [Monitoring](./monitoring.md)
 - [Upgrading the Kafka operator](./upgrade.md)

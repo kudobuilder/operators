@@ -1,11 +1,13 @@
 name: "kafka"
-version: "0.2.1"
-kudoVersion: 0.5.0
+version: "1.0.0"
+kudoVersion: 0.7.5
 kubernetesVersion: 1.15.0
 appVersion: 2.3.0
 maintainers:
   - name: Zain Malik
-    email: zmalikshxil@gmail.com
+    email: zmalik@d2iq.com
+  - name: Shubhanil Bag
+    email: sbag.c@d2iq.com
 url: https://kafka.apache.org/
 tasks:
   deploy:
