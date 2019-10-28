@@ -1,0 +1,28 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: shoppingcartapp
+  namespace: {{ .Namespace }}
+  labels:
+    appName: shoppingcartapp
+spec:
+  selector:
+    appName: shoppingcartapp
+  type: ClusterIP
+  ports:
+    - name: "akka-remote"
+      port: 10000
+      protocol: TCP
+      targetPort: 10000
+    - name: "akka-mgmt-http"
+      port: 10001
+      protocol: TCP
+      targetPort: 10001
+    - name: app
+      port: 9975
+      protocol: TCP
+      targetPort: 9975
+    - name: cinnamon
+      port: 9001
+      protocol: TCP
+      targetPort: 9001

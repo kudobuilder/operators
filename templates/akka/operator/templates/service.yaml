@@ -1,0 +1,12 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: akka-cluster-demo
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    app: akka-cluster-demo
+  ports:
+    - protocol: TCP
+      port: 8080
+  type: LoadBalancer
