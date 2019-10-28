@@ -14,7 +14,7 @@ spec:
           image: "zookeeper:3.4.14"
           env:
             - name: CONN
-              value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-1.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-2.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }}
+              value: zookeeper-0.hs:{{ .Params.CLIENT_PORT }},zookeeper-1.hs:{{ .Params.CLIENT_PORT }},zookeeper-2.hs:{{ .Params.CLIENT_PORT }}
           resources:
             requests:
               memory: "64Mi"
