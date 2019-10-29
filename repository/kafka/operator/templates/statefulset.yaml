@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .OperatorName }}
+  name: {{ .Name }}-{{ .OperatorName }}
   namespace: {{ .Namespace }}
   labels:
     kafka: {{ .OperatorName }}
@@ -77,7 +77,7 @@ spec:
               value: "{{ .Params.CLIENT_PORT }}"
           volumeMounts:
           {{ if eq .Params.PERSISTENT_STORAGE "true" }}
-            - name: datadir
+            - name: {{ .Name }}-datadir
               mountPath: /var/lib/kafka
           {{ end }}
             - name: bootstrap
@@ -189,7 +189,7 @@ spec:
   volumeClaimTemplates:
     {{ if eq .Params.PERSISTENT_STORAGE "true" }}
     - metadata:
-        name: datadir
+        name: {{ .Name }}-datadir
       spec:
         accessModes: [ "ReadWriteOnce" ]
         resources:

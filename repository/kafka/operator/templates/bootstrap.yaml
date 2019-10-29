@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: bootstrap
+  name: {{ .Name }}-bootstrap
   namespace: {{ .Namespace }}
 data:
   bootstrap.sh: |

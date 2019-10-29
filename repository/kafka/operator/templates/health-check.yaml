@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: health-check-script
+  name: {{ .Name }}-health-check-script
   namespace: {{ .Namespace }}
 data:
   health-check.sh: |

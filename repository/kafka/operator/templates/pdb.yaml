@@ -1,7 +1,7 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: pdb
+  name: {{ .Name }}-pdb
   namespace: {{ .Namespace }}
 spec:
   selector:
