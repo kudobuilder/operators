@@ -40,7 +40,7 @@ The source code for the `akka cluster` used in this demo can be found [here](htt
 Change to the `operator` folder of the `kudo-akka` repository.
 
 ```
-cd kudo-akka/operator
+cd templates/akka/operator
 ```
 
 Use the Kudo cli to `install` the `akka cluster`.
@@ -82,7 +82,7 @@ The source code for the `shoppingcart akka cluster` used in this demo can be fou
 Change to the `operator-shoppingcart` folder of the `kudo-akka` repository.
 
 ```
-cd kudo-akka/operator-shoppingcart
+cd templates/akka/operator-shoppingcart
 ```
 
 Use the Kudo cli to `install` the `akka cluster`.
