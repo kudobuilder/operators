@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: jaas-config
+  name: {{ .Name }}-jaas-config
   namespace: {{ .Namespace }}
 data:
   kafka_server_jaas.conf: |

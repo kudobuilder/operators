@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: serverproperties
+  name: {{ .Name }}-serverproperties
   namespace: {{ .Namespace }}
 data:
   server.properties: |
