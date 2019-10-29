@@ -9,7 +9,7 @@ status:
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: zookeeper
+  name: zk-zookeeper
 spec:
   template:
     spec:
