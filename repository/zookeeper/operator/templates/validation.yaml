@@ -14,11 +14,11 @@ spec:
           image: "zookeeper:3.4.14"
           env:
             - name: CONN
-              value: {{ .Name }}-zookeeper-0.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-1.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }},{{ .Name }}-zookeeper-2.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }}
+              value: {{ if gt (int .Params.NODE_COUNT) 0 }}zookeeper-0.hs:{{ .Params.CLIENT_PORT }}{{- $root := . -}}{{ range $i, $v := untilStep 1 (int .Params.NODE_COUNT) 1 }},zookeeper-{{ $v }}.hs:{{ $root.Params.CLIENT_PORT }}{{ end }}{{ end }}
           resources:
             requests:
-              memory: "{{ .Params.MEMORY }}"
-              cpu: "{{ .Params.CPUS }}"
+              memory: "64Mi"
+              cpu: "0.1"
           command:
             - bash
             - -c
