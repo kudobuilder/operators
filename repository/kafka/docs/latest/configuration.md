@@ -108,4 +108,4 @@ will create a Zookeeper node in path `/custom-path`.
 
 ##### Docker image
 
-The Dockerfile used to build the KUDO Kafka operator is hosted in the [dcos-kafka-service](https://github.com/mesosphere/dcos-kafka-service/blob/master/images/Dockerfile) repo
+The Dockerfile used to build the KUDO Kafka operator is hosted in the [dcos-kafka-service](https://github.com/mesosphere/kudo-kafka-operator/blob/master/images/Dockerfile) repo
