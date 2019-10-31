@@ -1,0 +1,17 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus-operator
+    release: prometheus-kubeaddons
+  name: kafka-cluster-monitor
+spec:
+  endpoints:
+  - interval: 30s
+    port: metrics
+  namespaceSelector:
+    matchNames:
+    - default
+  selector:
+    matchLabels:
+      kudo.dev/servicemonitor: "true"
