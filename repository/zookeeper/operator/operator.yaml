@@ -22,6 +22,8 @@ tasks:
   validation:
     resources:
       - validation.yaml
+  not-allowed:
+    resources:
 plans:
   deploy:
     strategy: serial
