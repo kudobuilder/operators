@@ -1,7 +1,7 @@
 parameters:
   - name: flink_storage_accessmodes
     description: "Defines the access modes for Persistent Volume Claims e.g., can be mounted once read/write or many times read-only"
-    zdefault: "ReadWriteOnce"
+    default: "ReadWriteOnce"
   - name: flink_taskmanager_replicas
     description: "Number of task managers to run"
     default: "2"
