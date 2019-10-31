@@ -1,3 +1,4 @@
+apiVersion: kudo.dev/v1beta1
 name: "elastic"
 version: "0.1.0"
 kudoVersion: 0.5.0

@@ -43,7 +43,7 @@ To update the Kafka cluster from version `0.1.1` to `0.2.0`:
 kubectl kudo upgrade kafka --version=0.2.0 --instance kafka
 
 operator.kudo.dev/kafka unchanged
-operatorversion.kudo.dev/v1alpha1/kafka-0.2.0 created
+operatorversion.kudo.dev/v1beta1/kafka-0.2.0 created
 ```
 Now there are two operator versions installed:
 ```
