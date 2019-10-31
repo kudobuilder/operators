@@ -1,6 +1,6 @@
 # Release notes 
 
-## latest
+## v1.0.0
 
 - Exposed configuration for livenessProbe and readinessProbe
 - User can enable advanced service health checks. Option to choose between a simple port-based check and an advanced producer-consumer check based on a custom heartbeat topic

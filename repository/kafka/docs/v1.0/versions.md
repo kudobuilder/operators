@@ -7,4 +7,4 @@
 
 ### KUDO Version Requirement
 
-KUDO version 0.4.0 or later
+KUDO version 0.8.0 or later
