@@ -8,11 +8,9 @@ KUDO Kafka is a Kubernetes operator built on top of [KUDO](kudo.dev) and require
 
 There are three CRDs that are installed when deploying KUDO Kafka:
 
-- Operator
-- OperatorVersion
-- Instance
-
-An Instance represents an instantiation of a KUDO Kafka cluster. The Operator and OperatorVersion hold all knowledge to instantiate the KUDO Kafka cluster. 
+- Operator: the definition that describes the Kudo Kafka operator.
+- OperatorVersion: the definition that describes the Kudo Kafka operator for a specific version.
+- Instance: the instantiation of a KUDO Kafka cluster based on the OperatorVersion.
 
 #### KUDO Controller Reconcile Cycle
 

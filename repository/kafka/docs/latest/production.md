@@ -119,7 +119,7 @@ NUM_PARTITIONS=3
 
 #### Graceful rolling restarts
 
-By default, KUDO Kafka sets `CONTROLLED_SHUTDOWN_ENABLE` to `true`. To ensure a faster flush during shutdown, and faster recovery during bootstrap, `num.recovery.threads.per.data.dir` can be increased from the default of `1` thread.
+By default, KUDO Kafka sets `CONTROLLED_SHUTDOWN_ENABLE` to `true`. Which means whenever the pods are restarted the broker does a controlled shutdown. That process includes a log flush. During these controlled shutdown and bootstrap periods Apache Kafka's LogManager uses a Threadpool. To ensure a faster flush during shutdown, and faster recovery during bootstrap, we can configure the threads in the LogManager Threadpool using the property `num.recovery.threads.per.data.dir`. Which can be increased from the default value of `1` thread.
 
 ```
 NUM_RECOVERY_THREADS_PER_DATA_DIR=3

@@ -10,7 +10,7 @@ KUDO Kafka is a Kubernetes operator built on [KUDO](kudo.dev) to manage Apache K
 
 - Securing the cluster in various ways: TLS encryption, Kerberos authentication, Kafka AuthZ
 - Prometheus metrics right out of the box with example Grafana dashboards
-- **Kerberos** support.
+- Kerberos support
 - Graceful rolling updates for any cluster configuration changes
 - Graceful rolling upgrades when upgrading the operator version
 
@@ -21,14 +21,13 @@ To get more information around KUDO Kafka architecture please take a look on the
 The latest stable version of Kafka operator is `1.0.0`
 For more details, please see the [v1.0 docs](./docs/v1.0) folder.
 
-For the latest master branch you can check  [docs](./docs/latest) docs 
-
 
 ## Version Chart
 
-| KUDO Kafka Version | Apache Kafka Version | Status |
-| ------------------ | -------------------- | ------ |
-| 0.1.2              | 2.2.1                | beta   |
-| 0.2.0              | 2.3.0                | beta   |
-| **1.0.0**          | **2.3.0**            | **GA** |
-| latest             | 2.3.0                | beta   |
+| KUDO Kafka | Apache Kafka | Minimum KUDO Version | Status |
+| ---------- | ------------ | -------------------- | ------ |
+| 0.1.2      | 2.2.1        | 0.7.5                | beta   |
+| 0.2.0      | 2.3.0        | 0.7.5                | beta   |
+| **1.0.0**  | **2.3.0**    | **0.8.0**            | **GA** |
+| latest     | 2.3.0        | 0.8.0                | beta   |
+
