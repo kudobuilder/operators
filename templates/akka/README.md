@@ -23,10 +23,10 @@ Once you have a running `kubernetes` cluster with `kubectl` installed along with
 kubectl kudo init
 ```
 
-Next clone the `kudo-akka repository` so that we can install the operator demos.
+Next clone the `Kudo operator repository` so that we can install the operator demos.
 
 ```
-git clone https://github.com/realmbgl/kudo-akka
+git clone https://github.com/kudobuilder/operators.git
 ```
 
 ### basic akka demo
@@ -37,10 +37,10 @@ The source code for the `akka cluster` used in this demo can be found [here](htt
 
 #### install the cluster
 
-Change to the `operator` folder of the `kudo-akka` repository.
+Change to the `templates/akka/operator` folder of the `kudo operator` repository.
 
 ```
-cd kudo-akka/operator
+cd templates/akka/operator
 ```
 
 Use the Kudo cli to `install` the `akka cluster`.
@@ -79,10 +79,10 @@ The source code for the `shoppingcart akka cluster` used in this demo can be fou
 
 #### install the cluster
 
-Change to the `operator-shoppingcart` folder of the `kudo-akka` repository.
+Change to the `templates/akka/operator-shoppingcart` folder of the `Kudo operator` repository.
 
 ```
-cd kudo-akka/operator-shoppingcart
+cd templates/akka/operator-shoppingcart
 ```
 
 Use the Kudo cli to `install` the `akka cluster`.
