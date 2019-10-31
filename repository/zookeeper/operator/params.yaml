@@ -14,10 +14,12 @@ CPUS:
 STORAGE_CLASS:
   description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
   required: false
+  trigger: "not-allowed"
 
 DISK_SIZE:
   description: "Disk size for the Zookeeper servers"
   default: "5Gi"
+  trigger: "not-allowed"
 
 CLIENT_PORT:
   default: "2181"
