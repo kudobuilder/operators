@@ -1,5 +1,5 @@
 name: "flink-demo"
-version: "0.1.0"
+version: "0.1.1"
 kudoVersion: 0.3.0
 kubernetesVersion: 1.15.0
 maintainers:
