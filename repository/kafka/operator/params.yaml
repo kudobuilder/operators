@@ -1,758 +1,605 @@
-AUTHORIZATION_ENABLED:
-  description: "Enable authorization."
-  default: "false"
-  displayName: "Authorization Enabled"
-
-AUTHORIZATION_SUPER_USERS:
-  description: "Semi-colon delimited list of principals. For Kerberos principals, these will be of the form User:<Kerberos-Primary>. For TLS, they will be of the form User:<CN of TLS cert> (for the TLS cert CN=test-user,OU=,O=Confluent,L=London,ST=London,C=GB, the user would be test-user)"
-  default: ""
-  displayName: "Super Users"
-
-AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND:
-  description: "Allow any user to perform an action if no ACL is found for the resource."
-  default: "false"
-  displayName: "Allow everyone if no acl found"
-
-BROKER_COUNT:
-  description: "Number of brokers spun up for Kafka"
-  default: "3"
-  displayName: "Broker Count"
-
-BROKER_CPUS:
-  description: "CPUs (request) for the Kafka Broker pods. spec.containers[].resources.requests.cpu"
-  default: "500m"
-
-BROKER_CPUS_LIMIT:
-  description: "CPUs (limit) for the Kafka Broker pods. spec.containers[].resources.limits.cpu"
-  default: "2000m"
-
-BROKER_MEM:
-  description: "Memory (request) for the Kafka Broker pods. spec.containers[].resources.requests.memory"
-  default: "2048Mi"
-
-BROKER_MEM_LIMIT:
-  description: "Memory (limit) for the Kafka Broker pods. spec.containers[].resources.limits.memory"
-  default: "4096Mi"
-
-BROKER_PORT:
-  description: "Port brokers run on"
-  default: "9093"
-
-BROKER_PORT_TLS:
-  description: "Port TLS-enabled brokers run on"
-  default: "9095"
-
-DISK_SIZE:
-  description: "Disk size for the brokers"
-  default: "5Gi"
-  trigger: "not-allowed"
-
-STORAGE_CLASS:
-  description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
-  required: false
-  trigger: "not-allowed"
-
-PERSISTENT_STORAGE:
-  description: "If false, ephemeral storage is used. Not recommended for Production use."
-  default: "true"
-  trigger: "not-allowed"
-
-CLIENT_PORT:
-  description: "Broker client port"
-  default: "9092"
-
-CLIENT_PORT_ENABLED:
-  default: "true"
-
-METRICS_PORT:
-  description: "Port JMX_EXPORTER binds"
-  default: "9094"
-
-METRICS_ENABLED:
-  default: "true"
-
-NUM_PARTITIONS:
-  description: "Number of partitions for Kafka topics"
-  default: "3"
-
-ZOOKEEPER_URI:
-  displayName: "zookeeper cluster URI"
-  description: |
-    host and port information for Zookeeper connection.
-    e.g. zk:2181,zk2:2181,zk3:2181
-  default: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
-  required: true
-
-ZOOKEEPER_PATH:
-  displayName: "zookeeper node path"
-  description: "Zookeeper node path. Defaults to Kafka instance name."
-  required: false
-
-AUTO_CREATE_TOPICS_ENABLE:
-  default: "true"
-
-AUTO_LEADER_REBALANCE_ENABLE:
-  default: "true"
-
-BACKGROUND_THREADS:
-  description: "The number of threads to use for various background processing tasks"
-  default: "10"
-
-COMPRESSION_TYPE:
-  default: "producer"
-  description: |
-    Specify the final compression type for a given topic. This configuration accepts the standard compression codecs ('gzip', 'snappy', 'lz4').
-    It additionally accepts 'uncompressed' which is equivalent to no compression; and 'producer' which means retain the original compression codec set by the producer.
-
-DELETE_TOPIC_ENABLE:
-  displayName: "delete.topic.enable"
-  default: "false"
-  description: "Enables delete topic. Delete topic through the admin tool will have no effect if this config is turned off"
-
-DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS:
-  default: "1"
-  description: "The purge interval (in number of requests) of the delete records request purgatory"
-
-KERBEROS_ENABLED:
-  description: "Enable kerberos authentication."
-  default: "false"
-  displayName: "Kerberos Enabled"
-
-KERBEROS_ENABLED_FOR_ZOOKEEPER:
-  description: "Enable Kerberos authentication for communication with Apache Zookeeper."
-  default: "false"
-  displayName: "Zookeeper Kerberos Enabled"
-
-KERBEROS_PRIMARY:
-  description: "The Kerberos primary used by Kafka tasks."
-  default: "kafka"
-  displayName: "Kerberos Primary"
-
-KERBEROS_KEYTAB_SECRET:
-  description: "The name of the Kubernetes secret storing the keytab."
-  default: "base64-kafka-keytab-secret"
-  displayName: "Kerberos Keytab Secret"
-
-KERBEROS_REALM:
-  description: "The Kerberos realm used to render the principal of Kafka broker pods."
-  default: "LOCAL"
-  displayName: "Kerberos Realm"
-
-KERBEROS_KDC_HOSTNAME:
-  description: "The name or address of a host running a KDC for the realm."
-  default: "kdc-service"
-  displayName: "Kerberos Hostname"
-
-KERBEROS_KDC_PORT:
-  description: "The port of the host running a KDC for that realm."
-  default: "2500"
-  displayName: "Kerberos Port"
-
-KERBEROS_DEBUG:
-  description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
-  default: "false"
-  displayName: "Kerberos Debug"
-
-LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS:
-  default: "300"
-  description: "The frequency with which the partition rebalance check is triggered by the controller"
-
-LEADER_IMBALANCE_PER_BROKER_PERCENTAGE:
-  default: "10"
-  description: "The ratio of leader imbalance allowed per broker. The controller would trigger a leader balance if it goes above this value per broker. The value is specified in percentage."
-
-LIVENESS_INITIAL_DELAY_SECONDS:
-  displayName: "livenessProbe initial delay timeout seconds"
-  description: "Number of seconds after the container has started before liveness probes is initiated."
-  default: "30"
-
-LIVENESS_PERIOD_SECONDS:
-  displayName: "livenessProbe period seconds"
-  description: "How often (in seconds) to perform the probe. Default to 30 seconds. Minimum value is 1."
-  default: "30"
-
-LIVENESS_TIMEOUT_SECONDS:
-  displayName: "livenessProbe timeout seconds"
-  description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
-  default: "30"
-
-LIVENESS_FAILURE_THRESHOLD:
-  displayName: "livenessProbe timeout seconds"
-  description: "When the Pod starts and the probe fails, Kubernetes will try failureThreshold times before restarting the Pod. Defaults to 3. Minimum value is 1."
-  default: "3"
-
-LIVENESS_METHOD:
-  displayName: "livenessProbe method"
-  description: "livenessProbe method values 'PORT' or 'FUNCTIONAL'"
-  default: "PORT"
-
-LIVENESS_TOPIC_PREFIX:
-  displayName: "livenessProbe topic prefix"
-  description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
-  default: "KafkaLivenessTopic"
-
-LIVENESS_KERBEROS_PRIMARY:
-  default: "livenessProbe"
-  description: "The Kerberos primary used by the liveness probe when using FUNCTIONAL livenessProbe method."
-  displayName: "Liveness Probe Kerberos Primary"
-
-LOG_FLUSH_INTERVAL_MESSAGES:
-  default: "9223372036854775807"
-  description: "The number of messages accumulated on a log partition before messages are flushed to disk"
-
-LOG_FLUSH_INTERVAL_MS:
-  default: "9223372036854775807"
-  description: "The maximum time in ms that a message in any topic is kept in memory before flushed to disk. If not set, the value in log.flush.scheduler.interval.ms is used"
-
-LOG_FLUSH_OFFSET_CHECKPOINT_INTERVAL_MS:
-  default: "60000"
-  description: "The frequency with which we update the persistent record of the last flush which acts as the log recovery point"
-
-LOG_FLUSH_SCHEDULER_INTERVAL_MS:
-  default: "9223372036854775807"
-  description: "The frequency in ms that the log flusher checks whether any log needs to be flushed to disk"
-
-LOG_FLUSH_START_OFFSET_CHECKPOINT_INTERVAL_MS:
-  default: "60000"
-  description: "The frequency with which we update the persistent record of log start offset"
-
-LOG_RETENTION_BYTES:
-  displayName: "log.retention.bytes"
-  description: "The maximum size of the log before deleting it"
-  default: "-1"
-
-LOG_RETENTION_MS:
-  displayName: "log.retention.ms"
-  description: "The number of milliseconds to keep a log file before deleting it (in milliseconds) If not set, the value in log.retention.minutes is used"
-  required: false
-
-LOG_RETENTION_MINUTES:
-  displayName: "log.retention.minutes"
-  description: "The number of minutes to keep a log file before deleting it (in minutes), secondary to log.retention.ms property. If not set, the value in log.retention.hours is used"
-  required: false
-
-LOG_RETENTION_HOURS:
-  displayName: "log.retention.hours"
-  description: "The number of hours to keep a log file before deleting it (in hours), tertiary to log.retention.ms property"
-  default: "168"
-  required: false
-
-LOG_ROLL_MS:
-  displayName: "log.roll.ms"
-  description: "The maximum time before a new log segment is rolled out (in milliseconds). If not set, the value in log.roll.hours is used"
-  required: false
-
-LOG_ROLL_JITTER_MS:
-  displayName: "log.roll.jitter.ms"
-  description: "The maximum jitter to subtract from logRollTimeMillis (in milliseconds). If not set, the value in log.roll.jitter.hours is used"
-  required: false
-
-LOG_ROLL_HOURS:
-  displayName: "log.roll.hours"
-  description: "The maximum time before a new log segment is rolled out (in hours), secondary to log.roll.ms property"
-  default: "168"
-  required: false
-
-LOG_ROLL_JITTER_HOURS:
-  displayName: "log.roll.jitter.hours"
-  description: "The maximum jitter to subtract from logRollTimeMillis (in hours), secondary to log.roll.jitter.ms property"
-  default: "0"
-  required: false
-
-LOG_SEGMENT_BYTES:
-  displayName: "log.segment.bytes"
-  description: "The maximum size of a single log file"
-  default: "1073741824"
-
-LOG_SEGMENT_DELETE_DELAY_MS:
-  displayName: "log.segment.delete.delay.ms"
-  description: "The amount of time to wait before deleting a file from the filesystem"
-  default: "60000"
-
-MESSAGE_MAX_BYTES:
-  displayName: "message.max.bytes"
-  description: "The largest record batch size allowed by Kafka. If this is increased and there are consumers older than 0.10.2, the consumers' fetch size must also be increased so that the they can fetch record batches this large.\nIn the latest message format version, records are always grouped into batches for efficiency. In previous message format versions, uncompressed records are not grouped into batches and this limit only applies to a single record in that case.\nThis can be set per topic with the topic level max.message.bytes config."
-  default: "1000012"
-
-MIN_INSYNC_REPLICAS:
-  displayName: "min.insync.replicas"
-  description: |
-    When a producer sets acks to "all" (or "-1") MIN_INSYNC_REPLICAS is the minimum number of replicas that must acknowledge a write for the write to be considered successful.
-    When used together, min.insync.replicas and acks allow you to enforce greater durability guarantees.
-    A typical scenario would be to create a topic with a replication factor of 3, set min.insync.replicas to 2, and produce with acks of "all".
-  default: "1"
-
-NUM_IO_THREADS:
-  displayName: "num.io.threads"
-  description: "The number of threads that the server uses for processing requests, which may include disk I/O"
-  default: "8"
-
-NUM_NETWORK_THREADS:
-  displayName: "num.network.threads"
-  description: "The number of threads that the server uses for receiving requests from the network and sending responses to the network"
-  default: "3"
-
-NUM_RECOVERY_THREADS_PER_DATA_DIR:
-  displayName: "num.recovery.threads.per.data.dir"
-  description: "The number of threads per data directory to be used for log recovery at startup and flushing at shutdown"
-  default: "1"
-
-NUM_REPLICA_FETCHERS:
-  displayName: "num.replica.fetchers"
-  description: "Number of fetcher threads used to replicate messages from a source broker. Increasing this value can increase the degree of I/O parallelism in the follower broker."
-  default: "1"
-
-OFFSET_METADATA_MAX_BYTES:
-  displayName: "offset.metadata.max.bytes"
-  description: "The maximum size for a metadata entry associated with an offset commit"
-  default: "4096"
-
-OFFSETS_COMMIT_REQUIRED_ACKS:
-  displayName: "offsets.commit.required.acks"
-  description: "The required acks before the commit can be accepted. In general the default (-1) should not be overridden"
-  default: -1
-
-OFFSETS_COMMIT_TIMEOUT_MS:
-  displayName: "offsets.commit.timeout.ms"
-  description: "Offset commit will be delayed until all replicas for the offsets topic receive the commit or this timeout is reached. This is similar to the producer request timeout."
-  default: "5000"
-
-OFFSETS_LOAD_BUFFER_SIZE:
-  displayName: "offsets.load.buffer.size"
-  description: "Batch size for reading from the offsets segments when loading offsets into the cache."
-  default: "5242880"
-
-OFFSETS_RETENTION_CHECK_INTERVAL_MS:
-  displayName: "offsets.retention.check.interval.ms"
-  description: "Frequency at which to check for stale offsets"
-  default: "600000"
-
-OFFSETS_RETENTION_MINUTES:
-  displayName: "offsets.retention.minutes"
-  description: "Offsets older than this retention period will be discarded"
-  default: "1440"
-
-OFFSETS_TOPIC_COMPRESSION_CODEC:
-  displayName: "offsets.topic.compression.codec"
-  description: "Compression codec for the offsets topic - compression may be used to achieve \"atomic\" commits"
-  default: "0"
-
-OFFSETS_TOPIC_NUM_PARTITIONS:
-  displayName: "offsets.topic.num.partitions"
-  description: "The number of partitions for the offset commit topic (should not change after deployment)"
-  default: "50"
-
-OFFSETS_TOPIC_REPLICATION_FACTOR:
-  displayName: "offsets.topic.replication.factor"
-  description: "The replication factor for the offsets topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement."
-  default: "3"
-
-OFFSETS_TOPIC_SEGMENT_BYTES:
-  displayName: "offsets.topic.segment.bytes"
-  description: "The offsets topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
-  default: "104857600"
-
-QUEUED_MAX_REQUESTS:
-  displayName: "queued.max.requests"
-  description: "The number of queued requests allowed before blocking the network threads"
-  default: "500"
-
-QUEUED_MAX_REQUEST_BYTES:
-  displayName: "queued.max.request.bytes"
-  description: "The number of queued bytes allowed before no more requests are read"
-  default: -1
-
-QUOTA_CONSUMER_DEFAULT:
-  displayName: "quota.consumer.default"
-  description: "Used only when dynamic default quotas are not configured for or in Zookeeper. Any consumer distinguished by clientId/consumer group will get throttled if it fetches more bytes than this value per-second"
-  default: "9223372036854775807"
-
-QUOTA_PRODUCER_DEFAULT:
-  displayName: "quota.producer.default"
-  description: "Used only when dynamic default quotas are not configured for , or in Zookeeper. Any producer distinguished by clientId will get throttled if it produces more bytes than this value per-second"
-  default: "9223372036854775807"
-
-READINESS_INITIAL_DELAY_SECONDS:
-  displayName: "livenessProbe initial delay timeout seconds"
-  description: "Number of seconds after the container has started before liveness probes is initiated. Defaults to 10."
-  default: "10"
-
-READINESS_PERIOD_SECONDS:
-  displayName: "livenessProbe period seconds"
-  description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
-  default: "10"
-
-READINESS_TIMEOUT_SECONDS:
-  displayName: "readinessProbe timeout seconds"
-  description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
-  default: "30"
-
-READINESS_SUCCESS_THRESHOLD:
-  displayName: "livenessProbe timeout seconds"
-  description: "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Minimum value is 1."
-  default: "1"
-
-READINESS_FAILURE_THRESHOLD:
-  displayName: "livenessProbe timeout seconds"
-  description: "When a Pod starts and the probe fails, Kubernetes will try failureThreshold times before the Pod will be marked Unready. Defaults to 3. Minimum value is 1."
-  default: "3"
-
-REPLICA_FETCH_MAX_BYTES:
-  displayName: "replica.fetch.max.bytes"
-  description: "The number of bytes of messages to attempt to fetch for each partition. This is not an absolute maximum, if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
-  default: "1048576"
-
-REPLICA_FETCH_MIN_BYTES:
-  displayName: "replica.fetch.min.bytes"
-  description: "Minimum bytes expected for each fetch response. If not enough bytes, wait up to replicaMaxWaitTimeMs"
-  default: "1"
-
-REPLICA_FETCH_WAIT_MAX_MS:
-  displayName: "replica.fetch.wait.max.ms"
-  description: "Max wait time for each fetcher request issued by follower replicas. This value should always be less than the replica.lag.time.max.ms at all times to prevent frequent shrinking of ISR for low throughput topics"
-  default: "500"
-
-REPLICA_FETCH_RESPONSE_MAX_BYTES:
-  displayName: "replica.fetch.response.max.bytes"
-  description: "Maximum bytes expected for the entire fetch response. Records are fetched in batches, and if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. As such this is not an absolute maximum. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
-  default: "10485760"
-
-REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS:
-  displayName: "replica.high.watermark.checkpoint.interval.ms"
-  description: "The frequency with which the high watermark is saved out to disk"
-  default: "5000"
-
-REPLICA_LAG_TIME_MAX_MS:
-  displayName: "replica.lag.time.max.ms"
-  description: "If a follower hasn't sent any fetch requests or hasn't consumed up to the leaders log end offset for at least this time, the leader will remove the follower from isr"
-  default: "10000"
-
-REPLICA_SOCKET_RECEIVE_BUFFER_BYTES:
-  displayName: "replica.socket.receive.buffer.bytes"
-  description: "The socket receive buffer for network requests"
-  default: "65536"
-
-REPLICA_SOCKET_TIMEOUT_MS:
-  displayName: "replica.socket.timeout.ms"
-  description: "The socket timeout for network requests. Its value should be at least replica.fetch.wait.max.ms"
-  default: "30000"
-
-REPLICATION_QUOTA_WINDOW_NUM:
-  displayName: "replication.quota.window.num"
-  description: "The number of samples to retain in memory for replication quotas"
-  default: "11"
-
-REPLICATION_QUOTA_WINDOW_SIZE_SECONDS:
-  displayName: "replication.quota.window.size.seconds"
-  description: "The time span of each sample for replication quotas"
-  default: "1"
-
-REQUEST_TIMEOUT_MS:
-  displayName: "request.timeout.ms"
-  description: "The configuration controls the maximum amount of time the client will wait for the response of a request. If the response is not received before the timeout elapses the client will resend the request if necessary or fail the request if retries are exhausted."
-  default: "30000"
-
-SOCKET_RECEIVE_BUFFER_BYTES:
-  displayName: "socket.receive.buffer.bytes"
-  description: "The SO_RCVBUF buffer of the socket sever sockets. If the value is -1 the OS default will be used."
-  default: "102400"
-
-SOCKET_REQUEST_MAX_BYTES:
-  displayName: "socket.request.max.bytes"
-  description: "The maximum number of bytes in a socket request"
-  default: "104857600"
-
-SOCKET_SEND_BUFFER_BYTES:
-  displayName: "socket.send.buffer.bytes"
-  description: "The SO_SNDBUF buffer of the socket sever sockets. If the value is -1, the OS default will be used."
-  default: "102400"
-
-UNCLEAN_LEADER_ELECTION_ENABLE:
-  displayName: "unclean.leader.election.enable"
-  description: "Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss"
-  default: "false"
-
-ZOOKEEPER_SESSION_TIMEOUT_MS:
-  displayName: "zookeeper.session.timeout.ms"
-  description: "Zookeeper session timeout"
-  default: "6000"
-
-CONNECTIONS_MAX_IDLE_MS:
-  displayName: "connections.max.idle.ms"
-  description: "Idle connections timeout: the server socket processor threads close the connections that idle more than this"
-  default: "600000"
-
-CONTROLLED_SHUTDOWN_ENABLE:
-  displayName: "controlled.shutdown.enable"
-  description: "Enable controlled shutdown of the server"
-  default: "true"
-
-CONTROLLED_SHUTDOWN_MAX_RETRIES:
-  displayName: "controlled.shutdown.max.retries"
-  description: "Controlled shutdown can fail for multiple reasons. This determines the number of retries when such failure happens"
-  default: "3"
-
-CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS:
-  displayName: "controlled.shutdown.retry.backoff.ms"
-  description: "Before each retry, the system needs time to recover from the state that caused the previous failure (Controller fail over, replica lag etc). This config determines the amount of time to wait before retrying."
-  default: "5000"
-
-CONTROLLER_SOCKET_TIMEOUT_MS:
-  displayName: "controller.socket.timeout.ms"
-  description: "The socket timeout for controller-to-broker channels"
-  default: "30000"
-
-DEFAULT_REPLICATION_FACTOR:
-  displayName: "default.replication.factor"
-  description: "Default replication factors for automatically created topics"
-  default: "1"
-
-FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS:
-  displayName: "fetch.purgatory.purge.interval.requests"
-  description: "The purge interval (in number of requests) of the fetch request purgatory"
-  default: "1000"
-
-GROUP_MAX_SESSION_TIMEOUT_MS:
-  displayName: "group.max.session.timeout.ms"
-  description: "The maximum allowed session timeout for registered consumers. Longer timeouts give consumers more time to process messages in between heartbeats at the cost of a longer time to detect failures."
-  default: "300000"
-
-GROUP_MIN_SESSION_TIMEOUT_MS:
-  displayName: "group.min.session.timeout.ms"
-  description: "The minimum allowed session timeout for registered consumers. Shorter timeouts result in quicker failure detection at the cost of more frequent consumer heartbeating which can overwhelm broker resources."
-  default: "6000"
-
-GROUP_INITIAL_REBALANCE_DELAY_MS:
-  displayName: "group.initial.rebalance.delay.ms"
-  description: "The amount of time the group coordinator will wait for more consumers to join a new group before performing the first rebalance. A longer delay means potentially fewer rebalances, but increases the time until processing begins."
-  default: "3000"
-
-INTER_BROKER_PROTOCOL_VERSION:
-  displayName: "inter.broker.protocol.version"
-  description: "Specify which version of the inter-broker protocol will be used, which must align with log.message.format.version. This is typically bumped *serially* one broker at a time, *after* all brokers were upgraded to a new version. Example of some valid values are: 0.8.0, 0.8.1, 0.8.1.1, 0.8.2, 0.8.2.0, 0.8.2.1, 0.9.0.0, 0.9.0.1, 0.10.0.0, 0.10.1.x, 0.10.2.x, 0.11.0.0, 1.0, 1.1. Check ApiVersion for the full list."
-  default: "2.1"
-
-LOG_MESSAGE_FORMAT_VERSION:
-  displayName: "log.message.format.version"
-  description: "Specify which version of the log message format will be used, which must align with inter.broker.protocol.version. This is a new setting as of 0.10.0.0, and should be left at 0.9.0 until clients are updated to 0.10.0.x. Similarly it should be left at 0.10.0 until all clients are updated to 0.11.0. This is typically bumped *serially* one broker at a time, *after* all inter-protocol versions are updated. Clients on earlier versions may see a performance penalty if this is increased before they've upgraded. See the latest Kafka documentation for details."
-  default: "2.1"
-
-LOG_CLEANER_BACKOFF_MS:
-  displayName: "log.cleaner.backoff.ms"
-  description: "The amount of time to sleep when there are no logs to clean"
-  default: "15000"
-
-LOG_CLEANER_DEDUPE_BUFFER_SIZE:
-  displayName: "log.cleaner.dedupe.buffer.size"
-  description: "The total memory used for log deduplication across all cleaner threads"
-  default: "134217728"
-
-LOG_CLEANER_DELETE_RETENTION_MS:
-  displayName: "log.cleaner.delete.retention.ms"
-  description: "How long are delete records retained?"
-  default: "86400000"
-
-LOG_CLEANER_ENABLE:
-  displayName: "log.cleaner.enable"
-  description: "Enable the log cleaner process to run on the server. Should be enabled if using any topics with a cleanup.policy=compact including the internal offsets topic. If disabled those topics will not be compacted and continually grow in size."
-  default: "true"
-
-LOG_CLEANER_IO_BUFFER_LOAD_FACTOR:
-  displayName: "log.cleaner.io.buffer.load.factor"
-  description: "Log cleaner dedupe buffer load factor. The percentage full the dedupe buffer can become. A higher value will allow more log to be cleaned at once but will lead to more hash collisions"
-  default: "0.9"
-
-LOG_CLEANER_IO_BUFFER_SIZE:
-  displayName: "log.cleaner.io.buffer.size"
-  description: "The total memory used for log cleaner I/O buffers across all cleaner threads"
-  default: "524288"
-
-LOG_CLEANER_IO_MAX_BYTES_PER_SECOND:
-  displayName: "log.cleaner.io.max.bytes.per.second"
-  description: "The log cleaner will be throttled so that the sum of its read and write i/o will be less than this value on average"
-  default: "1.7976931348623157e+308"
-
-LOG_CLEANER_MIN_CLEANABLE_RATIO:
-  displayName: "log.cleaner.min.cleanable.ratio"
-  description: "The minimum ratio of dirty log to total log for a log to eligible for cleaning"
-  default: "0.5"
-
-LOG_CLEANER_MIN_COMPACTION_LAG_MS:
-  displayName: "log.cleaner.min.compaction.lag.ms"
-  description: "The minimum time a message will remain uncompacted in the log. Only applicable for logs that are being compacted."
-  default: "0"
-
-LOG_CLEANER_THREADS:
-  displayName: "log.cleaner.threads"
-  description: "The number of background threads to use for log cleaning"
-  default: "1"
-
-LOG_CLEANUP_POLICY:
-  displayName: "log.cleanup.policy"
-  description: "The default cleanup policy for segments beyond the retention window. A comma separated list of valid policies. Valid policies are: \"delete\" and \"compact\""
-  default: "delete"
-
-LOG_INDEX_INTERVAL_BYTES:
-  displayName: "log.index.interval.bytes"
-  description: "The interval with which we add an entry to the offset index"
-  default: "4096"
-
-LOG_INDEX_SIZE_MAX_BYTES:
-  displayName: "log.index.size.max.bytes"
-  description: "The maximum size in bytes of the offset index"
-  default: "10485760"
-
-LOG_PREALLOCATE:
-  displayName: "log.preallocate"
-  description: "Should pre allocate file when create new segment? If you are using Kafka on Windows you probably need to set it to true."
-  default: "false"
-
-LOG_RETENTION_CHECK_INTERVAL_MS:
-  displayName: "log.retention.check.interval.ms"
-  description: "The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion"
-  default: "300000"
-
-MAX_CONNECTIONS_PER_IP:
-  displayName: "max.connections.per.ip"
-  description: "The maximum number of connections we allow from each ip address"
-  default: "2147483647"
-
-MAX_CONNECTIONS_PER_IP_OVERRIDES:
-  displayName: "max.connections.per.ip.overrides"
-  description: "Per-ip or hostname overrides to the default maximum number of connections"
-  default: ""
-
-PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS:
-  displayName: "producer.purgatory.purge.interval.requests"
-  description: "The purge interval (in number of requests) of the producer request purgatory"
-  default: "1000"
-
-REPLICA_FETCH_BACKOFF_MS:
-  displayName: "replica.fetch.backoff.ms"
-  description: "The amount of time to sleep when fetch partition error occurs."
-  default: "1000"
-
-RESERVED_BROKER_MAX_ID:
-  displayName: "reserved.broker.max.id"
-  description: "Max number that can be used for a broker.id"
-  default: "1000"
-
-METRIC_REPORTERS:
-  displayName: "metric.reporters"
-  description: "Java class to collect/report broker metrics"
-  default: ""
-
-METRICS_NUM_SAMPLES:
-  displayName: "metrics.num.samples"
-  description: "The number of samples maintained to compute metrics."
-  default: "2"
-
-METRICS_SAMPLE_WINDOW_MS:
-  displayName: "metrics.sample.window.ms"
-  description: "The window of time a metrics sample is computed over."
-  default: "30000"
-
-QUOTA_WINDOW_NUM:
-  displayName: "quota.window.num"
-  description: "The number of samples to retain in memory for client quotas"
-  default: "11"
-
-QUOTA_WINDOW_SIZE_SECONDS:
-  displayName: "quota.window.size.seconds"
-  description: "The time span of each sample for client quotas"
-  default: "1"
-
-SSL_ENDPOINT_IDENTIFICATION_ENABLED:
-  displayName: "ssl.endpoint.identification.enabled"
-  description: "By default enables the hostname verification when TLS connections are established between Kafka brokers. To disable hostname verification leave this option unchecked"
-  default: "true"
-
-TRANSACTION_STATE_LOG_SEGMENT_BYTES:
-  displayName: "transaction.state.log.segment.bytes"
-  description: "The transaction topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
-  default: "104857600"
-
-TRANSACTION_REMOVE_EXPIRED_TRANSACTION_CLEANUP_INTERVAL_MS:
-  displayName: "transaction.remove.expired.transaction.cleanup.interval.ms"
-  description: "The interval at which to remove transactions that have expired due to transactional.id.expiration.ms passing"
-  default: "3600000"
-
-TRANSACTION_MAX_TIMEOUT_MS:
-  displayName: "transaction.max.timeout.ms"
-  description: "The maximum allowed timeout for transactions. If a client's requested transaction time exceeds this then the broker will return an error in InitProducerIdRequest. This prevents a client from too large of a timeout which can stall consumers reading from topics included in the transaction."
-  default: "900000"
-
-TRANSACTION_STATE_LOG_NUM_PARTITIONS:
-  displayName: "transaction.state.log.num.partitions"
-  description: "The number of partitions for the transaction topic (should not change after deployment)."
-  default: "50"
-
-TRANSACTION_ABORT_TIMED_OUT_TRANSACTION_CLEANUP_INTERVAL_MS:
-  displayName: "transaction.abort.timed.out.transaction.cleanup.interval.ms"
-  description: "The interval at which to rollback transactions that have timed out"
-  default: "60000"
-
-TRANSACTION_STATE_LOG_LOAD_BUFFER_SIZE:
-  displayName: "transaction.state.log.load.buffer.size"
-  description: "Batch size for reading from the transaction log segments when loading producer ids and transactions into the cache."
-  default: "5242880"
-
-TRANSACTION_STATE_LOG_REPLICATION_FACTOR:
-  displayName: "transaction.state.log.replication.factor"
-  description: "The replication factor for the transaction topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement."
-  default: "3"
-
-TRANSACTION_STATE_LOG_MIN_ISR:
-  displayName: "transaction.state.log.min.isr"
-  description: "Overridden min.insync.replicas config for the transaction topic."
-  default: "2"
-
-TRANSACTIONAL_ID_EXPIRATION_MS:
-  displayName: "transactional.id.expiration.ms"
-  description: "The maximum amount of time in ms that the transaction coordinator will wait before proactively expire a producer's transactional id without receiving any transaction status updates from it."
-  default: "604800000"
-
-ZOOKEEPER_SYNC_TIME_MS:
-  displayName: "zookeeper.sync.time.ms"
-  description: "How far a ZK follower can be behind a ZK leader"
-  default: "2000"
-
-TRANSPORT_ENCRYPTION_ENABLED:
-  displayName: "Enable transport encryption (TLS)"
-  description: "Enable transport encryption (TLS)"
-  default: "false"
-
-TRANSPORT_ENCRYPTION_CIPHERS:
-  displayName: "Cipher Suite Names"
-  description: "Comma-separated list of JSSE Cipher Suite Names"
-  default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
-
-TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT:
-  displayName: "Allow Plaintext Traffic"
-  description: "Allow plaintext alongside encrypted traffic"
-  default: "false"
-
-SSL_AUTHENTICATION_ENABLED:
-  displayName: "Enable SSL authentication"
-  description: "Enable SSL authentication"
-  default: "false"
-
-TLS_SECRET_NAME:
-  default: "kafka-tls"
-  displayName: "kafka-tls"
-  description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
-
-CUSTOM_SERVER_PROPERTIES:
-  displayName: "custom server properties"
-  description: "These properties will be appended to the Kafka server properties"
-  default: ""
-
-CUSTOM_SERVER_PROPERTIES_CM_NAME:
-  displayName: "custom server properties configmap name"
-  description: "The properties present in this configmap will be appended to the Kafka server properties"
-  required: false
-
-CUSTOM_METRICS_CM_NAME:
-  displayName: "custom metrics properties and rules"
-  description: "These metrics prometheus rules to be used instead of the default metrics rules."
-  required: false
+parameters:
+  - name: AUTHORIZATION_ENABLED
+    description: "Enable authorization."
+    default: "false"
+    displayName: "Authorization Enabled"
+  - name: AUTHORIZATION_SUPER_USERS
+    description: "Semi-colon delimited list of principals. For Kerberos principals, these will be of the form User:<Kerberos-Primary>. For TLS, they will be of the form User:<CN of TLS cert> (for the TLS cert CN=test-user,OU=,O=Confluent,L=London,ST=London,C=GB, the user would be test-user)"
+    default: ""
+    displayName: "Super Users"
+  - name: AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND
+    description: "Allow any user to perform an action if no ACL is found for the resource."
+    default: "false"
+    displayName: "Allow everyone if no acl found"
+  - name: BROKER_COUNT
+    description: "Number of brokers spun up for Kafka"
+    default: "3"
+    displayName: "Broker Count"
+  - name: BROKER_CPUS
+    description: "CPUs (request) for the Kafka Broker pods. spec.containers[].resources.requests.cpu"
+    default: "500m"
+  - name: BROKER_CPUS_LIMIT
+    description: "CPUs (limit) for the Kafka Broker pods. spec.containers[].resources.limits.cpu"
+    default: "2000m"
+  - name: BROKER_MEM
+    description: "Memory (request) for the Kafka Broker pods. spec.containers[].resources.requests.memory"
+    default: "2048Mi"
+  - name: BROKER_MEM_LIMIT
+    description: "Memory (limit) for the Kafka Broker pods. spec.containers[].resources.limits.memory"
+    default: "4096Mi"
+  - name: BROKER_PORT
+    description: "Port brokers run on"
+    default: "9093"
+  - name: BROKER_PORT_TLS
+    description: "Port TLS-enabled brokers run on"
+    default: "9095"
+  - name: DISK_SIZE
+    description: "Disk size for the brokers"
+    default: "5Gi"
+    trigger: "not-allowed"
+  - name: STORAGE_CLASS
+    description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
+    required: false
+    trigger: "not-allowed"
+  - name: PERSISTENT_STORAGE
+    description: "If false, ephemeral storage is used. Not recommended for Production use."
+    default: "true"
+    trigger: "not-allowed"
+  - name: CLIENT_PORT
+    description: "Broker client port"
+    default: "9092"
+  - name: CLIENT_PORT_ENABLED
+    default: "true"
+  - name: METRICS_PORT
+    description: "Port JMX_EXPORTER binds"
+    default: "9094"
+  - name: METRICS_ENABLED
+    default: "true"
+  - name: NUM_PARTITIONS
+    description: "Number of partitions for Kafka topics"
+    default: "3"
+  - name: ZOOKEEPER_URI
+    displayName: "zookeeper cluster URI"
+    description: |
+      host and port information for Zookeeper connection.
+      e.g. zk:2181,zk2:2181,zk3:2181
+    default: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
+    required: true
+  - name: ZOOKEEPER_PATH
+    displayName: "zookeeper node path"
+    description: "Zookeeper node path. Defaults to Kafka instance name."
+    required: false
+  - name: AUTO_CREATE_TOPICS_ENABLE
+    default: "true"
+  - name: AUTO_LEADER_REBALANCE_ENABLE
+    default: "true"
+  - name: BACKGROUND_THREADS
+    description: "The number of threads to use for various background processing tasks"
+    default: "10"
+  - name: COMPRESSION_TYPE
+    default: "producer"
+    description: |
+      Specify the final compression type for a given topic. This configuration accepts the standard compression codecs ('gzip', 'snappy', 'lz4').
+      It additionally accepts 'uncompressed' which is equivalent to no compression; and 'producer' which means retain the original compression codec set by the producer.
+  - name: DELETE_TOPIC_ENABLE
+    displayName: "delete.topic.enable"
+    default: "false"
+    description: "Enables delete topic. Delete topic through the admin tool will have no effect if this config is turned off"
+  - name: DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS
+    default: "1"
+    description: "The purge interval (in number of requests) of the delete records request purgatory"
+  - name: KERBEROS_ENABLED
+    description: "Enable kerberos authentication."
+    default: "false"
+    displayName: "Kerberos Enabled"
+  - name: KERBEROS_ENABLED_FOR_ZOOKEEPER
+    description: "Enable Kerberos authentication for communication with Apache Zookeeper."
+    default: "false"
+    displayName: "Zookeeper Kerberos Enabled"
+  - name: KERBEROS_PRIMARY:
+    description: "The Kerberos primary used by Kafka tasks."
+    default: "kafka"
+    displayName: "Kerberos Primary"
+  - name: KERBEROS_KEYTAB_SECRET
+    description: "The name of the Kubernetes secret storing the keytab."
+    default: "base64-kafka-keytab-secret"
+    displayName: "Kerberos Keytab Secret"
+  - name: KERBEROS_REALM
+    description: "The Kerberos realm used to render the principal of Kafka broker pods."
+    default: "LOCAL"
+    displayName: "Kerberos Realm"
+  - name: KERBEROS_KDC_HOSTNAME
+    description: "The name or address of a host running a KDC for the realm."
+    default: "kdc-service"
+    displayName: "Kerberos Hostname"
+  - name: KERBEROS_KDC_PORT
+    description: "The port of the host running a KDC for that realm."
+    default: "2500"
+    displayName: "Kerberos Port"
+  - name: KERBEROS_DEBUG
+    description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
+    default: "false"
+    displayName: "Kerberos Debug"
+  - name: LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS
+    default: "300"
+    description: "The frequency with which the partition rebalance check is triggered by the controller"
+  - name: LEADER_IMBALANCE_PER_BROKER_PERCENTAGE
+    default: "10"
+    description: "The ratio of leader imbalance allowed per broker. The controller would trigger a leader balance if it goes above this value per broker. The value is specified in percentage."
+  - name: LIVENESS_INITIAL_DELAY_SECONDS
+    displayName: "livenessProbe initial delay timeout seconds"
+    description: "Number of seconds after the container has started before liveness probes is initiated."
+    default: "30"
+  - name: LIVENESS_PERIOD_SECONDS
+    displayName: "livenessProbe period seconds"
+    description: "How often (in seconds) to perform the probe. Default to 30 seconds. Minimum value is 1."
+    default: "30"
+  - name: LIVENESS_TIMEOUT_SECONDS
+    displayName: "livenessProbe timeout seconds"
+    description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
+    default: "30"
+  - name: LIVENESS_FAILURE_THRESHOLD
+    displayName: "livenessProbe timeout seconds"
+    description: "When the Pod starts and the probe fails, Kubernetes will try failureThreshold times before restarting the Pod. Defaults to 3. Minimum value is 1."
+    default: "3"
+  - name: LIVENESS_METHOD
+    displayName: "livenessProbe method"
+    description: "livenessProbe method values 'PORT' or 'FUNCTIONAL'"
+    default: "PORT"
+  - name: LIVENESS_TOPIC_PREFIX
+    displayName: "livenessProbe topic prefix"
+    description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
+    default: "KafkaLivenessTopic"
+  - name: LIVENESS_KERBEROS_PRIMARY
+    default: "livenessProbe"
+    description: "The Kerberos primary used by the liveness probe when using FUNCTIONAL livenessProbe method."
+    displayName: "Liveness Probe Kerberos Primary"
+  - name: LOG_FLUSH_INTERVAL_MESSAGES
+    default: "9223372036854775807"
+    description: "The number of messages accumulated on a log partition before messages are flushed to disk"
+  - name: LOG_FLUSH_INTERVAL_MS
+    default: "9223372036854775807"
+    description: "The maximum time in ms that a message in any topic is kept in memory before flushed to disk. If not set, the value in log.flush.scheduler.interval.ms is used"
+  - name: LOG_FLUSH_OFFSET_CHECKPOINT_INTERVAL_MS
+    default: "60000"
+    description: "The frequency with which we update the persistent record of the last flush which acts as the log recovery point"
+  - name: LOG_FLUSH_SCHEDULER_INTERVAL_MS
+    default: "9223372036854775807"
+    description: "The frequency in ms that the log flusher checks whether any log needs to be flushed to disk"
+  - name: LOG_FLUSH_START_OFFSET_CHECKPOINT_INTERVAL_MS
+    default: "60000"
+    description: "The frequency with which we update the persistent record of log start offset"
+  - name: LOG_RETENTION_BYTES
+    displayName: "log.retention.bytes"
+    description: "The maximum size of the log before deleting it"
+    default: "-1"
+  - name: LOG_RETENTION_MS
+    displayName: "log.retention.ms"
+    description: "The number of milliseconds to keep a log file before deleting it (in milliseconds) If not set, the value in log.retention.minutes is used"
+    required: false
+  - name: LOG_RETENTION_MINUTES
+    displayName: "log.retention.minutes"
+    description: "The number of minutes to keep a log file before deleting it (in minutes), secondary to log.retention.ms property. If not set, the value in log.retention.hours is used"
+    required: false
+  - name: LOG_RETENTION_HOURS
+    displayName: "log.retention.hours"
+    description: "The number of hours to keep a log file before deleting it (in hours), tertiary to log.retention.ms property"
+    default: "168"
+    required: false
+  - name: LOG_ROLL_MS
+    displayName: "log.roll.ms"
+    description: "The maximum time before a new log segment is rolled out (in milliseconds). If not set, the value in log.roll.hours is used"
+    required: false
+  - name: LOG_ROLL_JITTER_MS
+    displayName: "log.roll.jitter.ms"
+    description: "The maximum jitter to subtract from logRollTimeMillis (in milliseconds). If not set, the value in log.roll.jitter.hours is used"
+    required: false
+  - name: LOG_ROLL_HOURS
+    displayName: "log.roll.hours"
+    description: "The maximum time before a new log segment is rolled out (in hours), secondary to log.roll.ms property"
+    default: "168"
+    required: false
+  - name: LOG_ROLL_JITTER_HOURS
+    displayName: "log.roll.jitter.hours"
+    description: "The maximum jitter to subtract from logRollTimeMillis (in hours), secondary to log.roll.jitter.ms property"
+    default: "0"
+    required: false
+  - name: LOG_SEGMENT_BYTES
+    displayName: "log.segment.bytes"
+    description: "The maximum size of a single log file"
+    default: "1073741824"
+  - name: LOG_SEGMENT_DELETE_DELAY_MS
+    displayName: "log.segment.delete.delay.ms"
+    description: "The amount of time to wait before deleting a file from the filesystem"
+    default: "60000"
+  - name: MESSAGE_MAX_BYTES
+    displayName: "message.max.bytes"
+    description: "The largest record batch size allowed by Kafka. If this is increased and there are consumers older than 0.10.2, the consumers' fetch size must also be increased so that the they can fetch record batches this large.\nIn the latest message format version, records are always grouped into batches for efficiency. In previous message format versions, uncompressed records are not grouped into batches and this limit only applies to a single record in that case.\nThis can be set per  topic with the topic level max.message.bytes config."
+    default: "1000012"
+  - name: MIN_INSYNC_REPLICAS
+    displayName: "min.insync.replicas"
+    description: |
+      When a producer sets acks to "all" (or "-1") MIN_INSYNC_REPLICAS is the minimum number of replicas that must acknowledge a write for the write to be considered successful.
+      When used together, min.insync.replicas and acks allow you to enforce greater durability guarantees.
+      A typical scenario would be to create a topic with a replication factor of 3, set min.insync.replicas to 2, and produce with acks of "all".
+    default: "1"
+  - name: NUM_IO_THREADS
+    displayName: "num.io.threads"
+    description: "The number of threads that the server uses for processing requests, which may include disk I/O"
+    default: "8"
+  - name: NUM_NETWORK_THREADS
+    displayName: "num.network.threads"
+    description: "The number of threads that the server uses for receiving requests from the network and sending responses to the network"
+    default: "3"
+  - name: NUM_RECOVERY_THREADS_PER_DATA_DIR
+    displayName: "num.recovery.threads.per.data.dir"
+    description: "The number of threads per data directory to be used for log recovery at startup and flushing at shutdown"
+    default: "1"
+  - name: NUM_REPLICA_FETCHERS
+    displayName: "num.replica.fetchers"
+    description: "Number of fetcher threads used to replicate messages from a source broker. Increasing this value can increase the degree of I/O parallelism in the follower broker."
+    default: "1"
+  - name: OFFSET_METADATA_MAX_BYTES
+    displayName: "offset.metadata.max.bytes"
+    description: "The maximum size for a metadata entry associated with an offset commit"
+    default: "4096"
+  - name: OFFSETS_COMMIT_REQUIRED_ACKS
+    displayName: "offsets.commit.required.acks"
+    description: "The required acks before the commit can be accepted. In general the default (-1) should not be overridden"
+    default: -1
+  - name: OFFSETS_COMMIT_TIMEOUT_MS
+    displayName: "offsets.commit.timeout.ms"
+    description: "Offset commit will be delayed until all replicas for the offsets topic receive the commit or this timeout is reached. This is similar to the producer request timeout."
+    default: "5000"
+  - name: OFFSETS_LOAD_BUFFER_SIZE
+    displayName: "offsets.load.buffer.size"
+    description: "Batch size for reading from the offsets segments when loading offsets into the cache."
+    default: "5242880"
+  - name: OFFSETS_RETENTION_CHECK_INTERVAL_MS
+    displayName: "offsets.retention.check.interval.ms"
+    description: "Frequency at which to check for stale offsets"
+    default: "600000"
+  - name: OFFSETS_RETENTION_MINUTES
+    displayName: "offsets.retention.minutes"
+    description: "Offsets older than this retention period will be discarded"
+    default: "1440"
+  - name: OFFSETS_TOPIC_COMPRESSION_CODEC
+    displayName: "offsets.topic.compression.codec"
+    description: "Compression codec for the offsets topic - compression may be used to achieve \"atomic\" commits"
+    default: "0"
+  - name: OFFSETS_TOPIC_NUM_PARTITIONS
+    displayName: "offsets.topic.num.partitions"
+    description: "The number of partitions for the offset commit topic (should not change after deployment)"
+    default: "50"
+  - name: OFFSETS_TOPIC_REPLICATION_FACTOR
+    displayName: "offsets.topic.replication.factor"
+    description: "The replication factor for the offsets topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement."
+    default: "3"
+  - name: OFFSETS_TOPIC_SEGMENT_BYTES
+    displayName: "offsets.topic.segment.bytes"
+    description: "The offsets topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
+    default: "104857600"
+  - name: QUEUED_MAX_REQUESTS
+    displayName: "queued.max.requests"
+    description: "The number of queued requests allowed before blocking the network threads"
+    default: "500"
+  - name: QUEUED_MAX_REQUEST_BYTES
+    displayName: "queued.max.request.bytes"
+    description: "The number of queued bytes allowed before no more requests are read"
+    default: -1
+  - name: QUOTA_CONSUMER_DEFAULT
+    displayName: "quota.consumer.default"
+    description: "Used only when dynamic default quotas are not configured for or in Zookeeper. Any consumer distinguished by clientId/consumer group will get throttled if it fetches more bytes than this value per-second"
+    default: "9223372036854775807"
+  - name: QUOTA_PRODUCER_DEFAULT
+    displayName: "quota.producer.default"
+    description: "Used only when dynamic default quotas are not configured for , or in Zookeeper. Any producer distinguished by clientId will get throttled if it produces more bytes than this value per-second"
+    default: "9223372036854775807"
+  - name: READINESS_INITIAL_DELAY_SECONDS
+    displayName: "livenessProbe initial delay timeout seconds"
+    description: "Number of seconds after the container has started before liveness probes is initiated. Defaults to 10."
+    default: "10"
+  - name: READINESS_PERIOD_SECONDS
+    displayName: "livenessProbe period seconds"
+    description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
+    default: "10"
+  - name: READINESS_TIMEOUT_SECONDS
+    displayName: "readinessProbe timeout seconds"
+    description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
+    default: "30"
+  - name: READINESS_SUCCESS_THRESHOLD
+    displayName: "livenessProbe timeout seconds"
+    description: "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Minimum value is 1."
+    default: "1"
+  - name: READINESS_FAILURE_THRESHOLD
+    displayName: "livenessProbe timeout seconds"
+    description: "When a Pod starts and the probe fails, Kubernetes will try failureThreshold times before the Pod will be marked Unready. Defaults to 3. Minimum value is 1."
+    default: "3"
+  - name: REPLICA_FETCH_MAX_BYTES
+    displayName: "replica.fetch.max.bytes"
+    description: "The number of bytes of messages to attempt to fetch for each partition. This is not an absolute maximum, if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
+    default: "1048576"
+  - name: REPLICA_FETCH_MIN_BYTES
+    displayName: "replica.fetch.min.bytes"
+    description: "Minimum bytes expected for each fetch response. If not enough bytes, wait up to replicaMaxWaitTimeMs"
+    default: "1"
+  - name: REPLICA_FETCH_WAIT_MAX_MS
+    displayName: "replica.fetch.wait.max.ms"
+    description: "Max wait time for each fetcher request issued by follower replicas. This value should always be less than the replica.lag.time.max.ms at all times to prevent frequent shrinking of ISR for low throughput topics"
+    default: "500"
+  - name: REPLICA_FETCH_RESPONSE_MAX_BYTES:
+    displayName: "replica.fetch.response.max.bytes"
+    description: "Maximum bytes expected for the entire fetch response. Records are fetched in batches, and if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. As such this is not an absolute maximum. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
+    default: "10485760"
+  - name: REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS
+    displayName: "replica.high.watermark.checkpoint.interval.ms"
+    description: "The frequency with which the high watermark is saved out to disk"
+    default: "5000"
+  - name: REPLICA_LAG_TIME_MAX_MS
+    displayName: "replica.lag.time.max.ms"
+    description: "If a follower hasn't sent any fetch requests or hasn't consumed up to the leaders log end offset for at least this time, the leader will remove the follower from isr"
+    default: "10000"
+  - name: REPLICA_SOCKET_RECEIVE_BUFFER_BYTES
+    displayName: "replica.socket.receive.buffer.bytes"
+    description: "The socket receive buffer for network requests"
+    default: "65536"
+  - name: REPLICA_SOCKET_TIMEOUT_MS
+    displayName: "replica.socket.timeout.ms"
+    description: "The socket timeout for network requests. Its value should be at least replica.fetch.wait.max.ms"
+    default: "30000"
+  - name: REPLICATION_QUOTA_WINDOW_NUM
+    displayName: "replication.quota.window.num"
+    description: "The number of samples to retain in memory for replication quotas"
+    default: "11"
+  - name: REPLICATION_QUOTA_WINDOW_SIZE_SECONDS
+    displayName: "replication.quota.window.size.seconds"
+    description: "The time span of each sample for replication quotas"
+    default: "1"
+  - name: REQUEST_TIMEOUT_MS
+    displayName: "request.timeout.ms"
+    description: "The configuration controls the maximum amount of time the client will wait for the response of a request. If the response is not received before the timeout elapses the client will resend the request if necessary or fail the request if retries are exhausted."
+    default: "30000"
+  - name: SOCKET_RECEIVE_BUFFER_BYTES
+    displayName: "socket.receive.buffer.bytes"
+    description: "The SO_RCVBUF buffer of the socket sever sockets. If the value is -1 the OS default will be used."
+    default: "102400"
+  - name: SOCKET_REQUEST_MAX_BYTES
+    displayName: "socket.request.max.bytes"
+    description: "The maximum number of bytes in a socket request"
+    default: "104857600"
+  - name: SOCKET_SEND_BUFFER_BYTES
+    displayName: "socket.send.buffer.bytes"
+    description: "The SO_SNDBUF buffer of the socket sever sockets. If the value is -1, the OS default will be used."
+    default: "102400"
+  - name: UNCLEAN_LEADER_ELECTION_ENABLE
+    displayName: "unclean.leader.election.enable"
+    description: "Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss"
+    default: "false"
+  - name: ZOOKEEPER_SESSION_TIMEOUT_MS
+    displayName: "zookeeper.session.timeout.ms"
+    description: "Zookeeper session timeout"
+    default: "6000"
+  - name: CONNECTIONS_MAX_IDLE_MS
+    displayName: "connections.max.idle.ms"
+    description: "Idle connections timeout: the server socket processor threads close the connections that idle more than this"
+    default: "600000"
+  - name: CONTROLLED_SHUTDOWN_ENABLE
+    displayName: "controlled.shutdown.enable"
+    description: "Enable controlled shutdown of the server"
+    default: "true"
+  - name: CONTROLLED_SHUTDOWN_MAX_RETRIES
+    displayName: "controlled.shutdown.max.retries"
+    description: "Controlled shutdown can fail for multiple reasons. This determines the number of retries when such failure happens"
+    default: "3"
+  - name: CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS
+    displayName: "controlled.shutdown.retry.backoff.ms"
+    description: "Before each retry, the system needs time to recover from the state that caused the previous failure (Controller fail over, replica lag etc). This config determines the amount of time to wait before retrying."
+    default: "5000"
+  - name: CONTROLLER_SOCKET_TIMEOUT_MS
+    displayName: "controller.socket.timeout.ms"
+    description: "The socket timeout for controller-to-broker channels"
+    default: "30000"
+  - name: DEFAULT_REPLICATION_FACTOR
+    displayName: "default.replication.factor"
+    description: "Default replication factors for automatically created topics"
+    default: "1"
+  - name: FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS
+    displayName: "fetch.purgatory.purge.interval.requests"
+    description: "The purge interval (in number of requests) of the fetch request purgatory"
+    default: "1000"
+  - name: GROUP_MAX_SESSION_TIMEOUT_MS
+    displayName: "group.max.session.timeout.ms"
+    description: "The maximum allowed session timeout for registered consumers. Longer timeouts give consumers more time to process messages in between heartbeats at the cost of a longer time to detect failures."
+    default: "300000"
+  - name: GROUP_MIN_SESSION_TIMEOUT_MS
+    displayName: "group.min.session.timeout.ms"
+    description: "The minimum allowed session timeout for registered consumers. Shorter timeouts result in quicker failure detection at the cost of more frequent consumer heartbeating which can overwhelm broker resources."
+    default: "6000"
+  - name: GROUP_INITIAL_REBALANCE_DELAY_MS
+    displayName: "group.initial.rebalance.delay.ms"
+    description: "The amount of time the group coordinator will wait for more consumers to join a new group before performing the first rebalance. A longer delay means potentially fewer rebalances, but increases the time until processing begins."
+    default: "3000"
+  - name: INTER_BROKER_PROTOCOL_VERSION
+    displayName: "inter.broker.protocol.version"
+    description: "Specify which version of the inter-broker protocol will be used, which must align with log.message.format.version. This is typically bumped *serially* one broker at a time, *after* all brokers were upgraded to a new version. Example of some valid values are: 0.8.0, 0.8.1, 0.8.1.1, 0.8.2, 0.8.2.0, 0.8.2.1, 0.9.0.0, 0.9.0.1, 0.10.0.0, 0.10.1.x, 0.10.2.x, 0.11.0.0, 1.0, 1.1. Check ApiVersion for the full list."
+    default: "2.1"
+  - name: LOG_MESSAGE_FORMAT_VERSION
+    displayName: "log.message.format.version"
+    description: "Specify which version of the log message format will be used, which must align with inter.broker.protocol.version. This is a new setting as of 0.10.0.0, and should be left at 0.9.0 until clients are updated to 0.10.0.x. Similarly it should be left at 0.10.0 until all clients are updated to 0.11.0. This is typically bumped *serially* one broker at a time, *after* all inter-protocol versions are updated. Clients on earlier versions may see a performance penalty if this is increased before they've upgraded. See the latest Kafka documentation for details."
+    default: "2.1"
+  - name: LOG_CLEANER_BACKOFF_MS
+    displayName: "log.cleaner.backoff.ms"
+    description: "The amount of time to sleep when there are no logs to clean"
+    default: "15000"
+  - name: LOG_CLEANER_DEDUPE_BUFFER_SIZE
+    displayName: "log.cleaner.dedupe.buffer.size"
+    description: "The total memory used for log deduplication across all cleaner threads"
+    default: "134217728"
+  - name: LOG_CLEANER_DELETE_RETENTION_MS
+    displayName: "log.cleaner.delete.retention.ms"
+    description: "How long are delete records retained?"
+    default: "86400000"
+  - name: LOG_CLEANER_ENABLE
+    displayName: "log.cleaner.enable"
+    description: "Enable the log cleaner process to run on the server. Should be enabled if using any topics with a cleanup.policy=compact including the internal offsets topic. If disabled those topics will not be compacted and continually grow in size."
+    default: "true"
+  - name: LOG_CLEANER_IO_BUFFER_LOAD_FACTOR
+    displayName: "log.cleaner.io.buffer.load.factor"
+    description: "Log cleaner dedupe buffer load factor. The percentage full the dedupe buffer can become. A higher value will allow more log to be cleaned at once but will lead to more hash collisions"
+    default: "0.9"
+  - name: LOG_CLEANER_IO_BUFFER_SIZE
+    displayName: "log.cleaner.io.buffer.size"
+    description: "The total memory used for log cleaner I/O buffers across all cleaner threads"
+    default: "524288"
+  - name: LOG_CLEANER_IO_MAX_BYTES_PER_SECOND
+    displayName: "log.cleaner.io.max.bytes.per.second"
+    description: "The log cleaner will be throttled so that the sum of its read and write i/o will be less than this value on average"
+    default: "1.7976931348623157e+308"
+  - name: LOG_CLEANER_MIN_CLEANABLE_RATIO
+    displayName: "log.cleaner.min.cleanable.ratio"
+    description: "The minimum ratio of dirty log to total log for a log to eligible for cleaning"
+    default: "0.5"
+  - name: LOG_CLEANER_MIN_COMPACTION_LAG_MS
+    displayName: "log.cleaner.min.compaction.lag.ms"
+    description: "The minimum time a message will remain uncompacted in the log. Only applicable for logs that are being compacted."
+    default: "0"
+  - name: LOG_CLEANER_THREADS
+    displayName: "log.cleaner.threads"
+    description: "The number of background threads to use for log cleaning"
+    default: "1"
+  - name: LOG_CLEANUP_POLICY
+    displayName: "log.cleanup.policy"
+    description: "The default cleanup policy for segments beyond the retention window. A comma separated list of valid policies. Valid policies are: \"delete\" and \"compact\""
+    default: "delete"
+  - name: LOG_INDEX_INTERVAL_BYTES
+    displayName: "log.index.interval.bytes"
+    description: "The interval with which we add an entry to the offset index"
+    default: "4096"
+  - name: LOG_INDEX_SIZE_MAX_BYTES
+    displayName: "log.index.size.max.bytes"
+    description: "The maximum size in bytes of the offset index"
+    default: "10485760"
+  - name: LOG_PREALLOCATE
+    displayName: "log.preallocate"
+    description: "Should pre allocate file when create new segment? If you are using Kafka on Windows you probably need to set it to true."
+    default: "false"
+  - name: LOG_RETENTION_CHECK_INTERVAL_MS
+    displayName: "log.retention.check.interval.ms"
+    description: "The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion"
+    default: "300000"
+  - name: MAX_CONNECTIONS_PER_IP
+    displayName: "max.connections.per.ip"
+    description: "The maximum number of connections we allow from each ip address"
+    default: "2147483647"
+  - name: MAX_CONNECTIONS_PER_IP_OVERRIDES
+    displayName: "max.connections.per.ip.overrides"
+    description: "Per-ip or hostname overrides to the default maximum number of connections"
+    default: ""
+  - name: PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS
+    displayName: "producer.purgatory.purge.interval.requests"
+    description: "The purge interval (in number of requests) of the producer request purgatory"
+    default: "1000"
+  - name: REPLICA_FETCH_BACKOFF_MS
+    displayName: "replica.fetch.backoff.ms"
+    description: "The amount of time to sleep when fetch partition error occurs."
+    default: "1000"
+  - name: RESERVED_BROKER_MAX_ID
+    displayName: "reserved.broker.max.id"
+    description: "Max number that can be used for a broker.id"
+    default: "1000"
+  - name: METRIC_REPORTERS
+    displayName: "metric.reporters"
+    description: "Java class to collect/report broker metrics"
+    default: ""
+  - name: METRICS_NUM_SAMPLES
+    displayName: "metrics.num.samples"
+    description: "The number of samples maintained to compute metrics."
+    default: "2"
+  - name: METRICS_SAMPLE_WINDOW_MS
+    displayName: "metrics.sample.window.ms"
+    description: "The window of time a metrics sample is computed over."
+    default: "30000"
+  - name: QUOTA_WINDOW_NUM
+    displayName: "quota.window.num"
+    description: "The number of samples to retain in memory for client quotas"
+    default: "11"
+  - name: QUOTA_WINDOW_SIZE_SECONDS
+    displayName: "quota.window.size.seconds"
+    description: "The time span of each sample for client quotas"
+    default: "1"
+  - name: SSL_ENDPOINT_IDENTIFICATION_ENABLED
+    displayName: "ssl.endpoint.identification.enabled"
+    description: "By default enables the hostname verification when TLS connections are established between Kafka brokers. To disable hostname verification leave this option unchecked"
+    default: "true"
+  - name: TRANSACTION_STATE_LOG_SEGMENT_BYTES
+    displayName: "transaction.state.log.segment.bytes"
+    description: "The transaction topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
+    default: "104857600"
+  - name: TRANSACTION_REMOVE_EXPIRED_TRANSACTION_CLEANUP_INTERVAL_MS
+    displayName: "transaction.remove.expired.transaction.cleanup.interval.ms"
+    description: "The interval at which to remove transactions that have expired due to transactional.id.expiration.ms passing"
+    default: "3600000"
+  - name: TRANSACTION_MAX_TIMEOUT_MS
+    displayName: "transaction.max.timeout.ms"
+    description: "The maximum allowed timeout for transactions. If a client's requested transaction time exceeds this then the broker will return an error in InitProducerIdRequest. This prevents a client from too large of a timeout which can stall consumers reading from topics included in the transaction."
+    default: "900000"
+  - name: TRANSACTION_STATE_LOG_NUM_PARTITIONS
+    displayName: "transaction.state.log.num.partitions"
+    description: "The number of partitions for the transaction topic (should not change after deployment)."
+    default: "50"
+  - name: TRANSACTION_ABORT_TIMED_OUT_TRANSACTION_CLEANUP_INTERVAL_MS
+    displayName: "transaction.abort.timed.out.transaction.cleanup.interval.ms"
+    description: "The interval at which to rollback transactions that have timed out"
+    default: "60000"
+  - name: TRANSACTION_STATE_LOG_LOAD_BUFFER_SIZE
+    displayName: "transaction.state.log.load.buffer.size"
+    description: "Batch size for reading from the transaction log segments when loading producer ids and transactions into the cache."
+    default: "5242880"
+  - name: TRANSACTION_STATE_LOG_REPLICATION_FACTOR
+    displayName: "transaction.state.log.replication.factor"
+    description: "The replication factor for the transaction topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement."
+    default: "3"
+  - name: TRANSACTION_STATE_LOG_MIN_ISR
+    displayName: "transaction.state.log.min.isr"
+    description: "Overridden min.insync.replicas config for the transaction topic."
+    default: "2"
+  - name: TRANSACTIONAL_ID_EXPIRATION_MS
+    displayName: "transactional.id.expiration.ms"
+    description: "The maximum amount of time in ms that the transaction coordinator will wait before proactively expire a producer's transactional id without receiving any transaction status updates from it."
+    default: "604800000"
+  - name: ZOOKEEPER_SYNC_TIME_MS
+    displayName: "zookeeper.sync.time.ms"
+    description: "How far a ZK follower can be behind a ZK leader"
+    default: "2000"
+  - name: TRANSPORT_ENCRYPTION_ENABLED
+    displayName: "Enable transport encryption (TLS)"
+    description: "Enable transport encryption (TLS)"
+    default: "false"
+  - name: TRANSPORT_ENCRYPTION_CIPHERS
+    displayName: "Cipher Suite Names"
+    description: "Comma-separated list of JSSE Cipher Suite Names"
+    default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - name: TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT
+    displayName: "Allow Plaintext Traffic"
+    description: "Allow plaintext alongside encrypted traffic"
+    default: "false"
+  - name: SSL_AUTHENTICATION_ENABLED
+    displayName: "Enable SSL authentication"
+    description: "Enable SSL authentication"
+    default: "false"
+  - name: TLS_SECRET_NAME
+    default: "kafka-tls"
+    displayName: "kafka-tls"
+    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
+  - name: CUSTOM_SERVER_PROPERTIES
+    displayName: "custom server properties"
+    description: "These properties will be appended to the Kafka server properties"
+    default: ""
+  - name: CUSTOM_SERVER_PROPERTIES_CM_NAME
+    displayName: "custom server properties configmap name"
+    description: "The properties present in this configmap will be appended to the Kafka server properties"
+    required: false
+  - name: CUSTOM_METRICS_CM_NAME
+    displayName: "custom metrics properties and rules"
+    description: "These metrics prometheus rules to be used instead of the default metrics rules."
+    required: false
