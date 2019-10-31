@@ -7,6 +7,8 @@ metadata:
     zookeeper: {{ .OperatorName }}
     app: zookeeper
     instance: {{ .Name }}
+  annotations:
+    reloader.kudo.dev/auto: "true"
 spec:
   selector:
     matchLabels:
