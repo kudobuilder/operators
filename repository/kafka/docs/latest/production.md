@@ -10,11 +10,11 @@
 - Broker configuration
 - Run the KUDO Kafka with tuned parameters
 
-This document gives preference to the **data durability over the performance**.
+This document optimizes for **data durability over performance**. 
 
 ## Storage Class features
 
-Verify if there is a storage class installed in the kubernetes cluster. In this example we will use the `aws-ebs-csi-driver` as storage class reference.
+Verify if there is a storage class installed in the Kubernetes cluster. In this example we will use the `aws-ebs-csi-driver` as the storage class reference.
 
 ```
 > kubectl get sc
@@ -24,7 +24,7 @@ awsebscsiprovisioner (default)   ebs.csi.aws.com   2d
 
 ### Volume Expansion
 
-Verify if  the storage class has the option `AllowVolumeExpansion` to `true` 
+Verify if the storage class has the option `AllowVolumeExpansion` and is set to `true`.
 
 ```
 > kubectl describe sc awsebscsiprovisioner
@@ -40,21 +40,21 @@ VolumeBindingMode:     WaitForFirstConsumer
 Events:                <none>
 ```
 
-:warning: In case it's `unset` or `false`, make sure to provision enough disk when bootstrapping the KUDO Kafka cluster. The disk size can be configured using the `DISK_SIZE` parameter. By **default, its 5Gi** and **not ideal for production usage**. Extend it as much as you consider your Kafka cluster needs to have reliable stability.​ 
+:warning: In case `AllowVolumeExpansion` is `unset` or `false`, make sure to provision enough disk when bootstrapping the KUDO Kafka cluster. The disk size can be configured using the `DISK_SIZE` parameter. By **default, DISK_SIZE is set to 5Gi** and is **not ideal for production usage**. Users should Increase disk size by as much as they deem necessary for reliable stability.
 
 ### ReclaimPolicy
 
-Verify if the storage class has the option `ReclaimPolicy` set to `Retain`
+Verify the storage class has the option `ReclaimPolicy` and is set to `Retain`.
 
-To read more about the `ReclaimPolicy` check the Kubernetes official docs around [Changing Reclaim Policy](https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/)
+To read more about the `ReclaimPolicy` read the official Kubernetes docs on [Changing the Reclaim Policy](https://kubernetes.io/docs/tasks/administer-cluster/change-pv-reclaim-policy/)
 
 ```
-PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”. For dynamically provisioned PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered.
+> PersistentVolumes can have various reclaim policies, including “Retain”, “Recycle”, and “Delete”. For dynamically provisioned PersistentVolumes, the default reclaim policy is “Delete”. This means that a dynamically provisioned volume is automatically deleted when a user deletes the corresponding PersistentVolumeClaim. This automatic behavior might be inappropriate if the volume contains precious data. In that case, it is more appropriate to use the “Retain” policy. With the “Retain” policy, if a user deletes a PersistentVolumeClaim, the corresponding PersistentVolume is not be deleted. Instead, it is moved to the Released phase, where all of its data can be manually recovered.
 ```
 
-If the `StorageClass` is shared between many users, its a common practice to keep the default `ReclaimPolicy` as `Delete` and the alternative is to change the `ReclaimPolicy` in the `PersistentVolume` once the cluster is up and running. 
+If the `StorageClass` is to be shared between many users, a common practice is to leave the default `ReclaimPolicy` as `Delete` and set `ReclaimPolicy: Retain` in the `PersistentVolume` once the cluster is up and running. 
 
-Lets see an example of KUDO Kafka 3 brokers cluster's `PersistentVolumes` where the `StorageClass` default `ReclaimPolicy` is `Delete` 
+Let's see an example of a 3-broker KUDO Kafka cluster's `PersistentVolumes` where the `StorageClass` default `ReclaimPolicy` is `Delete` 
 
 ```
 > kubectl get pv
@@ -76,7 +76,7 @@ persistentvolume/pvc-8602a698-14a0-4c3d-85e6-67eb6da80a5d patched
 persistentvolume/pvc-de527673-8bee-4e38-9e6d-399ec07c2728 patched
 ```
 
-Verify that `ReclaimPolicy` has been changed for the broker `PersistentVolumes`
+Verify the `PersistentVolumes` `ReclaimPolicy` has been changed for all brokers:
 
 ```
 > kubectl get pv
@@ -91,7 +91,7 @@ pvc-de527673-8bee-4e38-9e6d-399ec07c2728   5Gi        RWO            Retain     
 
 #### Replication Factor
 
-Change the default replication factor from the default 1 to 3
+Change the default replication factor from the default `1` to `3`.
 
 ```
 DEFAULT_REPLICATION_FACTOR=3
@@ -99,10 +99,9 @@ DEFAULT_REPLICATION_FACTOR=3
 
 #### Minimum Insync Replicas
 
-When a producer sets acks to `all` (or `-1`) `MIN_INSYNC_REPLICAS` is the minimum number of replicas that must acknowledge a write for the write to be considered successful.
-When used together, `min.insync.replicas` and `acks` allow Apache Kafka users to enforce greater durability guarantees.
+`MIN_INSYNC_REPLICAS` is the minimum number of replicas that must acknowledge a write for the write to be considered successful. To enforce greater durability guarantees, Kafka users should use `MIN_INSYNC_REPLICAS` in conjunction with producer `acks`.
 
-To guarantee the messages durability a recommended practice would be to create a topic with a replication factor of `3`, set `MIN_INSYNC_REPLICAS` to `2`, and produce messages with acks of `all`.
+To guarantee message durability, a recommended practice is to create a topic with a replication factor of `3`, set `MIN_INSYNC_REPLICAS` to `2`, and produce messages with acks of `all`.
 
 ```
 MIN_INSYNC_REPLICAS=2
@@ -110,9 +109,9 @@ MIN_INSYNC_REPLICAS=2
 
 #### Number of partitions
 
-The number of partitions should be higher than `1` for reliability reasons, by default this option is set to `3`
+The number of partitions should be higher than `1` for reliability reasons. By default, this option is set to `3`.
 
-More partitions lead to higher throughput performance but affect latency and availability. In KUDO Kafka we can set this trade-off of throughput vs. availability by setting the default partition number.
+More partitions lead to higher throughput performance but affect latency and availability. In KUDO Kafka we can balance this trade-off of throughput vs. availability by configuring the default partition number.
 
 ```
 NUM_PARTITIONS=3
@@ -120,7 +119,7 @@ NUM_PARTITIONS=3
 
 #### Graceful rolling restarts
 
-KUDO Kafka enables by default the option `CONTROLLED_SHUTDOWN_ENABLE` to true. To ensure a faster flush during shutdown and faster recovery during the bootstrap `num.recovery.threads.per.data.dir` can be increased from default `1` thread.
+By default, KUDO Kafka sets `CONTROLLED_SHUTDOWN_ENABLE` to `true`. To ensure a faster flush during shutdown, and faster recovery during bootstrap, `num.recovery.threads.per.data.dir` can be increased from the default of `1` thread.
 
 ```
 NUM_RECOVERY_THREADS_PER_DATA_DIR=3
@@ -128,7 +127,7 @@ NUM_RECOVERY_THREADS_PER_DATA_DIR=3
 
 #### Network Threads
 
-If the Kafka cluster will have a lot of income requests, then you might need to change from the default value of `3` threads. This is necessary for clusters where a lot of different producers are connecting and writing messages.
+If users expect the Kafka cluster to receive a high number of incoming requests, then users may need to increase the the number of network threads from its default value of of `3`. This is important for clusters where a lot of different producers are connecting and writing messages.
 
 ```
 NUM_NETWORK_THREADS=10

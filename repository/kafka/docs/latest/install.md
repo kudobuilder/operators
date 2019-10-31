@@ -5,8 +5,8 @@ Requirements:
 - Install the [KUDO controller](https://kudo.dev/docs/getting-started/)
 - Install the [KUDO CLI](https://kudo.dev/docs/cli/)
 
-This guide explains the basic installation of the KUDO Zookeeper and KUDO Kafka. 
-To run the production-grade KUDO Kafka clusters please follow the running [KUDO Kafka in production](./production.md)
+This guide explains the basic installation for both KUDO Kafka and KUDO Zookeeper.
+To run a production-grade KUDO Kafka cluster, please read [KUDO Kafka in production](./production.md)
 
 ## Installing the Operator
 
