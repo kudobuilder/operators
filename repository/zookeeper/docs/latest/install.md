@@ -23,10 +23,14 @@ Plan(s) for "zk" in namespace "default":
 .
 └── zk (Operator-Version: "zookeeper-0.2.0" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [COMPLETE]
-    │   ├── Phase zookeeper [COMPLETE]
-    │   │   └── Step deploy (COMPLETE)
-    │   └── Phase validation [COMPLETE]
-    │       └── Step validation (COMPLETE)
+    │   ├── Phase zookeeper [COMPLETE]
+    │   │   └── Step deploy (COMPLETE)
+    │   └── Phase validation [COMPLETE]
+    │       └── Step validation (COMPLETE)
+    └── Plan validation (serial strategy) [NOT ACTIVE]
+        └── Phase connection (parallel strategy) [NOT ACTIVE]
+            └── Step connection (parallel strategy) [NOT ACTIVE]
+                └── connection [NOT ACTIVE]
 ```
 
 You can view all configuration options [here](./configuration.md)

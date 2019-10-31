@@ -14,7 +14,11 @@ kubectl kudo install zookeeper --instance=my-zookeeper-name \
             -p MEMORY=1Gi \
             -p DISK_SIZE=5Gi \
 ```
-The parameter `CLIENT_PORT`(default: 2181) sets the port for listening to client requests. Similarly, `SERVER_PORT`(default: 2888) is used to set port on which zookeeper will listen for requests from other servers in the ensemble and `ELECTION_PORT`(default: 3888) can be used to set the port on which the Zookeeper process will perform leader election.
+
+##### Ports
+
+The parameter `CLIENT_PORT`(default: 2181) sets the port for listening to client requests.
+Similarly, `SERVER_PORT`(default: 2888) is used to set port on which zookeeper will listen for requests from other servers in the ensemble and `ELECTION_PORT`(default: 3888) can be used to set the port on which the Zookeeper process will perform leader election.
 
 
 ##### Storage
