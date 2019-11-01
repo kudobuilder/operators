@@ -327,7 +327,7 @@ parameters:
     displayName: "replica.fetch.wait.max.ms"
     description: "Max wait time for each fetcher request issued by follower replicas. This value should always be less than the replica.lag.time.max.ms at all times to prevent frequent shrinking of ISR for low throughput topics"
     default: "500"
-  - name: REPLICA_FETCH_RESPONSE_MAX_BYTES:
+  - name: REPLICA_FETCH_RESPONSE_MAX_BYTES
     displayName: "replica.fetch.response.max.bytes"
     description: "Maximum bytes expected for the entire fetch response. Records are fetched in batches, and if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. As such this is not an absolute maximum. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
     default: "10485760"
