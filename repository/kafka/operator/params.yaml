@@ -96,7 +96,7 @@ parameters:
     description: "Enable Kerberos authentication for communication with Apache Zookeeper."
     default: "false"
     displayName: "Zookeeper Kerberos Enabled"
-  - name: KERBEROS_PRIMARY:
+  - name: KERBEROS_PRIMARY
     description: "The Kerberos primary used by Kafka tasks."
     default: "kafka"
     displayName: "Kerberos Primary"
