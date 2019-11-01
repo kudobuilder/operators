@@ -1,5 +1,5 @@
 parameters:
-  - name: NODE_COUNT:
+  - name: NODE_COUNT
     description: "Number of nodes spun up for Zookeeper"
     default: 3
     displayName: "Node Count"
