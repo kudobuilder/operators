@@ -6,9 +6,6 @@ The KUDO Zookeeper operator creates, configures and manages [Apache Zookeeper](h
 
 The latest stable version of Zookeeper operator is `0.2.0`
 
-For the latest master branch you can check  [docs](./docs/latest) docs 
-
-
 ## Version Chart
 
 | KUDO Zookeeper Version | Apache Zookeeper Version |
