@@ -1,3 +1,4 @@
+apiVersion: kudo.dev/v1beta1
 parameters:
   - name: BACKUP_FILE
     description: "Filename to save the backups to"

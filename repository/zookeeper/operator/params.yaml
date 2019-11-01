@@ -1,3 +1,4 @@
+apiVersion: kudo.dev/v1beta1
 parameters:
   - name: NODE_COUNT
     description: "Number of nodes spun up for Zookeeper"
