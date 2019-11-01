@@ -184,7 +184,7 @@ Use the following command to upgrade the operator version.
 ```
 kubectl kudo upgrade . --instance myes
 
-operatorversion.kudo.dev/v1alpha1/elastic-0.2.0 successfully created
+operatorversion.kudo.dev/v1beta1/elastic-0.2.0 successfully created
 instance./myes successfully updated
 ```
 
