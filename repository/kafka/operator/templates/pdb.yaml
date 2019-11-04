@@ -7,5 +7,5 @@ spec:
   selector:
     matchLabels:
       app: kafka
-      instance: {{ .Name }}
-  minAvailable: 2
+      kudo.dev/instance: {{ .Name }}
+  maxUnavailable: 1

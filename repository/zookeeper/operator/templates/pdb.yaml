@@ -10,5 +10,5 @@ spec:
   selector:
     matchLabels:
       app: zookeeper
-      zookeeper: {{ .Name }}
+      kudo.dev/instance: {{ .Name }}
   maxUnavailable: 1
