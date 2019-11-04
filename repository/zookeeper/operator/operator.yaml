@@ -50,11 +50,14 @@ plans:
               - infra
               - app
       - name: validation
-        strategy: parallel
+        strategy: serial
         steps:
           - name: validation
             tasks:
               - validation
+          - name: cleanup
+            tasks:
+              - validation-cleanup
   validation:
     strategy: serial
     phases:
