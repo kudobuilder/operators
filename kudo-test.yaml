@@ -5,6 +5,7 @@ manifestDirs:
 kubectl:
 - kudo init --crd-only
 - kudo install --skip-instance ./repository/elastic/operator/
+- kudo install --skip-instance ./repository/first-operator/operator/
 - kudo install --skip-instance ./repository/flink/operator/
 - kudo install --skip-instance ./repository/kafka/operator/
 - kudo install --skip-instance ./repository/mysql/operator/
