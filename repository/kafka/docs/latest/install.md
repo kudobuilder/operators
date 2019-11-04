@@ -12,7 +12,7 @@ To run a production-grade KUDO Kafka cluster, please read [KUDO Kafka in product
 
 #### Install Zookeeper 
 ```
-kubectl kudo install zookeeper --instance=zk
+kubectl kudo install zookeeper
 ```
 
 #### Install Kafka 
@@ -20,18 +20,22 @@ kubectl kudo install zookeeper --instance=zk
 Please read the [limitations](./limitations.md) docs before creating the KUDO Kafka cluster. 
 
 ```
-kubectl kudo install kafka --instance=kafka
+kubectl kudo install kafka
 ```
 
-Verify the if the deploy plan for `--instance=kafka` is complete.
+Verify the if the deploy plan for `--instance=kafka-instance` is complete.
 ```
-kubectl kudo plan status --instance=kafka
-Plan(s) for "kafka" in namespace "default":
+kubectl kudo plan status --instance=kafka-instance
+Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka (Operator-Version: "kafka-0.1.2" Active-Plan: "kafka-deploy-177524647")
-    └── Plan deploy (serial strategy) [COMPLETE]
-        └── Phase deploy-kafka (serial strategy) [COMPLETE]
-            └── Step deploy (COMPLETE)
+└── kafka-instance (Operator-Version: "kafka-1.0.0" Active-Plan: "deploy")
+    ├── Plan deploy (serial strategy) [COMPLETE]
+    │  └── Phase deploy-kafka [COMPLETE]
+    │    └── Step deploy (COMPLETE)
+    └── Plan not-allowed (serial strategy) [NOT ACTIVE]
+        └── Phase not-allowed (serial strategy) [NOT ACTIVE]
+            └── Step not-allowed (serial strategy) [NOT ACTIVE]
+                └── not-allowed [NOT ACTIVE]
 ```
 
 You can view all configuration options [here](./configuration.md)
