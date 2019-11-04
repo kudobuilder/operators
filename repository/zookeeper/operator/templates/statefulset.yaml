@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .OperatorName }}
+  name: {{ .Name }}-{{ .OperatorName }}
   namespace: {{ .Namespace }}
   labels:
     zookeeper: {{ .OperatorName }}
@@ -46,7 +46,7 @@ spec:
             - sh
             - -c
             - "ZOOKEEPERPATH=`pwd` /etc/zookeeper/bootstrap.sh \
-              --servers=3 \
+              --servers={{ .Params.NODE_COUNT }} \
               --data_dir=/var/lib/zookeeper/data \
               --data_log_dir=/logs \
               --conf_dir=/conf \
@@ -81,27 +81,27 @@ spec:
             timeoutSeconds: 5
             periodSeconds: 30
           volumeMounts:
-            - name: datadir
+            - name: {{ .Name }}-datadir
               mountPath: /var/lib/zookeeper
-            - name: bootstrap
+            - name: {{ .Name }}-bootstrap
               mountPath: /etc/zookeeper
-            - name: healthcheck
+            - name: {{ .Name }}-healthcheck
               mountPath: /etc/healthcheck
       securityContext:
         runAsUser: 1000
         fsGroup: 1000
       volumes:
-      - name: bootstrap
+      - name: {{ .Name }}-bootstrap
         configMap:
           name: {{ .Name }}-bootstrap
           defaultMode: 0777
-      - name: healthcheck
+      - name: {{ .Name }}-healthcheck
         configMap:
           name: {{ .Name }}-healthcheck
           defaultMode: 0777
   volumeClaimTemplates:
   - metadata:
-      name: datadir
+      name: {{ .Name }}-datadir
     spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:

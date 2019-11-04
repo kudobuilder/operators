@@ -328,4 +328,4 @@ data:
 
 kind: ConfigMap
 metadata:
-  name: bootstrap
+  name: {{ .Name }}-bootstrap

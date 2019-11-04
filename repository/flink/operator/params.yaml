@@ -1,18 +1,20 @@
-flink_storage_accessmodes:
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: flink_storage_accessmodes
     description: "Defines the access modes for Persistent Volume Claims e.g., can be mounted once read/write or many times read-only"
     default: "ReadWriteOnce"
-flink_taskmanager_replicas:
+  - name: flink_taskmanager_replicas
     description: "Number of task managers to run"
     default: "2"
-flink_jobmanager_replicas:
+  - name: flink_jobmanager_replicas
     description: "Number of job managers to run"
     default: "1"
-zookeeper_url:
+  - name: zookeeper_url
     description: "Connection information for Zookeeper"
     default: "zk-zk-0.zk-hs:2181,zk-zk-1.zk-hs:2181,zk-zk-2.zk-hs:2181"
-zookeeper_path:
+  - name: zookeeper_path
     description: Path to store Flink data in Zookeeper
     default: "/flink"
-high_availability:
+  - name: high_availability
     description: "Defines high-availability mode used for the cluster execution. To enable high-availability, set this mode to \"ZOOKEEPER\" or specify FQN of factory class."
     default: NONE

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: enable-tls
+  name: {{ .Name }}-enable-tls
   namespace: {{ .Namespace }}
 data:
   enable-tls.sh: |

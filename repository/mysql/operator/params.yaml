@@ -1,7 +1,9 @@
-BACKUP_FILE:
-  description: "Filename to save the backups to"
-  default: "backup.sql"
-  displayName: "BackupFile"
-  trigger: backup
-PASSWORD:
-  default: "password"
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: BACKUP_FILE
+    description: "Filename to save the backups to"
+    default: "backup.sql"
+    displayName: "BackupFile"
+    trigger: backup
+  - name: PASSWORD
+    default: "password"
