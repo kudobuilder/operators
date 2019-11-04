@@ -21,6 +21,7 @@ tasks:
         - bootstrap.yaml
         - metrics-config.yaml
         - health-check.yaml
+        - enable-tls.yaml
         - jaas-config.yaml
         - krb5-config.yaml
         - statefulset.yaml
@@ -34,6 +35,7 @@ tasks:
         - bootstrap.yaml
         - metrics-config.yaml
         - health-check.yaml
+        - enable-tls.yaml
         - jaas-config.yaml
         - krb5-config.yaml
         - statefulset.yaml
