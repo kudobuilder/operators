@@ -64,7 +64,7 @@ parameters:
     description: |
       host and port information for Zookeeper connection.
       e.g. zk:2181,zk2:2181,zk3:2181
-    default: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
+    default: "zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181"
     required: true
   - name: ZOOKEEPER_PATH
     displayName: "zookeeper node path"
