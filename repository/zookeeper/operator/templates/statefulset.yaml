@@ -33,8 +33,11 @@ spec:
           image: "zookeeper:3.4.14"
           resources:
             requests:
-              memory: "{{ .Params.MEMORY }}"
-              cpu: "{{ .Params.CPUS }}"
+              memory: {{ .Params.MEMORY }}
+              cpu: {{ .Params.CPUS }}
+            limits:
+              memory: {{ .Params.MEM_LIMIT }}
+              cpu: {{ .Params.CPUS_LIMIT }}
           ports:
             - containerPort: {{ .Params.CLIENT_PORT }}
               name: client
