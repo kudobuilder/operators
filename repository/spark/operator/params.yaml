@@ -1,0 +1,150 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  # Service Accounts and RBAC
+  - name: operatorServiceAccountName
+    description: "Service Account for Spark Operator"
+    default: "spark-operator-service-account"
+    displayName: "Operator Service Account"
+
+  - name: createOperatorServiceAccount
+    description: "Automatically create Service Account for Spark Operator"
+    default: true
+    displayName: "Auto Create Operator Service Account"
+
+  - name: sparkServiceAccountName
+    description: "Use Service Account for Spark Drivers"
+    default: "spark-service-account"
+    displayName: "Spark Drivers Service Account"
+
+  - name: createSparkServiceAccount
+    description: "Automatically generate Service Account for Spark Drivers"
+    default: true
+    displayName: "Auto Create Service Account for Spark Drivers"
+
+  - name: createRBAC
+    description: "Automatically create RBAC for Spark Operator and Drivers"
+    default: true
+    displayName: "Auto Create RBAC for Spark Operator and Drivers"
+
+  # Docker image
+  - name: operatorImageName
+    description: "Operator Docker image name"
+    default: mesosphere/kudo-spark-operator
+    displayName: "Operator Docker image name"
+
+  - name: operatorVersion
+    description: "Operator Docker image version (tag)"
+    default: latest
+    displayName: "Operator Docker image version (tag)"
+
+  - name: imagePullPolicy
+    description: "Image pull policy"
+    default: Always
+    displayName: "Image pull policy"
+
+  ## Metrics
+  - name: enableMetrics
+    description: "Enable metrics"
+    default: true
+    displayName: "Enable metrics"
+
+  - name: operatorMetricsPort
+    description: "Spark Operator Metrics port"
+    default: 10254
+    displayName: "Spark Operator Metrics port"
+
+  - name: metricsEndpoint
+    description: "Metrics endpoint"
+    default: "/metrics"
+    displayName: "Metrics endpoint"
+
+  - name: metricsPrefix
+    description: "Metrics prefix"
+    default: ""
+    displayName: "Metrics prefix"
+
+  - name: resyncIntervalSeconds
+    description: "Informer resync interval in seconds"
+    default: 30
+    displayName: "Informer resync interval in seconds"
+
+  # History Server
+  - name: enableHistoryServer
+    description: "Start Spark History Server"
+    default: false
+    displayName: "Enable Spark History Server"
+
+  - name: historyServerFsLogDirectory
+    description: "Spark EventLog Directory from which to load events for prior Spark job runs (e.g., hdfs://hdfs/ or s3a://path/to/bucket). Note: You'd typically want to set this to point to distributed/HA storage"
+    default: ""
+    displayName: "Spark History Server Event Log Directory"
+
+  - name: historyServerCleanerEnabled
+    description: "Specifies whether the Spark History Server should periodically clean up event logs from storage."
+    default: "false"
+    displayName: "Spark History Server Cleaner Enabled"
+
+  - name: historyServerCleanerInterval
+    description: "Frequency the Spark History Server checks for files to delete."
+    default: "1d"
+    displayName: "Spark History Server Cleaner Interval"
+
+  - name: historyServerCleanerMaxAge
+    description: "History files older than this will be deleted."
+    default: "7d"
+    displayName: "Spark History Server Cleaner Max Age"
+
+  - name: historyServerOpts
+    description: "Extra options to pass to the Spark History Server"
+    default: ""
+    displayName: "Spark History Server Options"
+
+  - name: historyServerPVCName
+    description: "External Persistent Volume Claim Name used for Spark event logs storage by History Server"
+    default: ""
+    displayName: "Spark History Server Persistent Volume Claim Name"
+
+  ## Miscellaneous
+  - name: sparkJobNamespace
+    description: "Namespace for Spark Applications. Defaults to Operator namespace"
+    default: ""
+    displayName: "Namespace for Spark Applications"
+
+  - name: enableWebhook
+    description: "Enable webhook"
+    default: true
+    displayName: "Enable webhook"
+
+  - name: webhookPort
+    description: "Webhook port"
+    default: 8080
+    displayName: "Webhook port"
+
+  - name: controllerThreads
+    description: "Controller threads"
+    default: 10
+    displayName: "Controller threads"
+
+  - name: ingressUrlFormat
+    description: "Ingress URL format"
+    default: ""
+    displayName: "Ingress URL format"
+
+  ## Output verbosity and debugging level
+  ## Ref: https://kubernetes.io/docs/reference/kubectl/cheatsheet/#kubectl-output-verbosity-and-debugging
+  - name: logLevel
+    description: "Log Level"
+    default: 2
+    displayName: "Log Level"
+
+  ## Whether to enable batch scheduler for pod scheduling,
+  ## if enabled, end user can specify batch scheduler name in spark application.
+  - name: enableBatchScheduler
+    description: "Enable Batch Scheduler"
+    default: false
+    displayName: "Enable Batch Scheduler"
+
+  - name: installCrds
+    description: "Install sparkapplications.sparkoperator.k8s.io and scheduledsparkapplications.sparkoperator.k8s.io"
+    default: true
+    displayName: "Install Spark Operator CRDs"

@@ -1,0 +1,89 @@
+# If the admission webhook is enabled, then a post-install step is required
+# to generate and install the secret in the operator namespace.
+
+# In the post-install hook, the token corresponding to the operator service account
+# is used to authenticate with the Kubernetes API server to install the secret bundle.
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}
+  namespace: {{ .Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .OperatorName }}
+    app.kubernetes.io/instance: {{ .Name }}
+    app.kubernetes.io/version: {{ .Params.operatorVersion }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .OperatorName }}
+      app.kubernetes.io/instance: {{ .Name }}
+      app.kubernetes.io/version: {{ .Params.operatorVersion }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+    {{- if eq .Params.enableMetrics "true" }}
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "{{ .Params.operatorMetricsPort }}"
+        prometheus.io/path: {{ .Params.metricsEndpoint }}
+    {{- end }}
+      labels:
+        app.kubernetes.io/name: {{ .OperatorName }}
+        app.kubernetes.io/instance: {{ .Name }}
+        app.kubernetes.io/version: {{ .Params.operatorVersion }}
+      initializers:
+        pending: []
+    spec:
+      {{- if eq .Params.createOperatorServiceAccount "true" }}
+      serviceAccountName: {{ .Name }}-{{ .Params.operatorServiceAccountName }}
+      {{- else }}
+      serviceAccountName: {{ .Params.operatorServiceAccountName }}
+      {{- end }}
+      {{- if eq .Params.enableWebhook "true" }}
+      volumes:
+        - name: webhook-certs
+          secret:
+            secretName: spark-webhook-certs
+      {{- end }}
+      containers:
+      - name: sparkoperator
+        image: {{ .Params.operatorImageName }}:{{ .Params.operatorVersion }}
+        imagePullPolicy: {{ .Params.imagePullPolicy }}
+        {{- if eq .Params.enableWebhook "true" }}
+        volumeMounts:
+          - name: webhook-certs
+            mountPath: /etc/webhook-certs
+        {{- end }}
+        {{- if eq .Params.enableMetrics "true" }}
+        ports:
+          - containerPort: {{ .Params.operatorMetricsPort }}
+        {{ end }}
+        args:
+        - -v={{ .Params.logLevel }}
+        {{- if (ne .Params.sparkJobNamespace "") }}
+        - -namespace={{ .Params.sparkJobNamespace }}
+        {{- else }}
+        - -namespace={{ .Namespace }}
+        {{- end }}
+        - -ingress-url-format={{ .Params.ingressUrlFormat }}
+        - -controller-threads={{ .Params.controllerThreads }}
+        - -resync-interval={{ .Params.resyncIntervalSeconds }}
+        - -logtostderr
+        {{- if eq .Params.enableMetrics "true" }}
+        - -enable-metrics=true
+        - -metrics-labels=app_type
+        - -metrics-port={{ .Params.operatorMetricsPort }}
+        - -metrics-endpoint={{ .Params.metricsEndpoint }}
+        - -metrics-prefix={{ .Params.metricsPrefix }}
+        {{- end }}
+        - -enable-batch-scheduler={{ .Params.enableBatchScheduler }}
+        {{- if eq .Params.enableWebhook "true" }}
+        - -enable-webhook=true
+        - -webhook-svc-namespace={{ .Namespace }}
+        - -webhook-port={{ .Params.webhookPort }}
+        - -webhook-svc-name={{ .OperatorName }}-webhook
+        - -webhook-config-name={{ .OperatorName }}-webhook-config
+        {{- end }}

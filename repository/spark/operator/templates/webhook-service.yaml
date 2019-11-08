@@ -1,0 +1,19 @@
+{{- if eq .Params.enableWebhook "true" }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Name }}-webhook
+  namespace: {{ .Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .OperatorName }}
+    app.kubernetes.io/instance: {{ .Name }}
+spec:
+  ports:
+  - port: 443
+    targetPort: {{ .Params.webhookPort }}
+    name: webhook
+  selector:
+    app.kubernetes.io/name: {{ .OperatorName }}
+    app.kubernetes.io/instance: {{ .Name }}
+    app.kubernetes.io/version: {{ .Params.operatorVersion }}
+{{- end }}

@@ -1,0 +1,50 @@
+{{- if eq .Params.createRBAC "true" }}
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  {{- if (ne .Params.sparkJobNamespace "") }}
+  namespace: {{ .Params.sparkJobNamespace }}
+  {{- else }}
+  namespace: {{ .Namespace }}
+  {{- end }}
+  name: {{ .Name }}-spark-role
+  labels:
+    app.kubernetes.io/name: {{ .Name }}-spark-role
+    app.kubernetes.io/instance: {{ .Name }}
+rules:
+  - apiGroups: [""]
+    resources: ["pods"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["services"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: {{ .Name }}-spark-rb
+  {{- if (ne .Params.sparkJobNamespace "") }}
+  namespace: {{ .Params.sparkJobNamespace }}
+  {{- else }}
+  namespace: {{ .Namespace }}
+  {{- end }}
+  labels:
+    app.kubernetes.io/name: {{ .Name }}-spark-rb
+    app.kubernetes.io/instance: {{ .Name }}
+subjects:
+- kind: ServiceAccount
+  {{- if eq .Params.createSparkServiceAccount "true" }}
+  name: {{ .Name }}-{{ .Params.sparkServiceAccountName }}
+  {{- else }}
+  name: {{ .Params.sparkServiceAccountName }}
+  {{- end }}
+  {{- if (ne .Params.sparkJobNamespace "") }}
+  namespace: {{ .Params.sparkJobNamespace }}
+  {{- else }}
+  namespace: {{ .Namespace }}
+  {{- end }}
+roleRef:
+  kind: Role
+  name: {{ .Name }}-spark-role
+  apiGroup: rbac.authorization.k8s.io
+{{- end }}

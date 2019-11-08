@@ -1,0 +1,19 @@
+{{- if eq .Params.enableHistoryServer "true" }}
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Name }}-history-server
+  namespace: {{ .Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .OperatorName }}-history-server
+    app.kubernetes.io/instance: {{ .Name }}
+    app.kubernetes.io/version: {{ .Params.operatorVersion }}
+spec:
+  ports:
+  - port: 18080
+    name: history-server
+  selector:
+    app.kubernetes.io/name: {{ .OperatorName }}-history-server
+    app.kubernetes.io/instance: {{ .Name }}
+    app.kubernetes.io/version: {{ .Params.operatorVersion }}
+{{- end }}
