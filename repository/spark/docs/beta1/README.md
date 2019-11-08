@@ -1,4 +1,4 @@
-KUDO Spark latest
+KUDO Spark beta1
 ---
 
 * [Installation](installation.md)
