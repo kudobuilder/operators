@@ -1,5 +1,10 @@
 # Release notes 
 
+
+## v1.0.1
+
+- Apache Kafka upgraded to 2.3.1
+
 ## v1.0.0
 
 - Exposed configuration for livenessProbe and readinessProbe
