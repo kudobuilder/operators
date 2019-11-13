@@ -84,6 +84,6 @@ spec:
         - -enable-webhook=true
         - -webhook-svc-namespace={{ .Namespace }}
         - -webhook-port={{ .Params.webhookPort }}
-        - -webhook-svc-name={{ .OperatorName }}-webhook
+        - -webhook-svc-name={{ .Name }}-webhook
         - -webhook-config-name={{ .OperatorName }}-webhook-config
         {{- end }}
