@@ -1,0 +1,227 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Name }}-node
+  namespace: {{ .Namespace }}
+  labels:
+    cassandra: {{ .OperatorName }}
+    app: {{ .Name }}
+  annotations:
+    reloader.kudo.dev/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Name }}
+      cassandra: {{ .OperatorName }}
+  serviceName: {{ .Name }}-svc
+  replicas: {{ .Params.NODE_COUNT }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Name }}
+        cassandra: {{ .OperatorName }}
+    spec:
+      securityContext:
+        # FIXME(mpereira): are the two settings below necessary?
+        # allowPrivilegeEscalation: false
+        # privileged: false
+        runAsNonRoot: true
+        # 999 is the "cassandra" user created in the Dockerfile:
+        # https://github.com/docker-library/cassandra/blob/master/3.11/Dockerfile
+        runAsUser: 999
+        runAsGroup: 999
+        # fsGroup is necessary for setting volume mount directory gids. It needs
+        # to be specified at the pod level.
+        fsGroup: 999
+        # FIXME(mpereira): sysctls need to be whitelisted at kubelet startup
+        # time. See https://jira.mesosphere.com/browse/DCOS-59219.
+        # sysctls:
+        #   - name: fs.file-max
+        #     value: "1048575"
+        #   - name: vm.max_map_count
+        #     value: "1048575"
+        #   - name: vm.swapiness
+        #     value: "1"
+      containers:
+        - name: cassandra
+          image: {{ .Params.NODE_DOCKER_IMAGE }}
+          imagePullPolicy: {{ .Params.NODE_DOCKER_IMAGE_PULL_POLICY }}
+          securityContext:
+            capabilities:
+              add:
+                # TODO(mpereira): add an operator parameter for "memory lock" so
+                # that this capability and a respective Docker image with
+                # `setcap`ed binaries are conditionally used.
+                - IPC_LOCK
+                # FIXME(mpereira): might not be necessary given DCOS-59219.
+                - SYS_RESOURCE
+          lifecycle:
+            preStop:
+              exec:
+                command:
+                  - nodetool
+                  - drain
+          readinessProbe:
+            exec:
+              command:
+                  - /bin/bash
+                  - /etc/cassandra/node-readiness-probe.sh
+            initialDelaySeconds: {{ .Params.NODE_READINESS_PROBE_INITIAL_DELAY_S }}
+            periodSeconds: {{ .Params.NODE_READINESS_PROBE_PERIOD_S }}
+            timeoutSeconds: {{ .Params.NODE_READINESS_PROBE_TIMEOUT_S }}
+            successThreshold: {{ .Params.NODE_READINESS_PROBE_SUCCESS_THRESHOLD }}
+            failureThreshold: {{ .Params.NODE_READINESS_PROBE_FAILURE_THRESHOLD }}
+          command:
+            - cassandra
+            - -f
+          # Comment the `command` above and uncomment the one below if pods are
+          # crash-looping and you would like to investigate their state. This is
+          # analogous to a `pod pause` in SDK-land.
+          # command:
+          #   - bash
+          #   - -c
+          #   - "while true; do echo 'sleeping...'; sleep 5; done"
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+            - name: PROMETHEUS_EXPORTER_ENABLED
+              value: "{{ .Params.PROMETHEUS_EXPORTER_ENABLED }}"
+          resources:
+            requests:
+              memory: "{{ .Params.NODE_MEM_MIB }}Mi"
+              cpu: "{{ .Params.NODE_CPU_MC }}m"
+            limits:
+              memory: "{{ .Params.NODE_MEM_LIMIT_MIB }}Mi"
+              cpu: "{{ .Params.NODE_CPU_LIMIT_MC }}m"
+          # Port names can't be longer than 15 characters.
+          ports:
+            - containerPort: {{ .Params.STORAGE_PORT }}
+              name: storage
+            - containerPort: {{ .Params.SSL_STORAGE_PORT }}
+              name: ssl-storage
+            - containerPort: {{ .Params.NATIVE_TRANSPORT_PORT }}
+              name: native
+            {{ if eq .Params.START_RPC "true" }}
+            - containerPort: {{ .Params.RPC_PORT }}
+              name: rpc
+            {{ end }}
+            - containerPort: {{ .Params.JMX_PORT }}
+              name: jmx
+          volumeMounts:
+            - name: var-lib-cassandra
+              mountPath: /var/lib/cassandra/
+            # Overwriting /etc/cassandra/ available in the Docker image.
+            - name: etc-cassandra
+              mountPath: /etc/cassandra/
+            - name: cassandra-yaml
+              mountPath: /etc/cassandra/cassandra.yaml
+              subPath: cassandra.yaml
+            - name: cassandra-env-sh
+              mountPath: /etc/cassandra/cassandra-env.sh
+              subPath: cassandra-env.sh
+            - name: jvm-options
+              mountPath: /etc/cassandra/jvm.options
+              subPath: jvm.options
+            - name: node-readiness-probe-sh
+              mountPath: /etc/cassandra/node-readiness-probe.sh
+              subPath: node-readiness-probe.sh
+        {{ if eq .Params.PROMETHEUS_EXPORTER_ENABLED "true" }}
+        - name: prometheus-exporter
+          image: {{ .Params.PROMETHEUS_EXPORTER_DOCKER_IMAGE }}
+          imagePullPolicy: {{ .Params.PROMETHEUS_EXPORTER_DOCKER_IMAGE_PULL_POLICY }}
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+            - name: POD_IP
+              valueFrom:
+                fieldRef:
+                  fieldPath: status.podIP
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: POD_SERVICE_ACCOUNT
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.serviceAccountName
+            - name: POD_UID
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.uid
+          resources:
+            requests:
+              memory: "{{ .Params.PROMETHEUS_EXPORTER_MEM_MIB }}Mi"
+              cpu: "{{ .Params.PROMETHEUS_EXPORTER_CPU_MC }}m"
+            limits:
+              memory: "{{ .Params.PROMETHEUS_EXPORTER_MEM_LIMIT_MIB }}Mi"
+              cpu: "{{ .Params.PROMETHEUS_EXPORTER_CPU_LIMIT_MC }}m"
+          volumeMounts:
+            - name: cassandra-exporter-config-yml
+              mountPath: /etc/cassandra_exporter/config.yml
+              subPath: config.yml
+        {{ end }}
+      volumes:
+        # Overwriting /etc/cassandra/ available in the Docker image.
+        - name: etc-cassandra
+          emptyDir: {}
+        - name: cassandra-yaml
+          configMap:
+            name: {{ .Name }}-cassandra-yaml
+        - name: cassandra-env-sh
+          configMap:
+            name: {{ .Name }}-cassandra-env-sh
+        - name: jvm-options
+          configMap:
+            name: {{ .Name }}-jvm-options
+        - name: node-readiness-probe-sh
+          configMap:
+            name: {{ .Name }}-node-readiness-probe-sh
+        {{ if eq .Params.PROMETHEUS_EXPORTER_ENABLED "true" }}
+        - name: cassandra-exporter-config-yml
+          configMap:
+            name: {{ .Name }}-cassandra-exporter-config-yml
+        {{ end }}
+  volumeClaimTemplates:
+    - metadata:
+        name: var-lib-cassandra
+        # The annotation below result in the volume only be writable by Pods
+        # using the same GID.
+        # https://kubernetes.io/docs/tasks/configure-pod-container/configure-persistent-volume-storage/#access-control
+        annotations:
+          pv.beta.kubernetes.io/gid: "999"
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: "{{ .Params.NODE_DISK_SIZE_GIB }}Gi"
+        {{ if eq .Params.NODE_STORAGE_CLASS "true" }}
+        storageClassName: {{ .Params.NODE_STORAGE_CLASS }}
+        {{ end }}
