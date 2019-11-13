@@ -1,0 +1,54 @@
+{{- if eq .Params.enableHistoryServer "true" }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-history-server
+  namespace: {{ .Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .OperatorName }}-history-server
+    app.kubernetes.io/instance: {{ .Name }}
+    app.kubernetes.io/version: {{ .Params.operatorVersion }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .OperatorName }}-history-server
+      app.kubernetes.io/instance: {{ .Name }}
+      app.kubernetes.io/version: {{ .Params.operatorVersion }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .OperatorName }}-history-server
+        app.kubernetes.io/instance: {{ .Name }}
+        app.kubernetes.io/version: {{ .Params.operatorVersion }}
+    spec:
+      {{- if eq .Params.createOperatorServiceAccount "true" }}
+      serviceAccountName: {{ .Name }}-{{ .Params.operatorServiceAccountName }}
+      {{- else }}
+      serviceAccountName: {{ .Params.operatorServiceAccountName }}
+      {{- end }}
+      containers:
+      - name: history-server
+        image: {{ .Params.operatorImageName }}:{{ .Params.operatorVersion }}
+        imagePullPolicy: {{ .Params.imagePullPolicy }}
+        command: ["/opt/spark/sbin/start-history-server.sh"]
+        env:
+        - name: SPARK_NO_DAEMONIZE
+          value: "true"
+        - name: SPARK_HISTORY_OPTS
+          value: "{{ .Params.historyServerOpts }} -Dspark.history.fs.logDirectory={{ .Params.historyServerFsLogDirectory }} -Dspark.history.fs.cleaner.enabled={{ .Params.historyServerCleanerEnabled }} -Dspark.history.fs.cleaner.interval={{ .Params.historyServerCleanerInterval }} -Dspark.history.fs.cleaner.maxAge={{ .Params.historyServerCleanerMaxAge }}"
+        ports:
+        - containerPort: 18080
+          name: "history-server"
+      {{- if .Params.historyServerPVCName }}
+        volumeMounts:
+        - mountPath: "{{ .Params.historyServerFsLogDirectory }}"
+          name: history-server-storage
+      volumes:
+      - name: history-server-storage
+        persistentVolumeClaim:
+          claimName: {{ .Params.historyServerPVCName }}
+      {{- end }}
+{{- end }}

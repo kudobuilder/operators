@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-operator-metrics
+  labels:
+    "spark/servicemonitor": "true"
+spec:
+  ports:
+    - port: 10254
+      name: metrics
+  clusterIP: None
+  selector:
+    "app.kubernetes.io/name": spark

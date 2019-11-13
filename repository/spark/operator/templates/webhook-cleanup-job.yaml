@@ -1,0 +1,32 @@
+{{- if eq .Params.enableWebhook "true" }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Name }}-webhook-cleanup
+  namespace: {{ .Namespace }}
+  labels:
+    app.kubernetes.io/name: {{ .Name }}-webhook-cleanup
+    app.kubernetes.io/instance: {{ .Name }}
+spec:
+  template:
+    spec:
+      {{- if eq .Params.createOperatorServiceAccount "true" }}
+      serviceAccountName: {{ .Name }}-{{ .Params.operatorServiceAccountName }}
+      {{- else }}
+      serviceAccountName: {{ .Params.operatorServiceAccountName }}
+      {{- end }}
+      restartPolicy: OnFailure
+      containers:
+      - name: main
+        image: {{ .Params.operatorImageName }}:{{ .Params.operatorVersion }}
+        imagePullPolicy: {{ .Params.imagePullPolicy }}
+        command:
+        - "/bin/sh"
+        - "-c"
+        - "curl -ik \
+          -X DELETE \
+          -H \"Authorization: Bearer $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)\" \
+          -H \"Accept: application/json\" \
+          -H \"Content-Type: application/json\" \
+          https://kubernetes.default.svc/api/v1/namespaces/{{ .Namespace }}/secrets/spark-webhook-certs"
+{{- end }}
