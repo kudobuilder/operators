@@ -1,0 +1,35 @@
+apiVersion: kudo.dev/v1beta1
+name: "cassandra"
+version: "0.1.0"
+kudoVersion: "0.8.0"
+kubernetesVersion: "1.15.0"
+appVersion: "3.11.4"
+maintainers:
+  - name: Murilo Pereira
+    email: murilo@murilopereira.com
+url: http://cassandra.apache.org/
+
+tasks:
+  - name: node
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+        - cassandra-yaml.yaml
+        - cassandra-env-sh.yaml
+        - jvm-options.yaml
+        - stateful-set.yaml
+        - cassandra-exporter-config-yml.yaml
+        - service-monitor-yaml.yaml
+        - node-readiness-probe-sh.yaml
+
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: nodes
+        strategy: parallel
+        steps:
+          - name: node
+            tasks:
+              - node
