@@ -10,8 +10,7 @@ spec:
   - interval: 30s
     port: metrics
   namespaceSelector:
-    matchNames:
-    - default
+    any: true
   selector:
     matchLabels:
       kudo.dev/servicemonitor: "true"
