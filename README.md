@@ -8,6 +8,8 @@ The official repository is hosted on Google Cloud Storage under the [Kudo Reposi
 
 ### [Apache Cassandra](https://github.com/kudobuilder/operators/tree/master/repository/cassandra)
 
+Apache Cassandra is an open-source distributed database designed to handle large amounts of data across many commodity servers, providing high availability with no single point of failure.
+
 ### [Apache Flink](https://github.com/kudobuilder/operators/tree/master/repository/flink)
 
 Apache Flink® provides stateful computations over data streams.
