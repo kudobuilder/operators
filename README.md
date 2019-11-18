@@ -6,6 +6,8 @@ Collection of KUDO operators.
 
 The official repository is hosted on Google Cloud Storage under the [Kudo Repository](https://kudo-repository.storage.googleapis.com) bucket.
 
+### [Apache Cassandra](https://github.com/kudobuilder/operators/tree/master/repository/cassandra)
+
 ### [Apache Flink](https://github.com/kudobuilder/operators/tree/master/repository/flink)
 
 Apache Flink® provides stateful computations over data streams.
