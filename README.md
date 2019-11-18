@@ -14,6 +14,10 @@ Apache Flink® provides stateful computations over data streams.
 
 Apache Kafka® is a distributed streaming platform.
 
+### [Apache Spark](https://github.com/kudobuilder/operators/tree/master/repository/spark)
+
+Apache Spark® is a unified analytics engine for large-scale data processing.
+
 ### [Apache Zookeeper](https://github.com/kudobuilder/operators/tree/master/repository/zookeeper)
 
 Apache ZooKeeper is an open-source server which enables highly reliable distributed coordination.
