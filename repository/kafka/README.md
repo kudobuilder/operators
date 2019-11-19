@@ -18,17 +18,16 @@ To get more information around KUDO Kafka architecture please take a look on the
 
 ## Getting started
 
-The latest stable version of Kafka operator is `1.0.1`
+The latest stable version of Kafka operator is `1.0.2`
 For more details, please see the [v1.0 docs](./docs/v1.0) folder.
 
 
 ## Version Chart
 
-| KUDO Kafka | Apache Kafka | Minimum KUDO Version | Status |
-| ---------- | ------------ | -------------------- | ------ |
-| 0.1.2      | 2.2.1        | 0.7.5                | beta   |
-| 0.2.0      | 2.3.0        | 0.7.5                | beta   |
-| 1.0.0      | 2.3.0        | 0.8.0                |   GA   |
-| **1.0.1**  | **2.3.1**    | **0.8.0**            | **GA** |
-| latest     | 2.3.1        | 0.8.0                | beta   |
+| KUDO Kafka | Apache Kafka | Minimum KUDO Version |
+| ---------- | ------------ | -------------------- |
+| 1.0.0      | 2.3.0        | 0.8.0                |
+| 1.0.1      | 2.3.1        | 0.8.0                |
+| **1.0.2**  | **2.3.1**    | **0.8.0**            |
+| latest     | 2.3.1        | 0.8.0                |
 
