@@ -117,6 +117,10 @@ parameters:
     description: "The port of the host running a KDC for that realm."
     default: "2500"
     displayName: "Kerberos Port"
+  - name: KERBEROS_USE_TCP
+    description: "Use TCP for KDC connection, by default it uses UDP protocol"
+    default: "false"
+    displayName: "Use TCP for Kerberos"
   - name: KERBEROS_DEBUG
     description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
     default: "false"

@@ -92,7 +92,8 @@ kubectl kudo install kafka \
     -p KERBEROS_REALM=LOCAL\
     -p KERBEROS_KDC_HOSTNAME=kdc-service.kudo-kafka.svc.cluster.local \
     -p KERBEROS_KDC_PORT=2500 \
-    -p KERBEROS_KEYTAB_SECRET="base64-kafka-keytab-secret"
+    -p KERBEROS_KEYTAB_SECRET="base64-kafka-keytab-secret" \
+    -p KERBEROS_USE_TCP=true
 ```
 then the principals to create would be:
 ```
@@ -100,9 +101,16 @@ kafka/kafka-kafka-0.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
 kafka/kafka-kafka-1.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
 kafka/kafka-kafka-2.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
 ```
+
+Use `KERBEROS_USE_TCP=true` parameter to use `TCP` protocol for KDC. By default it will try to use UDP. 
 #### Place Service Keytab in Kubernetes Secret Store
 
 The KUDO Kafka service uses a keytab containing all node principals (service keytab). After creating the principals above, generate the service keytab making sure to include all the node principals. This should be stored as a secret in the Kubernetes Secret Store using `base64` encoding.
+
+```
+kubectl create secret generic kdc --from-file=./kafka.keytab
+```
+:warning: The KUDO Kafka assume the key in the secret to be `kafka.keytab`
 
 ## Authorization
 

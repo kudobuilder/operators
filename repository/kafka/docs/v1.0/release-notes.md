@@ -1,6 +1,10 @@
 # Release notes 
 
 
+## v1.0.2
+
+- Add parameter `KERBEROS_USE_TCP` to use TCP protocol for KDC connection
+
 ## v1.0.1
 
 - Apache Kafka upgraded to 2.3.1
