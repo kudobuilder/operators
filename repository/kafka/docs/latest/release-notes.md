@@ -2,6 +2,10 @@
 
 ## latest
 
+## v1.0.2
+
+- Add parameter `KERBEROS_USE_TCP` to use TCP protocol for KDC connection
+- Add parameter `ADD_SERVICE_MONITOR` to create a service monitor for KUDO Kafka cluster.
 
 ## v1.0.1
 
