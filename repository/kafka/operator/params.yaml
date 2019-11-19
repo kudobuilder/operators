@@ -56,6 +56,9 @@ parameters:
     default: "9094"
   - name: METRICS_ENABLED
     default: "true"
+  - name: ADD_SERVICE_MONITOR
+    description: "Create a service monitor for the kafka service"
+    default: "false"
   - name: NUM_PARTITIONS
     description: "Number of partitions for Kafka topics"
     default: "3"

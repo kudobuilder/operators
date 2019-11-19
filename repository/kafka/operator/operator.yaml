@@ -24,6 +24,7 @@ tasks:
         - enable-tls.yaml
         - jaas-config.yaml
         - krb5-config.yaml
+        - service-monitor.yaml
         - statefulset.yaml
   - name: update
     kind: Apply

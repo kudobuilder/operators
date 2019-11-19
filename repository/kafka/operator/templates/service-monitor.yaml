@@ -1,0 +1,21 @@
+{{ if eq .Params.ADD_SERVICE_MONITOR "true" }}
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus-operator
+    release: prometheus-kubeaddons
+  name: {{ .Name }}-monitor
+  namespace: {{ .Namespace }}
+spec:
+  endpoints:
+  - interval: 30s
+    port: metrics
+  namespaceSelector:
+    matchNames:
+    - {{ .Namespace }}
+  selector:
+    matchLabels:
+      kudo.dev/instance: {{ .Name }}
+      kudo.dev/servicemonitor: "true"
+{{ end }}
