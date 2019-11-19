@@ -1,6 +1,6 @@
 apiVersion: kudo.dev/v1beta1
 name: "kafka"
-version: "1.0.1"
+version: "1.0.2"
 kudoVersion: 0.8.0
 kubernetesVersion: 1.14.8
 appVersion: 2.3.1
