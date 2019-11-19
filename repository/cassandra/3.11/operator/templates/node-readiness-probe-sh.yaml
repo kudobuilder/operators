@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-node-readiness-probe-sh
+  namespace: {{ .Namespace }}
+data:
+  node-readiness-probe.sh: |
+    nodetool status -p {{ .Params.JMX_PORT }} | grep -q "UN  ${POD_IP}"
