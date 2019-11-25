@@ -5,6 +5,7 @@
 
 - Add parameter `KERBEROS_USE_TCP` to use TCP protocol for KDC connection
 - Add parameter `ADD_SERVICE_MONITOR` to create a service monitor for KUDO Kafka cluster.
+- Add parameter `RUN_USER_WORKLOAD` to create some dummy user workload over kafka service.
 
 ## v1.0.1
 
