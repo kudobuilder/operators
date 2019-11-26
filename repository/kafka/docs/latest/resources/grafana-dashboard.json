@@ -18,12 +18,6 @@
     },
     {
       "type": "panel",
-      "id": "grafana-piechart-panel",
-      "name": "Pie Chart",
-      "version": "1.3.9"
-    },
-    {
-      "type": "panel",
       "id": "graph",
       "name": "Graph",
       "version": ""
@@ -67,7 +61,7 @@
   "gnetId": 9018,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1574782203067,
+  "iteration": 1574785671406,
   "links": [],
   "panels": [
     {
@@ -1056,29 +1050,24 @@
       }
     },
     {
-      "aliasColors": {
-        "AVAILABLE: kafka-kafka-0": "dark-green",
-        "USED: kafka-kafka-0": "dark-red",
-        "AVAILABLE: kafka-kafka-1": "dark-green",
-        "USED: kafka-kafka-1": "dark-red",
-        "AVAILABLE: kafka-kafka-2": "dark-green",
-        "USED: kafka-kafka-2": "dark-red",
-        "AVAILABLE: kafka-kafka-3": "dark-green",
-        "USED: kafka-kafka-3": "dark-red",
-        "AVAILABLE: kafka-kafka-4": "dark-green",
-        "USED: kafka-kafka-4": "dark-red",
-        "AVAILABLE: kafka-kafka-5": "dark-green",
-        "USED: kafka-kafka-5": "dark-red"
-      },
-      "breakPoint": "50%",
       "cacheTimeout": null,
-      "combine": {
-        "label": "Others",
-        "threshold": 0
-      },
+      "colorBackground": false,
+      "colorPostfix": true,
+      "colorValue": true,
+      "colors": [
+        "#37872D",
+        "#E0B400",
+        "#C4162A"
+      ],
       "datasource": "${DS_PROMETHEUS}",
-      "fontSize": "80%",
-      "format": "decbytes",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
       "gridPos": {
         "h": 4,
         "w": 4,
@@ -1087,37 +1076,61 @@
       },
       "id": 181,
       "interval": null,
-      "legend": {
-        "percentage": false,
-        "show": true,
-        "values": true
-      },
-      "legendType": "Under graph",
       "links": [],
-      "maxDataPoints": 3,
-      "nullPointMode": "connected",
-      "pieType": "pie",
-      "pluginVersion": "6.1.6",
-      "strokeWidth": 1,
-      "targets": [
+      "mappingType": 1,
+      "mappingTypes": [
         {
-          "expr": "node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"} - node_filesystem_avail_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}",
-          "format": "time_series",
-          "intervalFactor": 1,
-          "legendFormat": "USED: {{$broker}}",
-          "refId": "B"
+          "name": "value to text",
+          "value": 1
         },
         {
-          "expr": "node_filesystem_avail_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}",
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.1.6",
+      "postfix": "%",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "100 * (node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"} - node_filesystem_avail_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}) / node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}",
           "format": "time_series",
           "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "AVAILABLE: {{$broker}}",
-          "refId": "A"
+          "legendFormat": "USED: {{$broker}}",
+          "refId": "B"
         }
       ],
+      "thresholds": "30,70,70",
       "title": "Disk Usage",
-      "type": "grafana-piechart-panel",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
       "valueName": "current"
     },
     {
@@ -2707,16 +2720,16 @@
     {
       "aliasColors": {
         "TOTAL: kafka-kafka-0": "dark-green",
-        "USED: kafka-kafka-0": "dark-red",
         "TOTAL: kafka-kafka-1": "dark-green",
-        "USED: kafka-kafka-1": "dark-red",
         "TOTAL: kafka-kafka-2": "dark-green",
-        "USED: kafka-kafka-2": "dark-red",
         "TOTAL: kafka-kafka-3": "dark-green",
-        "USED: kafka-kafka-3": "dark-red",
         "TOTAL: kafka-kafka-4": "dark-green",
-        "USED: kafka-kafka-4": "dark-red",
         "TOTAL: kafka-kafka-5": "dark-green",
+        "USED: kafka-kafka-0": "dark-red",
+        "USED: kafka-kafka-1": "dark-red",
+        "USED: kafka-kafka-2": "dark-red",
+        "USED: kafka-kafka-3": "dark-red",
+        "USED: kafka-kafka-4": "dark-red",
         "USED: kafka-kafka-5": "dark-red"
       },
       "bars": false,
