@@ -54,6 +54,9 @@ parameters:
   - name: METRICS_PORT
     description: "Port JMX_EXPORTER binds"
     default: "9094"
+  - name: KAFKA_NODE_EXPORTER_PORT
+    description: "Port NODE_EXPORTER binds"
+    default: "9096"
   - name: METRICS_ENABLED
     default: "true"
   - name: ADD_SERVICE_MONITOR
