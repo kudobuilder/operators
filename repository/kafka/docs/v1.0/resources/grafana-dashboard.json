@@ -61,7 +61,7 @@
   "gnetId": 9018,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1571402248787,
+  "iteration": 1574944426067,
   "links": [],
   "panels": [
     {
@@ -960,7 +960,7 @@
       "fill": 10,
       "gridPos": {
         "h": 4,
-        "w": 8,
+        "w": 4,
         "x": 16,
         "y": 5
       },
@@ -1050,6 +1050,90 @@
       }
     },
     {
+      "cacheTimeout": null,
+      "colorBackground": false,
+      "colorPostfix": true,
+      "colorValue": true,
+      "colors": [
+        "#37872D",
+        "#E0B400",
+        "#C4162A"
+      ],
+      "datasource": "${DS_PROMETHEUS}",
+      "format": "none",
+      "gauge": {
+        "maxValue": 100,
+        "minValue": 0,
+        "show": true,
+        "thresholdLabels": false,
+        "thresholdMarkers": true
+      },
+      "gridPos": {
+        "h": 4,
+        "w": 4,
+        "x": 20,
+        "y": 5
+      },
+      "id": 181,
+      "interval": null,
+      "links": [],
+      "mappingType": 1,
+      "mappingTypes": [
+        {
+          "name": "value to text",
+          "value": 1
+        },
+        {
+          "name": "range to text",
+          "value": 2
+        }
+      ],
+      "maxDataPoints": 100,
+      "nullPointMode": "connected",
+      "nullText": null,
+      "pluginVersion": "6.1.6",
+      "postfix": "%",
+      "postfixFontSize": "50%",
+      "prefix": "",
+      "prefixFontSize": "50%",
+      "rangeMaps": [
+        {
+          "from": "null",
+          "text": "N/A",
+          "to": "null"
+        }
+      ],
+      "sparkline": {
+        "fillColor": "rgba(31, 118, 189, 0.18)",
+        "full": false,
+        "lineColor": "rgb(31, 120, 193)",
+        "show": false
+      },
+      "tableColumn": "",
+      "targets": [
+        {
+          "expr": "100 * (node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"} - node_filesystem_avail_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}) / node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}",
+          "format": "time_series",
+          "instant": true,
+          "intervalFactor": 1,
+          "legendFormat": "USED: {{$broker}}",
+          "refId": "B"
+        }
+      ],
+      "thresholds": "60,80,80",
+      "title": "Disk Usage: $broker",
+      "type": "singlestat",
+      "valueFontSize": "100%",
+      "valueMaps": [
+        {
+          "op": "=",
+          "text": "N/A",
+          "value": "null"
+        }
+      ],
+      "valueName": "current"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -1134,93 +1218,96 @@
       }
     },
     {
-      "aliasColors": {},
-      "bars": false,
-      "dashLength": 10,
-      "dashes": false,
-      "datasource": "${DS_PROMETHEUS}",
-      "description": "Generally, disk throughput tends to be the main bottleneck in Kafka performance. However, that’s not to say that the network is never a bottleneck. Depending on your use case, hardware, and configuration, the network can quickly become the slowest segment of a message’s trip, especially if you are sending messages across data centers. Tracking network throughput on your brokers gives you more information as to where potential bottlenecks may lie, and can inform decisions like whether or not you should enable end-to-end compression of your messages.",
-      "fill": 1,
+      "columns": [],
+      "fontSize": "100%",
       "gridPos": {
         "h": 8,
         "w": 12,
         "x": 12,
         "y": 9
       },
-      "id": 179,
-      "legend": {
-        "alignAsTable": true,
-        "avg": false,
-        "current": true,
-        "max": false,
-        "min": false,
-        "rightSide": false,
-        "show": true,
-        "total": false,
-        "values": true
-      },
-      "lines": true,
-      "linewidth": 1,
+      "id": 182,
       "links": [],
-      "nullPointMode": "null",
-      "percentage": false,
-      "pointradius": 5,
-      "points": false,
-      "renderer": "flot",
-      "seriesOverrides": [],
-      "spaceLength": 10,
-      "stack": true,
-      "steppedLine": false,
+      "pageSize": null,
+      "scroll": true,
+      "showHeader": true,
+      "sort": {
+        "col": 0,
+        "desc": true
+      },
+      "styles": [
+        {
+          "alias": "Time",
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "pattern": "Time",
+          "type": "date"
+        },
+        {
+          "alias": "Disk Used",
+          "colorMode": "row",
+          "colors": [
+            "rgba(50, 172, 45, 0.97)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(245, 54, 54, 0.9)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Value",
+          "thresholds": [
+            "60",
+            "80",
+            "80"
+          ],
+          "type": "number",
+          "unit": "percent"
+        },
+        {
+          "alias": "Broker: Mount Path",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "dateFormat": "YYYY-MM-DD HH:mm:ss",
+          "decimals": 2,
+          "mappingType": 1,
+          "pattern": "Metric",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        },
+        {
+          "alias": "",
+          "colorMode": null,
+          "colors": [
+            "rgba(245, 54, 54, 0.9)",
+            "rgba(237, 129, 40, 0.89)",
+            "rgba(50, 172, 45, 0.97)"
+          ],
+          "decimals": 2,
+          "pattern": "/.*/",
+          "thresholds": [],
+          "type": "number",
+          "unit": "short"
+        }
+      ],
       "targets": [
         {
-          "expr": "sum by(topic) (kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\", topic=~\".+\"})",
+          "expr": "100 * (node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\"} - node_filesystem_avail_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\"}) / node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\"}",
           "format": "time_series",
-          "interval": "15s",
+          "instant": true,
           "intervalFactor": 1,
-          "legendFormat": "{{topic}}",
+          "legendFormat": "{{pod}}: {{mountpoint}}",
           "refId": "A"
         }
       ],
-      "thresholds": [],
       "timeFrom": null,
-      "timeRegions": [],
       "timeShift": null,
-      "title": "Messages / Topic",
-      "tooltip": {
-        "shared": true,
-        "sort": 0,
-        "value_type": "individual"
-      },
-      "type": "graph",
-      "xaxis": {
-        "buckets": null,
-        "mode": "time",
-        "name": null,
-        "show": true,
-        "values": []
-      },
-      "yaxes": [
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": "0",
-          "show": true
-        },
-        {
-          "format": "short",
-          "label": null,
-          "logBase": 1,
-          "max": null,
-          "min": null,
-          "show": true
-        }
-      ],
-      "yaxis": {
-        "align": false,
-        "alignLevel": null
-      }
+      "title": "Disk Used / Broker",
+      "transform": "timeseries_to_rows",
+      "type": "table"
     },
     {
       "aliasColors": {},
@@ -1315,6 +1402,7 @@
       "dashLength": 10,
       "dashes": false,
       "datasource": "${DS_PROMETHEUS}",
+      "description": "Generally, disk throughput tends to be the main bottleneck in Kafka performance. However, that’s not to say that the network is never a bottleneck. Depending on your use case, hardware, and configuration, the network can quickly become the slowest segment of a message’s trip, especially if you are sending messages across data centers. Tracking network throughput on your brokers gives you more information as to where potential bottlenecks may lie, and can inform decisions like whether or not you should enable end-to-end compression of your messages.",
       "fill": 1,
       "gridPos": {
         "h": 7,
@@ -1322,7 +1410,7 @@
         "x": 12,
         "y": 17
       },
-      "id": 177,
+      "id": 179,
       "legend": {
         "alignAsTable": true,
         "avg": false,
@@ -1348,10 +1436,11 @@
       "steppedLine": false,
       "targets": [
         {
-          "expr": "sum(rate(kafka_server_BrokerTopicMetrics_BytesIn_total{service=\"$service\", namespace=\"$namespace\", topic=\"\"}[1m]))",
+          "expr": "sum by(topic) (kafka_server_BrokerTopicMetrics_MessagesIn_total{namespace=\"$namespace\",service=\"$service\", topic=~\".+\"})",
           "format": "time_series",
+          "interval": "15s",
           "intervalFactor": 1,
-          "legendFormat": "bytes in /second",
+          "legendFormat": "{{topic}}",
           "refId": "A"
         }
       ],
@@ -1359,7 +1448,7 @@
       "timeFrom": null,
       "timeRegions": [],
       "timeShift": null,
-      "title": "bytes in / sec",
+      "title": "Messages / Topic",
       "tooltip": {
         "shared": true,
         "sort": 0,
@@ -1375,11 +1464,11 @@
       },
       "yaxes": [
         {
-          "format": "decbytes",
+          "format": "short",
           "label": null,
           "logBase": 1,
           "max": null,
-          "min": null,
+          "min": "0",
           "show": true
         },
         {
@@ -1574,12 +1663,99 @@
       }
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "fill": 1,
+      "gridPos": {
+        "h": 7,
+        "w": 24,
+        "x": 0,
+        "y": 31
+      },
+      "id": 177,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": false,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": true,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "sum(rate(kafka_server_BrokerTopicMetrics_BytesIn_total{service=\"$service\", namespace=\"$namespace\", topic=\"\"}[1m]))",
+          "format": "time_series",
+          "intervalFactor": 1,
+          "legendFormat": "bytes in /second",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "bytes in / sec",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "decbytes",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 31
+        "y": 38
       },
       "id": 40,
       "panels": [],
@@ -1599,7 +1775,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 32
+        "y": 39
       },
       "id": 117,
       "legend": {
@@ -1688,7 +1864,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 32
+        "y": 39
       },
       "id": 119,
       "legend": {
@@ -1777,7 +1953,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 32
+        "y": 39
       },
       "id": 116,
       "legend": {
@@ -1866,7 +2042,7 @@
         "h": 7,
         "w": 8,
         "x": 0,
-        "y": 39
+        "y": 46
       },
       "id": 120,
       "legend": {
@@ -1955,7 +2131,7 @@
         "h": 7,
         "w": 8,
         "x": 8,
-        "y": 39
+        "y": 46
       },
       "id": 118,
       "legend": {
@@ -2044,7 +2220,7 @@
         "h": 7,
         "w": 8,
         "x": 16,
-        "y": 39
+        "y": 46
       },
       "id": 121,
       "legend": {
@@ -2132,7 +2308,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 46
+        "y": 53
       },
       "id": 60,
       "legend": {
@@ -2219,7 +2395,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 46
+        "y": 53
       },
       "id": 135,
       "legend": {
@@ -2307,7 +2483,7 @@
         "h": 7,
         "w": 12,
         "x": 0,
-        "y": 53
+        "y": 60
       },
       "id": 20,
       "legend": {
@@ -2396,7 +2572,7 @@
         "h": 7,
         "w": 12,
         "x": 12,
-        "y": 53
+        "y": 60
       },
       "id": 22,
       "legend": {
@@ -2483,7 +2659,7 @@
         "h": 8,
         "w": 12,
         "x": 0,
-        "y": 60
+        "y": 67
       },
       "id": 178,
       "legend": {
@@ -2567,7 +2743,7 @@
         "h": 8,
         "w": 12,
         "x": 12,
-        "y": 60
+        "y": 67
       },
       "id": 153,
       "links": [],
@@ -2632,6 +2808,118 @@
       "title": "Under Replicated Partitions",
       "transform": "table",
       "type": "table"
+    },
+    {
+      "aliasColors": {
+        "TOTAL: kafka-kafka-0": "dark-green",
+        "TOTAL: kafka-kafka-1": "dark-green",
+        "TOTAL: kafka-kafka-2": "dark-green",
+        "TOTAL: kafka-kafka-3": "dark-green",
+        "TOTAL: kafka-kafka-4": "dark-green",
+        "TOTAL: kafka-kafka-5": "dark-green",
+        "USED: kafka-kafka-0": "dark-red",
+        "USED: kafka-kafka-1": "dark-red",
+        "USED: kafka-kafka-2": "dark-red",
+        "USED: kafka-kafka-3": "dark-red",
+        "USED: kafka-kafka-4": "dark-red",
+        "USED: kafka-kafka-5": "dark-red"
+      },
+      "bars": false,
+      "cacheTimeout": null,
+      "dashLength": 10,
+      "dashes": false,
+      "datasource": "${DS_PROMETHEUS}",
+      "description": "Generally, disk throughput tends to be the main bottleneck in Kafka performance. However, that’s not to say that the network is never a bottleneck. Depending on your use case, hardware, and configuration, the network can quickly become the slowest segment of a message’s trip, especially if you are sending messages across data centers. Tracking network throughput on your brokers gives you more information as to where potential bottlenecks may lie, and can inform decisions like whether or not you should enable end-to-end compression of your messages.",
+      "fill": 8,
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 75
+      },
+      "id": 180,
+      "legend": {
+        "alignAsTable": true,
+        "avg": false,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": false,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 1,
+      "links": [],
+      "nullPointMode": "null",
+      "percentage": true,
+      "pointradius": 5,
+      "points": false,
+      "renderer": "flot",
+      "seriesOverrides": [],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
+      "targets": [
+        {
+          "expr": "node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}",
+          "format": "time_series",
+          "instant": false,
+          "interval": "",
+          "intervalFactor": 1,
+          "legendFormat": "TOTAL: {{pod}}",
+          "refId": "B"
+        },
+        {
+          "expr": "node_filesystem_size_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"} - node_filesystem_avail_bytes{mountpoint=\"/var/lib/kafka\",namespace=\"$namespace\",service=\"$service\",pod=\"$broker\"}",
+          "format": "time_series",
+          "instant": false,
+          "intervalFactor": 1,
+          "legendFormat": "USED: {{pod}}",
+          "refId": "A"
+        }
+      ],
+      "thresholds": [],
+      "timeFrom": null,
+      "timeRegions": [],
+      "timeShift": null,
+      "title": "Disk Usage",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "format": "Bps",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": "0",
+          "show": true
+        },
+        {
+          "format": "short",
+          "label": null,
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     }
   ],
   "refresh": false,
