@@ -39,9 +39,8 @@ Upload this [grafana json](./resources/grafana-dashboard.json) and you should se
 
 ![Grafana Dashboards](./resources/grafana-capture.png)
 
-### Disable the JMX Exporter
+### Disable the metrics
 
  ```
 kubectl kudo install kafka --instance=kafka --parameter METRICS_ENABLED=false
  ```
-
