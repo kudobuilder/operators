@@ -24,7 +24,7 @@ spec:
         - /opt/kafka/run_producer_test.sh
         env:
         - name: BOOTSTRAP_SERVERS
-          value: "kafka-svc.kudo-kafka.svc.cluster.local:9093"
+          value: "{{ .Name }}-svc.{{ .Namespace }}.svc.cluster.local:{{ .Params.BROKER_PORT }}"
         - name: NUM_TOPICS
           value: "30"
         - name: TEST_INTERVAL_SECONDS
@@ -70,7 +70,7 @@ spec:
         - /opt/kafka/run_consumer_test.sh
         env:
         - name: BOOTSTRAP_SERVERS
-          value: "kafka-svc.kudo-kafka.svc.cluster.local:9093"
+          value: "{{ .Name }}-svc.{{ .Namespace }}.svc.cluster.local:{{ .Params.BROKER_PORT }}"
         - name: NUM_TOPICS
           value: "30"
         - name: NUM_RECORDS
@@ -86,5 +86,4 @@ spec:
             memory: 512Mi
   strategy:
     type: Recreate
-{{ end }} 
-
+{{ end }}
