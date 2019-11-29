@@ -1,0 +1,149 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: es-discovery-svc
+  labels:
+    app: es-discovery-svc
+  namespace: {{ .Params.namespace }}
+spec:
+  selector:
+    app: {{ .Params.appName }}
+  ports:
+  - protocol: TCP
+    port: 9300
+    targetPort: 9300
+    name: transport
+  clusterIP: None
+---
+#create the cluster-ip or  nodePort  service
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Params.appName }}
+  labels:
+    k8s-app: {{ .Params.appName }}
+  namespace: {{ .Params.namespace }}
+spec:
+  type: {{ .Params.serviceType }}
+  {{- if  contains "ClusterIP" .Params.serviceType }}
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+      protocol: TCP
+    - name: transport
+      port: 9300
+      targetPort: 9300
+      protocol: TCP
+  {{- end }}
+  {{- if  contains "NodePort" .Params.serviceType }}
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+      protocol: TCP
+      nodePort: {{ .Params.httpNodePort }}
+    - name: transport
+      port: 9300
+      targetPort: 9300
+      nodePort: {{ .Params.tcpNodePort }}
+      protocol: TCP
+  {{- end }}
+  selector:
+    app: {{ .Params.appName }}
+
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Params.appName }} 
+  labels:
+    app: {{ .Params.appName }} 
+  namespace: {{ .Params.namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ .Params.appName }}
+  serviceName: es-discovery-svc
+  podManagementPolicy:  Parallel  #Parallel  #OrderedReady
+  replicas: {{ .Params.nodeNum }}
+  # Template is the object that describes the pod that will be created
+  template:
+    metadata:
+      labels:
+        app: {{ .Params.appName }}
+    spec:
+      securityContext:
+        # allows read/write access for mounted volumes  
+        # by users that belong to a group with gid: 1000
+        fsGroup: 1000
+      initContainers:
+      # init-container for setting the mmap count limit
+      - name: sysctl
+        image: busybox:latest
+        imagePullPolicy: IfNotPresent
+        command: ["sysctl", "-w", "vm.max_map_count=262144"]
+        securityContext:
+          privileged: true
+      containers:
+      - name: {{ .Params.appName }}
+        securityContext:
+          # applying fix in: https://github.com/kubernetes/kubernetes/issues/3595#issuecomment-287692878 
+          # https://docs.docker.com/engine/reference/run/#operator-exclusive-options
+          capabilities:
+            add:
+              # Lock memory (mlock(2), mlockall(2), mmap(2), shmctl(2))
+              - IPC_LOCK  
+              # Override resource Limits
+              - SYS_RESOURCE
+        image: {{ .Params.image }} 
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9300
+          name: transport
+          protocol: TCP
+        - containerPort: 9200
+          name: http
+          protocol: TCP
+        env:
+        # environment variables to be directly refrenced from the configuration
+        - name: ESNAME
+          value: "{{ .Params.appName }}"
+        - name: ES_HEAP_SIZE
+          value: {{ .Params.ES_HEAP_SIZE }}
+        - name: NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        - name: POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: POD_IP
+          valueFrom:
+            fieldRef:
+              fieldPath: status.podIP
+        - name: MASTER_SVC
+          value: "{{ .Params.appName }}"
+        # mounting storage persistent volume completely on the data dir
+        volumeMounts:
+        - name: data
+          mountPath: /data/
+        - mountPath: /etc/localtime
+          name: time
+      volumes:
+      - name: time       #跟上面的名称对应
+        hostPath:
+          path: /etc/localtime 
+  # The StatefulSet guarantees that a given [POD] network identity will 
+  # always map to the same storage identity
+  volumeClaimTemplates:   #可看作pvc的模板
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      storageClassName: '{{ .Params.storageClassName }}'  #存储类名，改为集群中已存在的
+      resources:
+        requests:
+          storage: "{{ .Params.volumeStorage }}" 
+
