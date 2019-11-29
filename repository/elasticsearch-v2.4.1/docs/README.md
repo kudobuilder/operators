@@ -1,8 +1,12 @@
-# 使用定义的elasticsearch镜像构建es集群
-镜像为ruguodangshi/elasticsearch-unicom:2.4.1
-### 前提
-- 在k8s集群创建名为local-storage的storageClass
-```
+# elasticsearch-v2.4.1
+Elasticsearch is an open source distributed search engine ，it is Large-scale used in China Unicom.
+Since our production environment has always used the 2.x version of es, and a lot of parameter optimizations have been done on this version, we have built this es operator on the basis of version 2.4.1.
+The image used in the operator has been passed to my own dockerhub repository，tag is "ruguodangshi/elasticsearch-unicom:2.4.1".
+You can run ```docker pull ruguodangshi/elasticsearch-unicom:2.4.1``` to get it.
+### Prerequisite
+- create a storageClass in your k8s cluster
+The yaml is like blow：
+ ```
 kind: StorageClass
 apiVersion: storage.k8s.io/v1
 metadata:
@@ -10,7 +14,8 @@ metadata:
 provisioner: kubernetes.io/no-provisioner
 volumeBindingMode: WaitForFirstConsumer
 ```
-- 集群中有足够的空闲的pv，数量大于等于nodeNum，pv示例
+- Create pv using the storageClass from the previous step
+The number of pv must be equal to nodeNum
 ```
 apiVersion: v1
 kind: PersistentVolume
