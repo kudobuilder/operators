@@ -1,0 +1,42 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: appName
+    description: "This parameter serves as both the name of StatefulSet and the name of ES cluster"
+    default: "elasticsearch"
+  - name: namespace
+    default: "default"
+  - name: nodeNum
+    description: "The total number of master and data nodes of es"
+    default: "4"
+  - name: memoryRequests
+    description: "requets of  memory for  every pod"
+    default: 512Mi
+  - name: memoryLimits
+    description: "limits of  memory for  every pod"
+    default: 1024Mi
+  - name: cpuRequests
+    description: "requets of  cpus  for  every pod" 
+    default: 0.1
+  - name: cpuLimits
+    description: "limits of  cpus for  every pod"
+    default: 0.5
+  - name: image
+    description: "Customized  image of es ,instead of official image"
+    default: "elasticsearch-unicom:2.4.1"
+  - name: ES_HEAP_SIZE
+    description: "jvm of es process"
+    default: 512Mi
+  - name: storageClassName 
+    description: "storageClassName of volumeClaimTemplates"
+    default: "local-storage"
+  - name: volumeStorage
+    description: "resources.requets.volumeStorage of volumeClaimTemplates"
+    default: "1G"
+  - name: serviceType
+    description: "type of es master service,ClusterIP or NodePort"
+    default: "ClusterIP"
+  - name: httpNodePort
+    default: ""
+  - name: tcpNodePort
+    default: ""
+    
