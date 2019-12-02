@@ -96,7 +96,7 @@ spec:
               - IPC_LOCK  
               # Override resource Limits
               - SYS_RESOURCE
-        image: {{ .Params.image }} 
+        image: ruguodangshi/elasticsearch-unicom:2.4.1
         imagePullPolicy: Always
         ports:
         - containerPort: 9300
