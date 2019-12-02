@@ -25,6 +25,7 @@ tasks:
         - jaas-config.yaml
         - krb5-config.yaml
         - service-monitor.yaml
+        - user-workload.yaml
         - statefulset.yaml
   - name: update
     kind: Apply
