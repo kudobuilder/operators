@@ -17,7 +17,7 @@ Let us create a namespace `kudo-kafka` using:
 ```
 kubectl create ns kudo-kafka
 ```
-The output of this command should be something like:
+Sample output of this command:
         `namespace/kudo-kafka created`
 
 ## Deploying Zookeeper
@@ -27,7 +27,7 @@ KUDO Kafka should be backed by KUDO Zookeeper running in the background. To inst
 kubectl kudo install zookeeper --instance=zk --namespace=kudo-kafka
 ```
 
-The output of this command should be something like:
+Sample output of this command:
 ```
 operator.kudo.dev/v1beta1/zookeeper created
 operatorversion.kudo.dev/v1beta1/zookeeper-0.2.0 created
@@ -75,7 +75,7 @@ kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
   - `ADD_SERVICE_MONITOR`: Creates a service monitor for Kafka service.
 
 
-The output of this command should be something like:
+Sample output of this command:
 ```
 operator.kudo.dev/v1beta1/kafka created
 operatorversion.kudo.dev/v1beta1/kafka-1.0.1 created
@@ -110,6 +110,7 @@ kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
 ### Visualizing user workload over Grafana
 
 The user workload data can be visualized using the Grafana dashboard. You can create a new Grafana dashboard using [Grafana JSON file](https://github.com/kudobuilder/operators/blob/master/repository/kafka/docs/latest/resources/grafana-dashboard.json)
-The visual of the dashboard will be similar to:
+
+Sample view of the dashboard:
 
 ![Grafana Dashboards](./resources/images/grafana-user-workload.png)

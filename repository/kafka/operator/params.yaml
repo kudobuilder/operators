@@ -60,7 +60,7 @@ parameters:
     description: "Create a service monitor for the kafka service"
     default: "false"
   - name: RUN_USER_WORKLOAD
-    description: "Create some dummy user workload (with some producer-consumer behavior) for the kafka service"
+    description: "Run dummy user workload on the kafka service"
     default: "false"
   - name: NUM_PARTITIONS
     description: "Number of partitions for Kafka topics"
