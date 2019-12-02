@@ -23,6 +23,29 @@ spec:
     spec:
       terminationGracePeriodSeconds: 300
       containers:
+        {{ if eq .Params.METRICS_ENABLED "true" }}
+        - name: kafka-node-exporter
+          image: quay.io/prometheus/node-exporter
+          resources:
+            requests:
+              memory: 20Mi
+              cpu: 0.1
+            limits:
+              memory: 50Mi
+              cpu: 0.2
+          ports:
+            - containerPort: {{ .Params.KAFKA_NODE_EXPORTER_PORT }}
+              name: ne-metrics
+          {{ if eq .Params.PERSISTENT_STORAGE "true" }}
+          volumeMounts:
+            - name: {{ .Name }}-datadir
+              mountPath: /var/lib/kafka
+          {{ end }}
+          args:
+            - --web.listen-address=0.0.0.0:{{ .Params.KAFKA_NODE_EXPORTER_PORT }}
+            - --web.disable-exporter-metrics
+            - --collector.filesystem
+        {{ end }}
         - name: k8skafka
           imagePullPolicy: Always
           image: mesosphere/kafka:1.0.1-2.3.1
