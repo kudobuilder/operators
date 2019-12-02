@@ -20,9 +20,6 @@ parameters:
   - name: cpuLimits
     description: "limits of  cpus for  every pod"
     default: 0.5
-  - name: image
-    description: "Customized  image of es ,instead of official image"
-    default: "ruguodangshi/elasticsearch-unicom:2.4.1"
   - name: ES_HEAP_SIZE
     description: "jvm of es process"
     default: 512Mi
