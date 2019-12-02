@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kafka-ultron-loader
-        image: zmalikshxil/kafka-ultron:0.0.1-alpha
+        image: mesosphere/kafka:workload
         imagePullPolicy: Always
         command:
         - /opt/kafka/run_producer_test.sh
@@ -64,7 +64,7 @@ spec:
     spec:
       containers:
       - name: kafka-ultron-loader
-        image: zmalikshxil/kafka-ultron:0.0.1-alpha
+        image: mesosphere/kafka:workload
         imagePullPolicy: Always
         command:
         - /opt/kafka/run_consumer_test.sh
