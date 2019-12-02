@@ -9,7 +9,7 @@ maintainers:
 url: https://kudo.dev
 tasks:
   - name: app
-    kind: StatefulSet
+    kind: Apply
     spec:
       resources:
         - statefulset.yaml
