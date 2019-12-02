@@ -28,10 +28,10 @@ spec:
           image: quay.io/prometheus/node-exporter
           resources:
             requests:
-              memory: 100Mi
+              memory: 20Mi
               cpu: 0.1
             limits:
-              memory: 150Mi
+              memory: 50Mi
               cpu: 0.2
           ports:
             - containerPort: {{ .Params.KAFKA_NODE_EXPORTER_PORT }}
