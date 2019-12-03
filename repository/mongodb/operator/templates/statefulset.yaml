@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Name }}
+  namespace: {{ .Namespace }}
+  labels:
+    app: mongo
+    mongo: {{ .OperatorName }}
+spec:
+  serviceName: {{ .Name }}-svc
+  selector:
+    matchLabels:
+      app: mongo
+      mongo: {{ .OperatorName }}
+  template:
+    metadata:
+      labels:
+        app: mongo
+        mongo: {{ .OperatorName }}
+    spec:
+      containers:
+      - name: mongo
+        image: mongo:{{ .AppVersion }}
+        env:
+        - name: MONGO_INITDB_ROOT_USERNAME
+          value: {{ .Params.InitRootUser }}
+        - name: MONGO_INITDB_ROOT_PASSWORD
+          value: {{ .Params.InitRootPasswrd }}
+        ports:
+        - containerPort: 80
+          name: mongo
+        volumeMounts:
+        - name: dbdata
+          mountPath: /data/db
+  volumeClaimTemplates:
+  - metadata:
+      name: dbdata
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
