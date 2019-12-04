@@ -20,8 +20,6 @@ data:
     export KAFKA_OPTS="-Dsun.security.krb5.debug=true $KAFKA_OPTS"
     {{ end }}
     {{ end }}
-
-
     
     KAFKA_BROKER_ID=${HOSTNAME##*-}
     
