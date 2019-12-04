@@ -1,7 +1,5 @@
 ![kudo-kafka](./resources/images/kudo-kafka.png)
 
-[TOC]
-
 # KUDO Kafka Access
 
 Kafka is a fully distributed messaging system as it persists, receives and sends records on different brokers.
