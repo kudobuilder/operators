@@ -53,6 +53,9 @@ data:
     DNS.3 = $(hostname -f)
     DNS.4 = $(hostname -i)
     DNS.5 = $(hostname)
+    {{ if eq .Params.EXTERNAL_ADVERTISED_LISTENER "true" }}
+    DNS.6 = $(cat /opt/kafka/external.dns)
+    {{ end }}
     IP.1 = 0.0.0.0
     IP.2 = 127.0.0.1
     IP.3 = $(hostname -i)

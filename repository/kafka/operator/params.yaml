@@ -417,6 +417,23 @@ parameters:
     displayName: "default.replication.factor"
     description: "Default replication factors for automatically created topics"
     default: "1"
+  - name: EXTERNAL_ADVERTISED_LISTENER
+    displayName: "Enable external advertised listeners"
+    description: "Enable external advertised listeners"
+    default: "false"
+  - name: EXTERNAL_ADVERTISED_LISTENER_PORT
+    displayName: "External advertised listener port"
+    description: "External advertised listener port"
+    default: "9097"
+  - name: EXTERNAL_ADVERTISED_LISTENER_TYPE
+    displayName: "External advertised listener load-balancer type"
+    description: |
+        External advertised listener load-balancer type, by default its using Node ports.
+        Valid values are "NodePort" and "LoadBalancer"
+    default: "NodePort"
+  - name: EXTERNAL_NODE_PORT
+    default: "30902"
+    displayName: "External Node Port starting value."
   - name: FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS
     displayName: "fetch.purgatory.purge.interval.requests"
     description: "The purge interval (in number of requests) of the fetch request purgatory"

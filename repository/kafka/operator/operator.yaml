@@ -15,7 +15,13 @@ tasks:
     kind: Apply
     spec:
       resources:
+        - serviceaccount.yaml
+        - role.yaml
+        - rolebinding.yaml
+        - clusterrole.yaml
+        - clusterrolebinding.yaml
         - service.yaml
+        - external-service.yaml
         - pdb.yaml
         - server.properties.yaml
         - bootstrap.yaml
