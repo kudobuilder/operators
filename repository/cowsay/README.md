@@ -19,7 +19,7 @@ KUDO Cowsay operator:
           kind: ConfigMap
           key: indexHtml
 ```
-- Launched an nginx webserver with it
+- Launches an nginx webserver with it
 
 
 ```
