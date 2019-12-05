@@ -4,7 +4,7 @@ version: "0.1.0"
 kubernetesVersion: 1.13.0
 maintainers:
   - name: zen-dog
-    email: <adukhovniy@d2iq.com>
+    email: <adukhovniy@D2iQ.com>
 url: https://kudo.dev
 tasks:
   - name: app
