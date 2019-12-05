@@ -1,0 +1,35 @@
+apiVersion: kudo.dev/v1beta1
+name: "cowsay"
+version: "0.1.0"
+kubernetesVersion: 1.13.0
+maintainers:
+  - name: zen-dog
+    email: <adukhovniy@d2iq.com>
+url: https://kudo.dev
+tasks:
+  - name: app
+    kind: Apply
+    spec:
+      resources:
+        - deployment.yaml
+  - name: genwww
+    kind: Pipe
+    spec:
+      pod: pipe-pod.yaml
+      pipe:
+        - file: /tmp/indexx.html
+          kind: ConfigMap
+          key: indexHtml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: main
+        strategy: serial
+        steps:
+          - name: genfiles
+            tasks:
+              - genwww
+          - name: app
+            tasks:
+              - app

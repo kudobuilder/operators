@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+spec:
+  volumes:
+  - name: shared-data
+    emptyDir: {}
+
+  initContainers:
+    - name: init
+      image: busybox
+      command: [ "/bin/sh", "-c" ]
+      args:
+        - wget -O /tmp/index.html 'http://cowsay.morecode.org/say?message=Good+things+come+when+you+least+expect+them&format=html'
+      volumeMounts:
+        - name: shared-data
+          mountPath: /tmp
