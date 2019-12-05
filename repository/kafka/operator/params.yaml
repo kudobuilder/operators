@@ -541,10 +541,13 @@ parameters:
     displayName: "quota.window.size.seconds"
     description: "The time span of each sample for client quotas"
     default: "1"
-  - name: SSL_ENDPOINT_IDENTIFICATION_ENABLED
-    displayName: "ssl.endpoint.identification.enabled"
-    description: "By default enables the hostname verification when TLS connections are established between Kafka brokers. To disable hostname verification leave this option unchecked"
-    default: "true"
+  - name: SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
+    displayName: "ssl.endpoint.identification.algorithm"
+    description: |
+    The endpoint identification algorithm used by clients to validate server host name. The default value is HTTPS.
+    Clients including client connections created by the broker for inter-broker communication verify that the broker host name matches the host name in the broker’s certificate.
+    Server host name verification may be disabled by setting ssl.endpoint.identification.algorithm to an empty string.
+    default: "HTTPS"
   - name: TRANSACTION_STATE_LOG_SEGMENT_BYTES
     displayName: "transaction.state.log.segment.bytes"
     description: "The transaction topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
@@ -605,10 +608,6 @@ parameters:
     default: "kafka-tls"
     displayName: "kafka-tls"
     description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
-  - name: CUSTOM_SERVER_PROPERTIES
-    displayName: "custom server properties"
-    description: "These properties will be appended to the Kafka server properties"
-    default: ""
   - name: CUSTOM_SERVER_PROPERTIES_CM_NAME
     displayName: "custom server properties configmap name"
     description: "The properties present in this configmap will be appended to the Kafka server properties"

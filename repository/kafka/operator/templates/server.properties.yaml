@@ -38,6 +38,7 @@ data:
 
     {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
     ############################# TLS Settings #############################
+    ssl.endpoint.identification.algorithm={{ .Params.SSL_ENDPOINT_IDENTIFICATION_ALGORITHM }}
     ssl.keystore.location=/home/kafka/tls/kafka.server.keystore.jks
     ssl.keystore.password=changeit
     ssl.key.password=changeit
@@ -48,7 +49,6 @@ data:
     ssl.enabled.protocols=TLSv1.2
     
     ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
-    
     # If Kerberos is NOT enabled, then SSL authentication can be turned on.
     {{ if ne .Params.KERBEROS_ENABLED "true" }}
     {{ if eq .Params.SSL_AUTHENTICATION_ENABLED "true" }}
