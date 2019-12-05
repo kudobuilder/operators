@@ -6,9 +6,9 @@
 
 Kafka is a fully distributed messaging system as it persists, receives and sends records on different brokers.
 
-Which in result makes it easier to scale it horizontally and provides guarantees for an architecture that can be fault tolerant. And the main 
+Which in result makes it easier to scale it horizontally and provides guarantees for an architecture that can be fault tolerant.
 
-To fully take advantage of the Apache Kafka sharding, a typical scenario would be the next one. Where different producers and consumers are connecting to all Kafka brokers and writing and reading messages from the brokers. 
+To fully take advantage of the Apache Kafka sharding, a typical scenario would be where different producers and consumers are connecting to all Kafka brokers and writing and reading messages from the brokers. 
 
 ![kudo-kafka](./resources/images/kafka-producer-consumer.png)
 
@@ -24,9 +24,7 @@ For the applications living inside the same kubernetes cluster. KUDO Kafka suppo
 
 ## External access
 
-For the producers and consumers living outside the Kubernetes cluster. KUDO Kafka supports the Nodeport and Loadbalancer approach.
-
-
+For the producers and consumers living outside the Kubernetes cluster KUDO Kafka supports the Nodeport and Loadbalancer approach.
 
 #### Loadbalancer (recommended)
 
@@ -36,7 +34,7 @@ KUDO Kafka can be exposed easily for external access using Service Type [LoadBal
 
 The parameter used to configure the external loadbalancers is `EXTERNAL_ADVERTISED_LISTENER_TYPE`
 
-When set to `LoadBalancer` it creates one service per broker. To expose each broker externally. 
+When set to `LoadBalancer` it creates one service per broker to expose each broker externally. 
 
 ```
 kubectl kudo install kafka --instance=kafka \
@@ -58,34 +56,44 @@ kafka-kafka-2-external   LoadBalancer   10.0.32.219   a252e64a36f4443ecbea2fa4c4
 
 Producers and consumers can connect to `aebb0d2f2adda4b22b7d9b0c07a865b8-1700665253.us-west-2.elb.amazonaws.com:9097,a8ae206a726b24fed91b82eb9110e0d1-1872607345.us-west-2.elb.amazonaws.com:9097,a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097` in the above case.
 
-To verify if the `server.properties` have the correct configuration for the `listeners`,`advertised.listeners` and `listener.security.protocol.map`, users can check the `server.properties` in the broker pods, for example for broker `2` we can verify by running the next command:
+To verify if the `server.properties` has the correct configuration for the `listeners`,`advertised.listeners` and `listener.security.protocol.map`, users can check the `server.properties` content in the broker pods. For example for broker `2` you just need to run the following command:
 
 ```
 > kubectl exec -ti kafka-kafka-2 cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
-listener.security.protocol.map=INTERNAL:SSL,EXTERNAL_INGRESS:SSL
+listener.security.protocol.map=INTERNAL:PLAINTEXT,EXTERNAL_INGRESS:PLAINTEXT
 inter.broker.listener.name=INTERNAL
 [ ... lines removed for clarity ...]
 ```
 
-In the above case we can see that loadbalancer hostname is listed in `advertised.listeners` and listening on `SSL` protocol. 
-
-```
-kubectl kudo install kafka --instance=kafka \
-	-p EXTERNAL_ADVERTISED_LISTENER=true \
-	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer \
-	-p CLIENT_PORT_ENABLED=false \
-	-p TRANSPORT_ENCRYPTION_ENABLED=true \
-	-p TLS_SECRET_NAME=kafka-tls
-```
+In the above case we can see that loadbalancer hostname is listed in `advertised.listeners` and listening on `PLAINTEXT` protocol. 
 
 To have the loadbalancer hostname, KUDO Kafka brokers wait for the loadbalancer hostname or IP address to be assigned. And add the address to the `advertised.listeners`  
 
+##### Enabling/Disabling Loadbalancer access in already running KUDO Kafka  
+
+KUDO Kafka supports enabling and disabling of the parameter `EXTERNAL_ADVERTISED_LISTENER`. This allows users to switch on and off the loadbalancers for an already running KUDO Kafka cluster.
+
+To enable the external access via load balancers:
+
+```
+kubectl kudo update --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=true \
+	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer 
+```
+
+To disable the external access via load balancers:
+
+```
+kubectl kudo update --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=false
+```
+
 #### Nodeports
 
-Exposing the Apache Kafka brokers using the NodePorts Service Type isn't a recommended way for the KUDO Kafka. But it can help during development and testing environments, when user isn't looking for an external LoadBalancer service. 
+Exposing the Apache Kafka brokers using the NodePorts Service Type **isn't a recommended way for the KUDO Kafka in production**. But it can help during development and testing environments, when user isn't looking for an external LoadBalancer service. 
 
 The parameter used to configure the external loadbalancers is `EXTERNAL_ADVERTISED_LISTENER_TYPE`
 
@@ -140,6 +148,115 @@ EXTERNAL_INGRESS://34.214.27.71:30904
 
 This also explains why using NodePort in production isn't recommended. As in case if any node loss or in case a broker is scheduled to a new node, the external-ip address will be changed. The same case is handled well by the `LoadBalancer` alternative.
 
+##### Enabling/Disabling NodePort access in already running KUDO Kafka  
+
+KUDO Kafka supports enabling and disabling of the parameter `EXTERNAL_ADVERTISED_LISTENER`. This allows users to switch on and off the nodeports access for an already running KUDO Kafka cluster.
+
+To enable the external access via node ports:
+
+```
+kubectl kudo update --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=true \
+	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort 
+```
+
+To disable the external access via load balancers:
+
+```
+kubectl kudo update --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=false
+```
+
+#### Switching access type in running cluster
+
+Due to known kubernetes issue in [issues/221](https://github.com/kubernetes/kubectl/issues/221) switching the Loadbalancer access to Nodeport access and vice versa, is a two step update
+
+##### Switching from Nodeport to Loadbalancer
+
+First disable the external access
+
+```
+kubectl kudo update --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=false
+```
+
+Once the plan status is complete, we can enable again with `LoadBalancer` type
+
+````
+kubectl kudo install kafka --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=true \
+	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer
+````
+
+##### Switching from Loadbalancer to Nodeport
+
+First disable the external access
+
+```
+kubectl kudo update --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=false
+```
+
+Once the plan status is complete, we can enable again with `NodePort` type
+
+```
+kubectl kudo install kafka --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=true \
+	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort
+```
+
 ## Security
 
 [KUDO Kafka Security options](./security.md) plays well with the external access. Enabling Kerberos or TLS authentication methods will modify the required external security protocol map. 
+
+##### Loadbalancer with TLS encryption enabled
+
+Exposing KUDO Kafka works with the TLS encryption enabled. 
+
+```
+kubectl kudo install kafka --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=true \
+	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer \
+	-p CLIENT_PORT_ENABLED=false \
+	-p TRANSPORT_ENCRYPTION_ENABLED=true \
+	-p TLS_SECRET_NAME=kafka-tls
+```
+
+And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
+
+```
+> kubectl exec -ti kafka-kafka-2 cat server.properties
+[ ... lines removed for clarity ...]
+listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
+advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
+listener.security.protocol.map=INTERNAL:SSL,EXTERNAL_INGRESS:SSL
+inter.broker.listener.name=INTERNAL
+[ ... lines removed for clarity ...]
+```
+
+##### Nodeport with TLS encryption enabled
+
+Exposing KUDO Kafka works with the TLS encryption enabled. 
+
+```
+kubectl kudo install kafka --instance=kafka \
+	-p EXTERNAL_ADVERTISED_LISTENER=true \
+	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort \
+	-p CLIENT_PORT_ENABLED=false \
+	-p TRANSPORT_ENCRYPTION_ENABLED=true \
+	-p TLS_SECRET_NAME=kafka-tls
+```
+
+And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
+
+```
+> kubectl exec -ti kafka-kafka-2 cat server.properties
+[ ... lines removed for clarity ...]
+listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
+advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://34.214.27.71:30904
+listener.security.protocol.map=INTERNAL:SSL,EXTERNAL_INGRESS:SSL
+inter.broker.listener.name=INTERNAL
+[ ... lines removed for clarity ...]
+```
+
+##### 
