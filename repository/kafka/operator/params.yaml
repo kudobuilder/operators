@@ -544,9 +544,9 @@ parameters:
   - name: SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
     displayName: "ssl.endpoint.identification.algorithm"
     description: |
-    The endpoint identification algorithm used by clients to validate server host name. The default value is HTTPS.
-    Clients including client connections created by the broker for inter-broker communication verify that the broker host name matches the host name in the broker’s certificate.
-    Server host name verification may be disabled by setting ssl.endpoint.identification.algorithm to an empty string.
+      The endpoint identification algorithm used by clients to validate server host name. The default value is HTTPS.
+      Clients including client connections created by the broker for inter-broker communication verify that the broker host name matches the host name in the broker’s certificate.
+      Server host name verification may be disabled by setting ssl.endpoint.identification.algorithm to an empty string.
     default: "HTTPS"
   - name: TRANSACTION_STATE_LOG_SEGMENT_BYTES
     displayName: "transaction.state.log.segment.bytes"
