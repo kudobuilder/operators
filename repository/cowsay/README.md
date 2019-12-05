@@ -8,7 +8,7 @@ The KUDO cowsay operator is a small demo for the KUDO [Pipe-Tasks](https://githu
 
 KUDO Cowsay operator:
 
-- Uses KUOD pipe-tasks and [cowsay.morecode.org](http://cowsay.morecode.org) to generate a customized index.html 
+- Uses KUDO pipe-tasks and [cowsay.morecode.org](http://cowsay.morecode.org) to generate a customized `index.html`
 ```yaml
   - name: genwww
     kind: Pipe
