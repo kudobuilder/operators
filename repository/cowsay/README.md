@@ -15,7 +15,7 @@ KUDO Cowsay operator:
     spec:
       pod: pipe-pod.yaml
       pipe:
-        - file: /tmp/indexx.html
+        - file: /tmp/index.html
           kind: ConfigMap
           key: indexHtml
 ```

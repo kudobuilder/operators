@@ -4,7 +4,6 @@ spec:
   volumes:
   - name: shared-data
     emptyDir: {}
-
   initContainers:
     - name: init
       image: busybox
