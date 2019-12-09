@@ -11,18 +11,18 @@ Please see https://git.k8s.io/community/CLA.md for more info.
 ## How to Contribute to an Existing Operator
 
 1. Submit an issue describing your proposed change to the operator in question.
-2. The operator maintainer or repo owners will respond  to your issue promptly
-3. If your proposed change is accepted, and you haven't already done so, sign a Contributor License Agreement (see details above).
-4. Fork the desired repo, develop and test your code changes.
-5. Submit a pull request.
+1. The operator maintainer or repo owners will respond  to your issue promptly
+1. If your proposed change is accepted, and you haven't already done so, sign a Contributor License Agreement (see details above).
+1. Fork the desired repo, develop and test your code changes.
+1. Submit a pull request.
 
 ### Requirements for the new Operators
 
 - Must include a `README.md`
-- Must include source GitHub repositories for images used in the Operator
+- Must include source GitHub repositories for the container images used in the Operator
 - Must pass the `kubectl kudo package verify` 
 - Must specify the minimum `KUDO` version and `Kubernetes` version in `operator.yaml`
-- Must provide tests for the Operator
+- Must provide at least one deploy plan test for the Operator
 - Must follow the structure described in [getting started guide](https://kudo.dev/docs/developing-operators.html#getting-started)
 - Each file in `templates` directory must be of one Kubernetes object type
 - Should follow Kubernetes best practices
