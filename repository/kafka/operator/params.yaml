@@ -619,6 +619,9 @@ parameters:
   - name: MIRROR_MAKER_ENABLED
     default: "false"
     trigger: "mirrormaker"
+  - name: MIRROR_MAKER_REPLICA_COUNT
+    default: "1"
+    trigger: "mirrormaker"
   - name: MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE
     default: "SOURCE"
     trigger: "mirrormaker"
@@ -637,3 +640,15 @@ parameters:
   - name: MIRROR_MAKER_OFFSET_COMMIT_INTERVAL
     default: "60000"
     trigger: "mirrormaker"
+  - name: MIRROR_MAKER_CPUS
+    description: "CPUs (request) for the Mirror Maker pods. spec.containers[].resources.requests.cpu"
+    default: "100m"
+  - name: MIRROR_MAKER_CPUS_LIMIT
+    description: "CPUs (limit) for the Mirror Maker pods. spec.containers[].resources.limits.cpu"
+    default: "100m"
+  - name: MIRROR_MAKER_MEM
+    description: "Memory (request) for the Mirror Maker pods. spec.containers[].resources.requests.memory"
+    default: "512Mi"
+  - name: MIRROR_MAKER_MEM_LIMIT
+    description: "Memory (limit) for the Mirror Maker pods. spec.containers[].resources.limits.memory"
+    default: "512Mi"
