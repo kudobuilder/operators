@@ -616,3 +616,24 @@ parameters:
     displayName: "custom metrics properties and rules"
     description: "These metrics prometheus rules to be used instead of the default metrics rules."
     required: false
+  - name: MIRROR_MAKER_ENABLED
+    default: "false"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE
+    default: "SOURCE"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS
+    default: ""
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_ABORT_ON_SEND_FAILURE
+    default: "true"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_TOPIC_WHITELIST
+    default: ".*"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_NUM_STREAMS
+    default: "1"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_OFFSET_COMMIT_INTERVAL
+    default: "60000"
+    trigger: "mirrormaker"
