@@ -1,8 +1,8 @@
 
 # Kafka MirrorMaker
 
-KUDO Kafka operator comes with [Kafka MirrorMaker](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330) included. MirrorMaker is a tool to mirror a source Kafka 
-cluster into a target (mirror) Kafka cluster. The tool uses a Kafka consumer to consume messages from the
+KUDO Kafka operator comes with builtin integration of [Kafka MirrorMaker](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330).
+MirrorMaker is a tool to mirror a source Kafka cluster into a target (mirror) Kafka cluster. The tool uses a Kafka consumer to consume messages from the
 source cluster, and re-publishes those messages to the (target) cluster using an embedded Kafka producer.
 
 ### Using the MirrorMaker
