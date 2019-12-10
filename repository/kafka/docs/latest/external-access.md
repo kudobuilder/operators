@@ -59,7 +59,7 @@ Producers and consumers can connect to `aebb0d2f2adda4b22b7d9b0c07a865b8-1700665
 To verify if the `server.properties` has the correct configuration for the `listeners`,`advertised.listeners` and `listener.security.protocol.map`, users can check the `server.properties` content in the broker pods. For example for broker `2` you just need to run the following command:
 
 ```
-> kubectl exec -ti kafka-kafka-2 cat server.properties
+> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
@@ -122,7 +122,7 @@ In this case we don't have an `EXTERNAL-IP` and this is expected. To access thos
 We can verify them by checking the `server.properties`
 
 ```
-> kubectl exec -ti kafka-kafka-2 cat server.properties
+> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9093,EXTERNAL_INGRESS://34.214.27.71:30904
 [ ... lines removed for clarity ...]
@@ -133,7 +133,9 @@ advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.loca
 Another way to get the list of all brokers addresses is:
 
 ```
-kubectl exec -ti kafka-kafka-0 cat external.advertised.listeners
+kubectl exec -ti kafka-kafka-0 -c k8skafka cat external.advertised.listeners
+kubectl exec -ti kafka-kafka-1 -c k8skafka cat external.advertised.listeners
+kubectl exec -ti kafka-kafka-2 -c k8skafka cat external.advertised.listeners
 kubectl exec -ti kafka-kafka-1 cat external.advertised.listeners
 kubectl exec -ti kafka-kafka-2 cat external.advertised.listeners
 ```
@@ -225,7 +227,7 @@ kubectl kudo install kafka --instance=kafka \
 And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
 
 ```
-> kubectl exec -ti kafka-kafka-2 cat server.properties
+> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
@@ -250,7 +252,7 @@ kubectl kudo install kafka --instance=kafka \
 And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
 
 ```
-> kubectl exec -ti kafka-kafka-2 cat server.properties
+> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://34.214.27.71:30904
