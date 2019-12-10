@@ -32,14 +32,14 @@ If MirrorMaker is running in a Kafka operator instance then to disable that scal
 pod count to 0, using the following command:
 
 ```sh
-kubectl kudo update --instance=kafkao -p MIRROR_MAKER_REPLICA_COUNT=0
+kubectl kudo update --instance=kafka -p MIRROR_MAKER_REPLICA_COUNT=0
 ``` 
 
 ### Advanced Options
 
-|Parameter|Description|
-|--|--|
-| MIRROR_MAKER_TOPIC_WHITELIST | Whitelist of topics to mirror |
-|MIRROR_MAKER_NUM_STREAMS|Number of consumer streams|
-|MIRROR_MAKER_OFFSET_COMMIT_INTERVAL|Offset commit interval in ms|
-|MIRROR_MAKER_ABORT_ON_SEND_FAILURE| Stop the entire mirror maker when a send failure occurs |
+|Parameter|Description|Example|
+|--|--|--|
+| MIRROR_MAKER_TOPIC_WHITELIST | Whitelist of topics to mirror |<ul> <li> ".*" for all topics (default) <li>"topic1"</li> <li> "topic5,topic6"</li></ul> |
+|MIRROR_MAKER_NUM_STREAMS|Number of consumer streams|<ul><li>"1" (default)</li></ul>|
+|MIRROR_MAKER_OFFSET_COMMIT_INTERVAL|Offset commit interval in ms|<ul><li>"60000" for 1 min (default)</li></ui>|
+|MIRROR_MAKER_ABORT_ON_SEND_FAILURE| Stop the entire mirror maker when a send failure occurs |<ul><li>"true" (default)</li><li>"false"</li></ul>|
