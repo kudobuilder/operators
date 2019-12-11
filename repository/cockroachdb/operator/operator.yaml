@@ -1,0 +1,53 @@
+apiVersion: kudo.dev/v1beta1
+name: "CockroachDB"
+version: "0.1.0"
+kudoVersion: 0.8.0
+kubernetesVersion: 1.13.0
+appVersion: 19.2.1
+maintainers:
+  - name: liwei
+    email: "liw327@chinaunicom.cn"
+url: "https://www.cockroachlabs.com/"
+tasks:
+- name: svc
+  kind: Apply
+  spec:
+    resources:
+    - services.yaml
+- name: poddisruptionbudget
+  kind: Apply
+  spec:
+    resources:
+    - poddisruptionbudget.yaml
+- name: sts
+  kind: Apply
+  spec:
+    resources:
+    - statefulset.yaml
+- name: init
+  kind: Apply
+  spec:
+    resources:
+    - job.yaml
+plans:
+  deploy:
+    strategy: parallel
+    phases:
+    - name: base
+      strategy: serial
+      steps:
+      - name: svc
+        tasks:
+        - svc
+      - name: poddisruptionbudget
+        tasks:
+        - poddisruptionbudget
+      - name: sts
+        tasks:
+        - sts
+    - name: init
+      strategy: serial
+      steps:
+      - name: init
+        tasks:
+        - init

@@ -1,0 +1,46 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: namespace
+    default: default
+  - name: serviceAccountName
+    default: cockroachdb
+  - name: clusterRoleName
+    default: cockroachdb
+  - name: roleName
+    default: cockroachdb
+  - name: serviceName
+    default: cockroachdb
+  - name: grpcPort
+    default: 26257
+  - name: httpPort
+    default: 8080
+  - name: grpcPortDNSSuffix
+    default: grpc
+  - name: httpPortDNSSuffix
+    default: http
+  - name: publicServiceName
+    default: cockroachdb-public
+  - name: publicGrpcPort
+    default: 26257
+  - name: publicHttpPort
+    default: 8080
+  - name: publicGrpcPortDNSSuffix
+    default: grpc
+  - name: publicHttpPortDNSSuffix
+    default: http
+  - name: requestCPU
+    default: 0.1
+  - name: requestMemory
+    default: 1Gi
+  - name: limitCPU
+    default: 0.2
+  - name: limitMemory
+    default: 1Gi
+  - name: initImageVersion
+    default: 0.4
+  - name: imageVersion
+    default: v19.2.1
+  - name: storageClassName
+    default: default
+  - name: storageSize
+    default: 1Gi
