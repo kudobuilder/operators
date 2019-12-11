@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-cruise-control
+  namespace: {{ .Namespace }}
+spec:
+  selector:
+    matchLabels:
+      app: cruise-control
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cruise-control
+      annotations:
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: cruise-control
+        image: zmalikshxil/cruise-control:latest
+        imagePullPolicy: IfNotPresent
+        ports:
+        - name: api
+          containerPort: 8090
+        - name: http
+          containerPort: 9090
+        command:
+        - bash
+        - -c
+        args:
+        - /opt/cruise-control/kafka-cruise-control-start.sh /etc/cruise-control/config/cruise.properties
+        resources:
+          requests:
+            cpu: 100m
+            memory: 512Mi
+        readinessProbe:
+          tcpSocket:
+            port: 8090
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: cc-props
+          mountPath: /etc/cruise-control/config
+      volumes:
+      - name: cc-props
+        configMap:
+          name: {{ .Name }}-cruisecontrol-props

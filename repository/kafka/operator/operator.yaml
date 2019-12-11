@@ -27,20 +27,12 @@ tasks:
         - service-monitor.yaml
         - user-workload.yaml
         - statefulset.yaml
-  - name: update
+  - name: cruise-control-deploy
     kind: Apply
     spec:
       resources:
-        - service.yaml
-        - pdb.yaml
-        - server.properties.yaml
-        - bootstrap.yaml
-        - metrics-config.yaml
-        - health-check.yaml
-        - enable-tls.yaml
-        - jaas-config.yaml
-        - krb5-config.yaml
-        - statefulset.yaml
+        - cruise-control.yaml
+        - cruise-control-config.yaml
   - name: not-allowed
     kind: Apply
     spec:
@@ -55,6 +47,12 @@ plans:
           - name: deploy
             tasks:
               - deploy
+      - name: deploy-cruise
+        strategy: serial
+        steps:
+          - name: deploy-cruise
+            tasks:
+              - cruise-control-deploy
   # this plan is triggered when some parameter present in limitations is updated
   # https://github.com/kudobuilder/operators/blob/master/repository/kafka/docs/latest/limitations.md
   not-allowed:
