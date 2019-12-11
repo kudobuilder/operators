@@ -64,6 +64,10 @@ parameters:
     description: "Disk size for the brokers"
     default: "5Gi"
     trigger: "not-allowed"
+  - name: ENABLE_CRUISE_CONTROL
+    description: "Enable cruise control for the current KUDO Kafka cluster"
+    default: "false"
+    trigger: "deploy-cruise"
   - name: STORAGE_CLASS
     description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
     required: false
