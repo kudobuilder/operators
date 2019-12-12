@@ -13,6 +13,7 @@ kubectl:
 - kudo install --skip-instance ./repository/zookeeper/operator/
 testDirs:
 - ./repository/zookeeper/tests
+- ./repository/kafka/tests
 startKIND: true
 startKUDO: true
 timeout: 300
