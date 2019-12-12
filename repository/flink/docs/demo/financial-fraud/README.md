@@ -75,7 +75,7 @@ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
         ```bash
         $ kubectl kudo install flink --version=0.1.2 --skip-instance
         operator.kudo.dev/v1beta1/flink created
-        operatorversion.kudo.dev/v1beta1/flink-0.1.1 created
+        operatorversion.kudo.dev/v1beta1/flink-0.1.2 created
         ```
 
 Now you should have all required Operators installed.
@@ -157,7 +157,7 @@ Lastly, the Flink operator needs to be installed. We wait for its status to be c
 $ kubectl kudo plan status --instance flink
 Plan(s) for "flink" in namespace "default":
 .
-└── flink-demo-flink (Operator-Version: "flink-0.1.1" Active-Plan: "deploy")
+└── flink-demo-flink (Operator-Version: "flink-0.1.2" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase flink (serial strategy) [COMPLETE]
             └── Step jobmanager (COMPLETE)
@@ -268,7 +268,7 @@ kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.con
 # install o and ov
 kubectl kudo install zookeeper --version=0.2.0 --skip-instance
 kubectl kudo install kafka --version=0.1.3 --skip-instance
-kubectl kudo install flink --version=0.1.1 --skip-instance
+kubectl kudo install flink --version=0.1.2 --skip-instance
 
 
 # install demo

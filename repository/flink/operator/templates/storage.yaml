@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ . Name }}-snapshots
+  name: {{ .Name }}-snapshots
   namespace: {{ .Namespace }}
 spec:
   accessModes:
