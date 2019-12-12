@@ -558,6 +558,21 @@ data:
     #    off heap objects
     memtable_allocation_type: {{ .Params.MEMTABLE_ALLOCATION_TYPE }}
 
+    # Limits the maximum Merkle tree depth to avoid consuming too much
+    # memory during repairs.
+    #
+    # The default setting of 18 generates trees of maximum size around
+    # 50 MiB / tree. If you are running out of memory during repairs consider
+    # lowering this to 15 (~6 MiB / tree) or lower, but try not to lower it
+    # too much past that or you will lose too much resolution and stream
+    # too much redundant data during repair. Cannot be set lower than 10.
+    #
+    # For more details see https://issues.apache.org/jira/browse/CASSANDRA-14096.
+    #
+    {{ if .Params.REPAIR_SESSION_MAX_TREE_DEPTH }}
+    repair_session_max_tree_depth: {{ .Params.REPAIR_SESSION_MAX_TREE_DEPTH }}
+    {{ end }}
+
     # Total space to use for commit logs on disk.
     #
     # If space gets above this value, Cassandra will flush every dirty CF
@@ -1351,6 +1366,12 @@ data:
     #
     {{ if .Params.OTC_BACKLOG_EXPIRATION_INTERVAL_MS }}
     otc_backlog_expiration_interval_ms: {{ .Params.OTC_BACKLOG_EXPIRATION_INTERVAL_MS }}
+    {{ end }}
+
+    # Enables SASI index creation on this node.
+    # SASI indexes are considered experimental and are not recommended for production use.
+    {{ if .Params.ENABLE_SASI_INDEXES }}
+    enable_sasi_indexes: {{ .Params.ENABLE_SASI_INDEXES }}
     {{ end }}
 
     {{ if .Params.CUSTOM_CASSANDRA_YAML_BASE64 }}

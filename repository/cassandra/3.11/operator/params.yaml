@@ -34,7 +34,7 @@ parameters:
 
   - name: NODE_DOCKER_IMAGE
     description: "Cassandra node Docker image."
-    default: "mesosphere/cassandra:3.11.4-0.1.0"
+    default: "mesosphere/cassandra:3.11.5-0.1.1"
 
   - name: NODE_DOCKER_IMAGE_PULL_POLICY
     description: "Cassandra node Docker image pull policy."
@@ -93,7 +93,7 @@ parameters:
 
   - name: PROMETHEUS_EXPORTER_DOCKER_IMAGE
     description: "Prometheus exporter Docker image."
-    default: "mesosphere/cassandra-prometheus-exporter:2.2.1-0.1.0"
+    default: "mesosphere/cassandra-prometheus-exporter:2.2.1-0.1.1"
 
   - name: PROMETHEUS_EXPORTER_DOCKER_IMAGE_PULL_POLICY
     description: "Prometheus exporter Docker image pull policy."
@@ -657,6 +657,14 @@ parameters:
 
   - name: OTC_BACKLOG_EXPIRATION_INTERVAL_MS
     description: "How many milliseconds to wait between two expiration runs on the backlog (queue) of the OutboundTcpConnection."
+    default: ""
+
+  - name: REPAIR_SESSION_MAX_TREE_DEPTH
+    description: "Limits the maximum Merkle tree depth to avoid consuming too much memory during repairs."
+    default: ""
+
+  - name: ENABLE_SASI_INDEXES
+    description: "Enables SASI index creation on this node. SASI indexes are considered experimental and are not recommended for production use."
     default: ""
 
   - name: CUSTOM_CASSANDRA_YAML_BASE64
