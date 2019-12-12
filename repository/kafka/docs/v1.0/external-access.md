@@ -1,6 +1,5 @@
 ![kudo-kafka](./resources/images/kudo-kafka.png)
 
-[TOC]
 
 # KUDO Kafka Access
 
