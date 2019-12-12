@@ -1,0 +1,14 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: kafka
+spec:
+  operatorVersion:
+    name: kafka-1.0.2
+    namespace: default
+    kind: OperatorVersion
+  name: "kafka"
+  parameters:
+    BROKER_MEM: "1024Mi"
+    BROKER_CPUS: "500m"
+    ZOOKEEPER_URI: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
