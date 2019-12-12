@@ -43,3 +43,9 @@ kubectl kudo update --instance=kafka -p MIRROR_MAKER_REPLICA_COUNT=0
 |MIRROR_MAKER_NUM_STREAMS|Number of consumer streams|<ul><li>"1" (default)</li></ul>|
 |MIRROR_MAKER_OFFSET_COMMIT_INTERVAL|Offset commit interval in ms|<ul><li>"60000" for 1 min (default)</li></ui>|
 |MIRROR_MAKER_ABORT_ON_SEND_FAILURE| Stop the entire mirror maker when a send failure occurs |<ul><li>"true" (default)</li><li>"false"</li></ul>|
+
+### Limitations
+
+Currently MirrorMaker works with Kafka protocol `PLAINTEXT` only. It will not work if Kerberos and or TLS is
+enabled in the Kafka instance (external included). Future releases of KUDO Kafka will provide enhancements to
+address this limitation through a MirrorMaker operator.
