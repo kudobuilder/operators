@@ -188,7 +188,7 @@ Wonderful, all phases completed and our Flink job even got submitted. In order t
 at the Flink dashboard:
 
 - Run `kubectl proxy` to make the dashboard available
-- Access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
+- Access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-jobmanager:ui/proxy/#/overview
 
 ### Flink Job Output
 
@@ -284,9 +284,9 @@ kubectl kudo plan status --instance flink-demo
 kubectl get pods -w
 
 #kubectl proxy
-open http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-demo-flink-jobmanager:ui/proxy/#/overview
+open http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-jobmanager:ui/proxy/#/overview
 
-kubectl logs $(kubectl get pod -l job-name=flink-demo-submit-flink-job -o jsonpath="{.items[0].metadata.name}")
+kubectl logs $(kubectl get pod -l job-name=submit-flink-job -o jsonpath="{.items[0].metadata.name}")
 
 kubectl logs $(kubectl get pod -l actor=flink-demo -o jsonpath="{.items[0].metadata.name}")
 

@@ -14,7 +14,7 @@ spec:
             - name: DOWNLOAD_URL
               value: {{ .Params.download_url }}
             - name: JOBMANAGER
-              value: jobmanager
+              value: flink-jobmanager
           name: {{ .PlanName }}
           image: bash
           imagePullPolicy: Always
