@@ -22,6 +22,7 @@ spec:
         kafka: {{ .OperatorName }}
     spec:
       terminationGracePeriodSeconds: 300
+      serviceAccountName: {{ .Name }}
       containers:
         {{ if eq .Params.METRICS_ENABLED "true" }}
         - name: kafka-node-exporter
@@ -48,7 +49,7 @@ spec:
         {{ end }}
         - name: k8skafka
           imagePullPolicy: Always
-          image: mesosphere/kafka:1.0.1-2.3.1
+          image: mesosphere/kafka:1.0.2-2.3.1
           resources:
             requests:
               memory: {{ .Params.BROKER_MEM }}
@@ -62,6 +63,19 @@ spec:
             {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
             - containerPort: {{ .Params.BROKER_PORT_TLS }}
               name: server-tls
+            {{ end }}
+            {{ if eq .Params.EXTERNAL_ADVERTISED_LISTENER "true" }}
+            {{ if eq  .Params.EXTERNAL_ADVERTISED_LISTENER_TYPE "LoadBalancer" }}
+            - containerPort: {{ .Params.EXTERNAL_ADVERTISED_LISTENER_PORT }}
+              name: ingress
+            {{ end }}
+            {{ if eq  .Params.EXTERNAL_ADVERTISED_LISTENER_TYPE "NodePort" }}
+            {{- $root := . -}}
+            {{ range $i, $v := until (int .Params.BROKER_COUNT) }}
+            - containerPort: {{ add (int $root.Params.EXTERNAL_NODE_PORT) $v}}
+              name: node-port-{{ $v }}
+            {{ end }}
+            {{ end }}
             {{ end }}
           command:
             - bash
@@ -100,6 +114,16 @@ spec:
               value: "{{ .Params.BROKER_PORT_TLS }}"
             - name: KAFKA_CLIENT_PORT
               value: "{{ .Params.CLIENT_PORT }}"
+            - name: EXTERNAL_INGRESS_PORT
+              value: "{{ .Params.EXTERNAL_ADVERTISED_LISTENER_PORT }}"
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
           volumeMounts:
           {{ if eq .Params.PERSISTENT_STORAGE "true" }}
             - name: {{ .Name }}-datadir
