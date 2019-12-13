@@ -33,20 +33,6 @@ tasks:
         - service-monitor.yaml
         - user-workload.yaml
         - statefulset.yaml
-  - name: update
-    kind: Apply
-    spec:
-      resources:
-        - service.yaml
-        - pdb.yaml
-        - server.properties.yaml
-        - bootstrap.yaml
-        - metrics-config.yaml
-        - health-check.yaml
-        - enable-tls.yaml
-        - jaas-config.yaml
-        - krb5-config.yaml
-        - statefulset.yaml
   - name: mirrormaker
     kind: Apply
     spec:

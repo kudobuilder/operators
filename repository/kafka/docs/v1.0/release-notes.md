@@ -8,6 +8,7 @@
 - Enabled [external KUDO Kafka access](./external-access.md).
 - Add parameter `RUN_USER_WORKLOAD` to run some [testing workload over Kafka service](./kudo-kafka-runbook.md).
 - Add disk usage [metrics](./monitoring.md)
+- Add built-in [mirror-maker integration](./mirrormaker.md)
 
 ## v1.0.1
 
