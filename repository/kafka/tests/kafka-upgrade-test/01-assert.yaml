@@ -22,7 +22,7 @@ spec:
       - name: k8skafka
         resources:
           requests:
-            memory: "1Gi"
-            cpu: "500m"
+            memory: "300Mi"
+            cpu: "300m"
 status:
   readyReplicas: 3

@@ -9,5 +9,5 @@ spec:
     kind: OperatorVersion
   name: "kafka"
   parameters:
-    BROKER_MEM: "750Mi"
+    BROKER_MEM: "400Mi"
     BROKER_CPUS: "300m"

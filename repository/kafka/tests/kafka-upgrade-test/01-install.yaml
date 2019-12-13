@@ -9,6 +9,6 @@ spec:
     kind: OperatorVersion
   name: "kafka"
   parameters:
-    BROKER_MEM: "1024Mi"
-    BROKER_CPUS: "500m"
+    BROKER_MEM: "300Mi"
+    BROKER_CPUS: "300m"
     ZOOKEEPER_URI: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
