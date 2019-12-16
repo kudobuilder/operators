@@ -39,3 +39,8 @@ test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
 # cleans project
 clean:
 	./clean-build.sh
+
+.PHONY: index
+# builds repo index
+index: bin/kubectl-kudo_$(KUDO_VERSION)
+	./build-community-repo.sh

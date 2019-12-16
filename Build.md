@@ -29,7 +29,7 @@ Another convention is to have a version number associated with the build using t
 
 ## Step 2 Build Index
 
-To build the index simple run `./build-community-repo.sh`
+To build the index simple run `./build-community-repo.sh` or `make index`.
 
 This will build a `index.yaml` file under `build/repo`
 
