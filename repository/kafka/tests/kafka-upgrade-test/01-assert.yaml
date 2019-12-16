@@ -1,0 +1,28 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: kafka
+status:
+  aggregatedStatus:
+    status: COMPLETE
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: kafka-kafka
+spec:
+  template:
+    spec:
+      containers:
+      - name: kafka-node-exporter
+        resources:
+          requests:
+            memory: "20Mi"
+            cpu: "100m"
+      - name: k8skafka
+        resources:
+          requests:
+            memory: "300Mi"
+            cpu: "300m"
+status:
+  readyReplicas: 1
