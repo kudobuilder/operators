@@ -20,4 +20,4 @@ spec:
            memory: "256Mi"
            cpu: "300m"
 status:
-  readyReplicas: 3
+  readyReplicas: 1

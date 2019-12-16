@@ -9,5 +9,6 @@ spec:
     kind: OperatorVersion
   name: "zk"
   parameters:
+    NODE_COUNT: "1"
     MEMORY: "256Mi"
     CPUS: "0.3"
