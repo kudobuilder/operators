@@ -1,6 +1,6 @@
 # Building Operator Packages and Repositories
 
-The repository build process is a 2 step process.  First build the set of operators you wish to build. Then create the repository index file for that repository.
+The repository build process is a 2 step process. First build the set of operators you wish to build. Then create the repository index file for that repository.
 
 The "community" repository is the repository for all operators in the community and is a default location for all operator builds. The build process expects the following prerequisites:
 
@@ -10,7 +10,7 @@ The "community" repository is the repository for all operators in the community 
 
 ## Step 1: Build Operators
 
-`./build-operator.sh` is a script within the github repo for building operator packages.  It has a number of conveniences based on conventions that have developed.  Regardless of convention, a sure way to get a success build using the script is to provide the path to the operator.
+`./build-operator.sh` is a script within the github repo for building operator packages. It has a number of conveniences based on conventions that have developed. Regardless of convention, a sure way to get a success build using the script is to provide the path to the operator.
 
 `./build-operator.sh repository/mysql/operator/`
 
@@ -24,7 +24,7 @@ Another convention is to have a version number associated with the build using t
 
 **NOTES:**
 1. All builds will be under `build/repo` under the project
-1. All operator packages built will be under `build/repo`.  If you want to add more than 1 operator, build multiple operator packages before building the repository index.
+1. All operator packages built will be under `build/repo`. If you want to add more than 1 operator, build multiple operator packages before building the repository index.
 3. There is no rebuild and if the operator already exists the build will fail.
 
 ## Step 2: Build Repository Index
