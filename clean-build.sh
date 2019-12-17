@@ -10,6 +10,5 @@ REPO_DIR=build/repo
 
 
 if [[ -d "${REPO_DIR}" ]]; then
-  # if repo dir doesn't exist create it
   rm -rf $REPO_DIR
 fi
