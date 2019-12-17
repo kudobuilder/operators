@@ -1,6 +1,5 @@
 # Release notes 
 
-## latest
 
 ## v1.1.0
 

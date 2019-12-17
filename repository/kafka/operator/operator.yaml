@@ -1,9 +1,9 @@
 apiVersion: kudo.dev/v1beta1
 name: "kafka"
-version: "1.0.2"
+version: "1.1.0"
 kudoVersion: 0.8.0
 kubernetesVersion: 1.14.8
-appVersion: 2.3.1
+appVersion: 2.4.0
 maintainers:
   - name: Zain Malik
     email: zmalik@d2iq.com
