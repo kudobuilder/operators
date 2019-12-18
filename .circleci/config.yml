@@ -16,9 +16,9 @@ workflows:
   test-1.16:
     jobs:
       - test:
-          kubernetes_version: 1.16.0
+          kubernetes_version: 1.16.3
 
   test-1.15:
     jobs:
     - test:
-        kubernetes_version: 1.15.0
+        kubernetes_version: 1.15.6
