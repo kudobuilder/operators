@@ -156,7 +156,7 @@ parameters:
 
   - name: enableLeaderElection
     description: "Whether to enable leader election when the operator Deployment has more than one replica, i.e., when replicas is greater than 1."
-    default: true
+    default: false
     displayName: "Enable leader election"
 
   - name: leaderElectionLockName
