@@ -34,6 +34,7 @@ spec:
     metadata:
       labels:
         app: mysql
+      name: mysql
     spec:
       containers:
       - image: mysql:5.7

@@ -16,7 +16,7 @@ spec:
         command:
         - /bin/sh
         - -c
-        - "mysqldump -u root -h {{ .Name }}-mysql -p{{ .Params.PASSWORD }} kudo > /backups/{{ .Params.BACKUP_FILE }}"
+        - "mysqldump -u root -h mysql -p{{ .Params.PASSWORD }} kudo > /backups/{{ .Params.BACKUP_FILE }}"
         volumeMounts:
         - name: backup-pv
           mountPath: /backups

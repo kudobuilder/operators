@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: backup-pv
+  name: {{ .Name }}-backup-pv
 spec:
   accessModes:
     - ReadWriteOnce
