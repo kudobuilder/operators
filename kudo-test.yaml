@@ -5,6 +5,8 @@ manifestDirs:
 kubectl:
 - kudo init --crd-only
 - kudo install --skip-instance ./repository/cassandra/3.11/operator/
+- kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
+- kudo install --skip-instance ./repository/confluent-schema-registry/operator/
 - kudo install --skip-instance ./repository/cowsay/operator/
 - kudo install --skip-instance ./repository/elastic/operator/
 - kudo install --skip-instance ./repository/first-operator/operator/
@@ -12,13 +14,12 @@ kubectl:
 - kudo install --skip-instance ./repository/flink/operator/
 - kudo install --skip-instance ./repository/kafka/operator/
 - kudo install --skip-instance ./repository/mysql/operator/
-- kudo install --skip-instance ./repository/redis/operator/
-- kudo install --skip-instance ./repository/zookeeper/operator/
-- kudo install --skip-instance ./repository/confluent-schema-registry/operator/
-- kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
 - kudo install --skip-instance ./repository/rabbitmq/operator/
-- kudo install --skip-instance ./templates/akka/operator/
+- kudo install --skip-instance ./repository/redis/operator/
+- kudo install --skip-instance ./repository/spark/operator/
+- kudo install --skip-instance ./repository/zookeeper/operator/
 - kudo install --skip-instance ./templates/akka/operator-shoppingcart/
+- kudo install --skip-instance ./templates/akka/operator/
 testDirs:
 - ./repository/zookeeper/tests
 - ./repository/kafka/tests
