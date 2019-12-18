@@ -4,7 +4,7 @@ metadata:
   name: kafka
 spec:
   operatorVersion:
-    name: kafka-1.0.2
+    name: kafka-1.1.0
     namespace: default
     kind: OperatorVersion
   name: "kafka"
