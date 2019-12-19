@@ -1,0 +1,23 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: HOST_NAME
+    description: "Host name used to generate absolute URLs in responses"
+    default: "localhost"
+  - name: SCHEMA_REGISTRY_PORT
+    description: "Port on which Confluent Schema Registry will be exported to listen on for new connections"
+    default: 8081
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    description: "A list of Kafka brokers to connect to. Eg. PLAINTEXT://hostname:9092"
+    default: "kafka-kafka-0.kafka-svc.default.svc.cluster.local:9093,kafka-kafka-1.kafka-svc.default.svc.cluster.local:9093,kafka-kafka-2.kafka-svc.default.svc.cluster.local:9093"
+  - name: MEMORY
+    description: Amount of memory to provide to Confluent Schema Registry pods
+    default: "256Mi"
+  - name: MEM_LIMIT
+    description: "Memory (limit) for the Confluent Schema Registry nodes pods. spec.containers[].resources.limits.memory"
+    default: "1024Mi"
+  - name: CPUS
+    description: Amount of cpu to provide to Confluent Schema Registry pods
+    default: "250m"
+  - name: CPUS_LIMIT
+    description: "CPUs (limit) for the Confluent Schema Registry nodes pods. spec.containers[].resources.limits.cpu"
+    default: "1000m"

@@ -1,0 +1,45 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}
+  namespace: {{ .Namespace }}
+  labels:
+    app: schema-registry
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: schema-registry
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: schema-registry
+    spec:
+      containers:
+      - name: schema-registry
+        image: mesosphere/cp-schema-registry:5.3.0
+        command: ["/etc/confluent/docker/run"]
+        resources:
+          requests:
+            memory: {{ .Params.MEMORY }}
+            cpu: {{ .Params.CPUS }}
+          limits:
+            memory: {{ .Params.MEM_LIMIT }}
+            cpu: {{ .Params.CPUS_LIMIT }}
+        ports:
+        - containerPort: {{ .Params.SCHEMA_REGISTRY_PORT }}
+          name: schema-registry
+        env:
+        - name: SCHEMA_REGISTRY_HOST_NAME
+          value: {{ .Params.HOST_NAME }}
+        - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
+          value: {{ .Params.KAFKA_BOOTSTRAP_SERVERS }}
+        livenessProbe:
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+          httpGet:
+            path: /
+            port: {{ .Params.SCHEMA_REGISTRY_PORT }}
