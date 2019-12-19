@@ -1,0 +1,23 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: rest-proxy
+status:
+  aggregatedStatus:
+    status: COMPLETE
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rest-proxy
+spec:
+  template:
+    spec:
+     containers:
+     - name: rest-proxy
+       resources:
+         requests:
+           memory: "256Mi"
+           cpu: "250m"
+status:
+  readyReplicas: 1
