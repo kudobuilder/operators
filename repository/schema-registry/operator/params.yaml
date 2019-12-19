@@ -8,7 +8,7 @@ parameters:
     default: 8081
   - name: KAFKA_BOOTSTRAP_SERVERS
     description: "A list of Kafka brokers to connect to. Eg. PLAINTEXT://hostname:9092"
-    default: "kafka-kafka-0.kafka-svc.default.svc.cluster.local:9093,kafka-kafka-1.kafka-svc.default.svc.cluster.local:9093,kafka-kafka-2.kafka-svc.default.svc.cluster.local:9093"
+    default: "kafka-instance-kafka-0.kafka-instance-svc:9093,kafka-instance-kafka-1.kafka-instance-svc:9093,kafka-instance-kafka-2.kafka-instance-svc:9093"
   - name: MEMORY
     description: Amount of memory to provide to Confluent Schema Registry pods
     default: "256Mi"
