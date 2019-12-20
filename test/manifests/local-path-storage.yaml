@@ -1,5 +1,6 @@
 # create a kubernetes-in-docker cluster and replace the standard storage class with the local-path-provisioner.
 # fsGroups are not supported in the standard storage class, so we use the rancher local-path-provisioner.
+# This has been modified from https://github.com/rancher/local-path-provisioner/blob/v0.0.11/deploy/local-path-storage.yaml
 # https://github.com/kubernetes/kubernetes/pull/39438
 apiVersion: storage.k8s.io/v1
 kind: StorageClass
@@ -23,11 +24,10 @@ metadata:
   name: local-path-provisioner-service-account
   namespace: local-path-storage
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
   name: local-path-provisioner-role
-  namespace: local-path-storage
 rules:
 - apiGroups: [""]
   resources: ["nodes", "persistentvolumeclaims"]
@@ -42,11 +42,10 @@ rules:
   resources: ["storageclasses"]
   verbs: ["get", "list", "watch"]
 ---
-apiVersion: rbac.authorization.k8s.io/v1beta1
+apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: local-path-provisioner-bind
-  namespace: local-path-storage
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -56,7 +55,7 @@ subjects:
   name: local-path-provisioner-service-account
   namespace: local-path-storage
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: local-path-provisioner
@@ -74,7 +73,7 @@ spec:
       serviceAccountName: local-path-provisioner-service-account
       containers:
       - name: local-path-provisioner
-        image: rancher/local-path-provisioner:v0.0.9
+        image: rancher/local-path-provisioner:v0.0.11
         imagePullPolicy: IfNotPresent
         command:
         - local-path-provisioner
