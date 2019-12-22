@@ -13,6 +13,7 @@ kubectl:
 - kudo install --skip-instance ./repository/zookeeper/operator/
 - kudo install --skip-instance ./repository/confluent-schema-registry/operator/
 - kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
+- kudo install --skip-instance ./repository/rabbitmq/operator/
 testDirs:
 - ./repository/zookeeper/tests
 - ./repository/kafka/tests
