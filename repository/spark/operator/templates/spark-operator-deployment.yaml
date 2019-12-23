@@ -14,7 +14,11 @@ metadata:
     app.kubernetes.io/instance: {{ .Name }}
     app.kubernetes.io/version: {{ .Params.operatorVersion }}
 spec:
+  {{- if eq .Params.enableLeaderElection "true" }}
   replicas: {{ .Params.replicas }}
+  {{- else }}
+  replicas: 1
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .OperatorName }}
