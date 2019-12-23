@@ -3,6 +3,9 @@ parameters:
   - name: HOST_NAME
     description: "Host name used to generate absolute URLs in responses"
     default: "localhost"
+  - name: NODE_COUNT
+    description: "Number of nodes that would be running Confluent REST Proxy service"
+    default: "1"
   - name: SCHEMA_REGISTRY_URL
     description: "The base URL for Confluent Schema Registry that should be used by the Avro serializer"
     default: "http://localhost:8081/"
@@ -24,3 +27,15 @@ parameters:
   - name: CPUS_LIMIT
     description: "CPUs (limit) for the Confluent REST Proxy nodes pods. spec.containers[].resources.limits.cpu"
     default: "1000m"
+  - name: LIVENESS_INITIAL_DELAY_SECONDS
+    displayName: "livenessProbe initial delay timeout seconds"
+    description: "Number of seconds after the container has started before liveness probes is initiated."
+    default: "30"
+  - name: LIVENESS_PERIOD_SECONDS
+    displayName: "livenessProbe period seconds"
+    description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
+    default: "10"
+  - name: LIVENESS_TIMEOUT_SECONDS
+    displayName: "livenessProbe timeout seconds"
+    description: "Number of seconds after which the probe times out. Defaults to 10 seconds. Minimum value is 1."
+    default: "10"

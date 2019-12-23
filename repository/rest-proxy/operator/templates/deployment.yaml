@@ -6,7 +6,7 @@ metadata:
   labels:
     app: rest-proxy
 spec:
-  replicas: 1
+  replicas: {{ .Params.NODE_COUNT }}
   selector:
     matchLabels:
       app: rest-proxy
@@ -19,7 +19,7 @@ spec:
     spec:
       containers:
       - name: rest-proxy
-        image: confluentinc/cp-kafka-rest:5.3.0
+        image: confluentinc/cp-kafka-rest:5.3.2
         command: ["/etc/confluent/docker/run"]
         resources:
           requests:
@@ -39,9 +39,9 @@ spec:
         - name: KAFKA_REST_BOOTSTRAP_SERVERS
           value: {{ .Params.KAFKA_BOOTSTRAP_SERVERS }}
         livenessProbe:
-          initialDelaySeconds: 30
-          periodSeconds: 10
-          timeoutSeconds: 5
+          initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
+          periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
+          timeoutSeconds: {{ .Params.LIVENESS_TIMEOUT_SECONDS }}
           httpGet:
             path: /
             port: {{ .Params.REST_PROXY_PORT }}
