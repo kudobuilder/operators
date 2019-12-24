@@ -2,16 +2,16 @@ apiVersion: kudo.dev/v1beta1
 parameters:
   - name: HOST_NAME
     description: "Host name used to generate absolute URLs in responses"
-    default: "localhost"
+    default: "rest-proxy"
   - name: NODE_COUNT
     description: "Number of nodes that would be running Confluent REST Proxy service"
     default: "1"
   - name: SCHEMA_REGISTRY_URL
     description: "The base URL for Confluent Schema Registry that should be used by the Avro serializer"
-    default: "http://localhost:8081/"
+    default: "http://schema-registry:8081/"
   - name: KAFKA_BOOTSTRAP_SERVERS
     description: "A list of Kafka brokers to connect to. Eg. PLAINTEXT://hostname:9092"
-    default: "kafka-instance-kafka-0.kafka-instance-svc:9093,kafka-instance-kafka-1.kafka-instance-svc:9093,kafka-instance-kafka-2.kafka-instance-svc:9093"
+    default: "PLAINTEXT://kafka-instance-kafka-0.kafka-instance-svc:9093,PLAINTEXT://kafka-instance-kafka-1.kafka-instance-svc:9093,PLAINTEXT://kafka-instance-kafka-2.kafka-instance-svc:9093"
   - name: REST_PROXY_PORT
     description: "Port on which Confluent REST Proxy will be exported to listen on for new connections"
     default: 8082
