@@ -2,7 +2,7 @@ apiVersion: kudo.dev/v1beta1
 parameters:
   - name: HOST_NAME
     description: "Host name used to generate absolute URLs in responses"
-    default: "localhost"
+    default: "schema-registry"
   - name: NODE_COUNT
     description: "Number of nodes that would be running Confluent REST Proxy service"
     default: "1"
