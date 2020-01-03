@@ -12,6 +12,7 @@ kubectl:
 - kudo install --skip-instance ./repository/redis/operator/
 - kudo install --skip-instance ./repository/zookeeper/operator/
 - kudo install --skip-instance ./repository/schema-registry/operator/
+- kudo install --skip-instance ./repository/rest-proxy/operator/
 testDirs:
 - ./repository/zookeeper/tests
 - ./repository/kafka/tests

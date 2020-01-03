@@ -1,0 +1,13 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: rest-proxy
+spec:
+  operatorVersion:
+    name: rest-proxy-0.1.0
+    namespace: default
+    kind: OperatorVersion
+  name: "rest-proxy"
+  parameters:
+    MEMORY: "256Mi"
+    CPUS: "0.25"
