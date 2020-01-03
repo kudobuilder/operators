@@ -8,10 +8,10 @@ metadata:
   name: flink
 spec:
   operatorVersion:
-    name: flink-0.1.1
+    name: flink-0.1.2
     namespace: default
     type: OperatorVersions
   parameters:
     high_availability: ZOOKEEPER
-    zookeeper_url: "{{ .Name }}-zk-zookeeper-0.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-zookeeper-1.{{ .Name }}-zk-hs:2181,{{ .Name }}-zk-zookeeper-2.{{ .Name }}-zk-hs:2181"
+    zookeeper_url: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
     zookeeper_path: "/flink-demo-flink"

@@ -6,6 +6,7 @@ KUDO Spark latest
 * [Submitting Spark applications](submission.md)
 * [Monitoring](monitoring.md)
 * [Spark History Server](history-server.md)
+* [Advanced configuration options](advanced-configuration.md)
 * [Release notes](release-notes.md)
 * [Limitations](limitations.md)
 * [Versions](versions.md)

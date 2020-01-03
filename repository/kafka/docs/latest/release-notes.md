@@ -2,10 +2,18 @@
 
 ## latest
 
+## v1.1.0
+
+- Apache Kafka upgraded to 2.4.0
+
 ## v1.0.2
 
 - Add parameter `KERBEROS_USE_TCP` to use TCP protocol for KDC connection
 - Add parameter `ADD_SERVICE_MONITOR` to create a service monitor for KUDO Kafka cluster.
+- Enabled [external KUDO Kafka access](./external-access.md).
+- Add parameter `RUN_USER_WORKLOAD` to run some [testing workload over Kafka service](./kudo-kafka-runbook.md).
+- Add disk usage [metrics](./monitoring.md)
+- Add built-in [mirror-maker integration](./mirrormaker.md)
 
 ## v1.0.1
 

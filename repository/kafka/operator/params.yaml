@@ -54,10 +54,16 @@ parameters:
   - name: METRICS_PORT
     description: "Port JMX_EXPORTER binds"
     default: "9094"
+  - name: KAFKA_NODE_EXPORTER_PORT
+    description: "Port NODE_EXPORTER binds"
+    default: "9096"
   - name: METRICS_ENABLED
     default: "true"
   - name: ADD_SERVICE_MONITOR
     description: "Create a service monitor for the kafka service"
+    default: "false"
+  - name: RUN_USER_WORKLOAD
+    description: "Run dummy user workload on the kafka service"
     default: "false"
   - name: NUM_PARTITIONS
     description: "Number of partitions for Kafka topics"
@@ -411,6 +417,23 @@ parameters:
     displayName: "default.replication.factor"
     description: "Default replication factors for automatically created topics"
     default: "1"
+  - name: EXTERNAL_ADVERTISED_LISTENER
+    displayName: "Enable external advertised listeners"
+    description: "Enable external advertised listeners"
+    default: "false"
+  - name: EXTERNAL_ADVERTISED_LISTENER_PORT
+    displayName: "External advertised listener port"
+    description: "External advertised listener port"
+    default: "9097"
+  - name: EXTERNAL_ADVERTISED_LISTENER_TYPE
+    displayName: "External advertised listener load-balancer type"
+    description: |
+        External advertised listener load-balancer type, by default its using Node ports.
+        Valid values are "NodePort" and "LoadBalancer"
+    default: "NodePort"
+  - name: EXTERNAL_NODE_PORT
+    default: "30902"
+    displayName: "External Node Port starting value."
   - name: FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS
     displayName: "fetch.purgatory.purge.interval.requests"
     description: "The purge interval (in number of requests) of the fetch request purgatory"
@@ -535,10 +558,13 @@ parameters:
     displayName: "quota.window.size.seconds"
     description: "The time span of each sample for client quotas"
     default: "1"
-  - name: SSL_ENDPOINT_IDENTIFICATION_ENABLED
-    displayName: "ssl.endpoint.identification.enabled"
-    description: "By default enables the hostname verification when TLS connections are established between Kafka brokers. To disable hostname verification leave this option unchecked"
-    default: "true"
+  - name: SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
+    displayName: "ssl.endpoint.identification.algorithm"
+    description: |
+      The endpoint identification algorithm used by clients to validate server host name. The default value is HTTPS.
+      Clients including client connections created by the broker for inter-broker communication verify that the broker host name matches the host name in the broker’s certificate.
+      Server host name verification may be disabled by setting ssl.endpoint.identification.algorithm to an empty string.
+    default: "HTTPS"
   - name: TRANSACTION_STATE_LOG_SEGMENT_BYTES
     displayName: "transaction.state.log.segment.bytes"
     description: "The transaction topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
@@ -599,10 +625,6 @@ parameters:
     default: "kafka-tls"
     displayName: "kafka-tls"
     description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
-  - name: CUSTOM_SERVER_PROPERTIES
-    displayName: "custom server properties"
-    description: "These properties will be appended to the Kafka server properties"
-    default: ""
   - name: CUSTOM_SERVER_PROPERTIES_CM_NAME
     displayName: "custom server properties configmap name"
     description: "The properties present in this configmap will be appended to the Kafka server properties"
@@ -611,3 +633,43 @@ parameters:
     displayName: "custom metrics properties and rules"
     description: "These metrics prometheus rules to be used instead of the default metrics rules."
     required: false
+  - name: MIRROR_MAKER_ENABLED
+    default: "false"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_REPLICA_COUNT
+    default: "1"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE
+    default: "SOURCE"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS
+    default: ""
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_ABORT_ON_SEND_FAILURE
+    default: "true"
+    description: "Configure the mirror maker to exit on a failed send"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_TOPIC_WHITELIST
+    default: ".*"
+    description: "Whitelist of topics to mirror"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_NUM_STREAMS
+    default: "1"
+    description: "Number of consumer streams to use to consume topics from the source cluster"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_OFFSET_COMMIT_INTERVAL
+    default: "60000"
+    description: "Offset commit interval in ms"
+    trigger: "mirrormaker"
+  - name: MIRROR_MAKER_CPUS
+    description: "CPUs (request) for the Mirror Maker pods. spec.containers[].resources.requests.cpu"
+    default: "100m"
+  - name: MIRROR_MAKER_CPUS_LIMIT
+    description: "CPUs (limit) for the Mirror Maker pods. spec.containers[].resources.limits.cpu"
+    default: "100m"
+  - name: MIRROR_MAKER_MEM
+    description: "Memory (request) for the Mirror Maker pods. spec.containers[].resources.requests.memory"
+    default: "512Mi"
+  - name: MIRROR_MAKER_MEM_LIMIT
+    description: "Memory (limit) for the Mirror Maker pods. spec.containers[].resources.limits.memory"
+    default: "512Mi"

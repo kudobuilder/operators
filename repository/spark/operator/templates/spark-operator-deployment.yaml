@@ -14,7 +14,11 @@ metadata:
     app.kubernetes.io/instance: {{ .Name }}
     app.kubernetes.io/version: {{ .Params.operatorVersion }}
 spec:
+  {{- if eq .Params.enableLeaderElection "true" }}
+  replicas: {{ .Params.replicas }}
+  {{- else }}
   replicas: 1
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .OperatorName }}
@@ -86,4 +90,16 @@ spec:
         - -webhook-port={{ .Params.webhookPort }}
         - -webhook-svc-name={{ .Name }}-webhook
         - -webhook-config-name={{ .OperatorName }}-webhook-config
+        {{- end }}
+        {{- if eq .Params.enableLeaderElection "true" }}
+        - -leader-election=true
+        {{- if eq .Params.leaderElectionLockNamespace "" }}
+        - -leader-election-lock-namespace={{ .Namespace }}
+        {{- else }}
+        - -leader-election-lock-namespace={{ .Params.leaderElectionLockNamespace }}
+        {{- end }}
+        - -leader-election-lock-name={{ .Params.leaderElectionLockName }}
+        - -leader-election-lease-duration={{ .Params.leaderElectionLeaseDuration }}
+        - -leader-election-renew-deadline={{ .Params.leaderElectionRenewDeadline }}
+        - -leader-election-retry-period={{ .Params.leaderElectionRetryPeriod }}
         {{- end }}

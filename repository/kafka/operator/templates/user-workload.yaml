@@ -1,0 +1,89 @@
+{{ if eq .Params.RUN_USER_WORKLOAD "true" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-user-workload-producer
+  namespace: {{ .Namespace }}
+  labels:
+    app: kafka-user-workload
+spec:
+  replicas: 1
+  namespaceSelector:
+    matchNames:
+    - {{ .Namespace }}
+  template:
+    metadata:
+      labels:
+        name: kafka-user-workload
+    spec:
+      containers:
+      - name: kafka-ultron-loader
+        image: mesosphere/kafka:workload
+        imagePullPolicy: Always
+        command:
+        - /opt/kafka/run_producer_test.sh
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: "{{ .Name }}-svc.{{ .Namespace }}.svc.cluster.local:{{ .Params.BROKER_PORT }}"
+        - name: NUM_TOPICS
+          value: "30"
+        - name: TEST_INTERVAL_SECONDS
+          value: "1"
+        - name: PRODUCER_THROUGHPUT
+          value: "100"
+        - name: NUM_RECORDS
+          value: "100"
+        - name: RECORD_SIZE
+          value: "100"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+  strategy:
+    type: Recreate
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-user-workload-consumer
+  namespace: {{ .Namespace }}
+  labels:
+    app: kafka-user-workload
+spec:
+  replicas: 1
+  namespaceSelector:
+    matchNames:
+    - {{ .Namespace }}
+  template:
+    metadata:
+      labels:
+        name: kafka-user-workload
+    spec:
+      containers:
+      - name: kafka-ultron-loader
+        image: mesosphere/kafka:workload
+        imagePullPolicy: Always
+        command:
+        - /opt/kafka/run_consumer_test.sh
+        env:
+        - name: BOOTSTRAP_SERVERS
+          value: "{{ .Name }}-svc.{{ .Namespace }}.svc.cluster.local:{{ .Params.BROKER_PORT }}"
+        - name: NUM_TOPICS
+          value: "30"
+        - name: NUM_RECORDS
+          value: "100"
+        - name: TEST_INTERVAL_SECONDS
+          value: "1"
+        resources:
+          limits:
+            cpu: 100m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
+  strategy:
+    type: Recreate
+{{ end }}
