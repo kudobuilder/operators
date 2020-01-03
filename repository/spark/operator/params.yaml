@@ -148,3 +148,39 @@ parameters:
     description: "Install sparkapplications.sparkoperator.k8s.io and scheduledsparkapplications.sparkoperator.k8s.io"
     default: true
     displayName: "Install Spark Operator CRDs"
+
+  - name: replicas
+    description: "The number of replicas of the operator Deployment"
+    default: 1
+    displayName: "Number of replicas"
+
+  - name: enableLeaderElection
+    description: "Whether to enable leader election when the operator Deployment has more than one replica, i.e., when replicas is greater than 1."
+    default: false
+    displayName: "Enable leader election"
+
+  - name: leaderElectionLockName
+    description: "Name of the lock resource (ConfigMap) used for leader election"
+    default: spark-operator-lock
+    displayName: "Name of the lock resource"
+
+  - name: leaderElectionLockNamespace
+    description: "Namespace of the lock resource used for leader election. Defaults to Operator namespace"
+    default: ""
+    displayName: "Lock resource namespace"
+
+  - name: leaderElectionLeaseDuration
+    description: "Leader election lease duration."
+    default: 15s
+    displayName: "Leader election lease duration"
+
+  - name: leaderElectionRenewDeadline
+    description: "Leader election renew deadline."
+    default: 14s
+    displayName: "Leader election renew deadline"
+
+  - name: leaderElectionRetryPeriod
+    description: "Leader election retry period."
+    default: 4s
+    displayName: "Leader election retry period"
+
