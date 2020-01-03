@@ -3,7 +3,7 @@ name: "schema-registry"
 version: "0.1.0"
 kudoVersion: 0.8.0
 kubernetesVersion: 1.15.0
-appVersion: 5.3.0
+appVersion: 5.3.2
 maintainers:
   - name: Vibhu Jain
     email: vjain.c@d2iq.com
