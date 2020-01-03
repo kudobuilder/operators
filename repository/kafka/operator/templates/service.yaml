@@ -20,6 +20,8 @@ spec:
     {{ if eq .Params.METRICS_ENABLED "true" }}
     - port: {{ .Params.METRICS_PORT }}
       name: metrics
+    - port: {{ .Params.KAFKA_NODE_EXPORTER_PORT }}
+      name: ne-metrics
     {{ end }}
   clusterIP: None
   selector:

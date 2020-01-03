@@ -1,5 +1,5 @@
 KUBERNETES_VERSION=1.15.0
-KUDO_VERSION=0.8.0-pre.2
+KUDO_VERSION=0.9.0
 
 ARTIFACTS ?= artifacts/
 
@@ -34,3 +34,13 @@ create-cluster:
 # Test runs the test harness using kubectl-kudo test.
 test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
 	kubectl kudo test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
+
+.PHONY: clean
+# cleans project
+clean:
+	./clean-build.sh
+
+.PHONY: index
+# builds repo index
+index: bin/kubectl-kudo_$(KUDO_VERSION)
+	./build-community-repo.sh

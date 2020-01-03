@@ -1,0 +1,34 @@
+{{ if eq .Params.MIRROR_MAKER_ENABLED "true" }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-mirror-maker-config
+  namespace: {{ .Namespace }}
+data:
+  external.properties: |
+    bootstrap.servers={{ .Params.MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS }}
+    {{ if eq .Params.MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE "SOURCE" }}
+    # Used when MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE is SOURCE
+    exclude.internal.topics=true
+    group.id={{ .Name }}_mirror_maker_consumer
+    auto.offset.reset=earliest
+    {{ else }}
+    # Used when MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE is DESTINATION
+    acks=1
+    batch.size=100
+    client.id={{ .Name }}_mirror_maker_producer
+    {{ end }}
+  self.properties: |
+    bootstrap.servers={{ .Name }}-svc.{{ .Namespace }}.svc.cluster.local:{{ .Params.BROKER_PORT }}
+    {{ if eq .Params.MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE "SOURCE" }}
+    # Used when MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE is SOURCE
+    acks=1
+    batch.size=100
+    client.id={{ .Name }}_mirror_maker_producer
+    {{ else }}
+    # Used when MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE is DESTINATION
+    exclude.internal.topics=true
+    group.id={{ .Name }}_mirror_maker_consumer
+    auto.offset.reset=earliest
+    {{ end }}
+{{ end }}

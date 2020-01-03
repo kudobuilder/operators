@@ -11,6 +11,8 @@ spec:
   endpoints:
   - interval: 30s
     port: metrics
+  - interval: 30s
+    port: ne-metrics
   namespaceSelector:
     matchNames:
     - {{ .Namespace }}

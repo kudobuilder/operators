@@ -1,9 +1,11 @@
 # Binaries for programs and plugins
+/.idea
 *.exe
 *.exe~
 *.dll
 *.so
 *.dylib
+build/*
 
 # Test binary, build with `go test -c`
 *.test

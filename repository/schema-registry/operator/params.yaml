@@ -1,0 +1,38 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: HOST_NAME
+    description: "Host name used to generate absolute URLs in responses"
+    default: "schema-registry"
+  - name: NODE_COUNT
+    description: "Number of nodes that would be running Confluent REST Proxy service"
+    default: "1"
+  - name: SCHEMA_REGISTRY_PORT
+    description: "Port on which Confluent Schema Registry will be exported to listen on for new connections"
+    default: 8081
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    description: "A list of Kafka brokers to connect to. Eg. PLAINTEXT://hostname:9092"
+    default: "kafka-instance-kafka-0.kafka-instance-svc:9093,kafka-instance-kafka-1.kafka-instance-svc:9093,kafka-instance-kafka-2.kafka-instance-svc:9093"
+  - name: MEMORY
+    description: Amount of memory to provide to Confluent Schema Registry pods
+    default: "256Mi"
+  - name: MEM_LIMIT
+    description: "Memory (limit) for the Confluent Schema Registry nodes pods. spec.containers[].resources.limits.memory"
+    default: "1024Mi"
+  - name: CPUS
+    description: Amount of cpu to provide to Confluent Schema Registry pods
+    default: "250m"
+  - name: CPUS_LIMIT
+    description: "CPUs (limit) for the Confluent Schema Registry nodes pods. spec.containers[].resources.limits.cpu"
+    default: "1000m"
+  - name: LIVENESS_INITIAL_DELAY_SECONDS
+    displayName: "livenessProbe initial delay timeout seconds"
+    description: "Number of seconds after the container has started before liveness probes is initiated."
+    default: "30"
+  - name: LIVENESS_PERIOD_SECONDS
+    displayName: "livenessProbe period seconds"
+    description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
+    default: "10"
+  - name: LIVENESS_TIMEOUT_SECONDS
+    displayName: "livenessProbe timeout seconds"
+    description: "Number of seconds after which the probe times out. Defaults to 10 seconds. Minimum value is 1."
+    default: "10"
