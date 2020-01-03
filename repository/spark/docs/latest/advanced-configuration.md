@@ -79,3 +79,37 @@ acquired lease spark-operator/spark-operator-lock
 ...
 
 ```
+
+## Using Volcano as a Batch Scheduler
+
+Volcano is a batch scheduling system built on Kubernetes. It provides a suite of mechanisms that are commonly required by many classes of batch & elastic workloads including distributed data processing and machine learning. Spark Operator can be integrated with Volcano to get fine-grained control of Spark applications scheduling via queues and priority classes. To get more information about the Volcano system and how to install it on your K8s cluster, visit [https://volcano.sh/](https://volcano.sh/).
+
+To enable the batch scheduler (disabled by default), install Spark Operator with the following parameter:
+
+```bash
+$ kubectl kudo install spark \
+    --namespace=spark-operator \
+    -p enableBatchScheduler=true
+```
+In `SparkApplication` yaml file, add the following parameter to the `spec` section:
+```
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: <Spark application name>
+  namespace: <Spark application namespace>
+spec:
+  batchScheduler: "volcano"
+  <the rest of the configuration>
+```
+After the application is submitted, verify the driver pod is scheduled by Volcano:
+
+```bash
+$ kubectl describe spark-pi-driver -n spark-operator
+...
+Events:
+  Type     Reason       Age   From               Message
+  ----     ------       ----  ----               -------
+  Normal   Scheduled    76s   volcano            Successfully assigned spark-operator/spark-pi-driver to <node-name>
+...
+```
