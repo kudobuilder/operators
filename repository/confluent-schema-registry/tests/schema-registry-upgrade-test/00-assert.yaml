@@ -1,7 +1,7 @@
 apiVersion: kudo.dev/v1beta1
 kind: Instance
 metadata:
-  name: rest-proxy
+  name: confluent-schema-registry
 status:
   aggregatedStatus:
     status: COMPLETE
@@ -9,12 +9,12 @@ status:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: rest-proxy
+  name: confluent-schema-registry
 spec:
   template:
     spec:
      containers:
-     - name: rest-proxy
+     - name: confluent-schema-registry
        resources:
          requests:
            memory: "256Mi"
