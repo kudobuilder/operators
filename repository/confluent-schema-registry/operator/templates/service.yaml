@@ -7,5 +7,5 @@ spec:
   ports:
   - port: {{ .Params.SCHEMA_REGISTRY_PORT }}
   selector:
-    app: schema-registry
+    app: confluent-schema-registry
   clusterIP: None

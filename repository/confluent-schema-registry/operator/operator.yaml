@@ -1,5 +1,5 @@
 apiVersion: kudo.dev/v1beta1
-name: "schema-registry"
+name: "confluent-schema-registry"
 version: "0.1.0"
 kudoVersion: 0.8.0
 kubernetesVersion: 1.15.0
