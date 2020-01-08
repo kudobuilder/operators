@@ -34,7 +34,7 @@ kind: ServiceMonitor
 metadata:
   labels:
     app: prometheus-operator
-    release: prometheus-operator # todo: rename to prometheus-kubeaddons
+    release: prometheus-kubeaddons
   name: spark-monitor
   namespace: {{ .Namespace }}
 spec:
