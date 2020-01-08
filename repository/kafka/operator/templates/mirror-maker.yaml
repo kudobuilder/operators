@@ -1,0 +1,55 @@
+{{ if eq .Params.MIRROR_MAKER_ENABLED "true" }}
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-mirror-maker
+  namespace: {{ .Namespace }}
+  labels:
+    app: kafka-mirror-maker
+spec:
+  replicas: {{ .Params.MIRROR_MAKER_REPLICA_COUNT }}
+  namespaceSelector:
+    matchNames:
+    - {{ .Namespace }}
+  template:
+    metadata:
+      labels:
+        name: kafka-mirror-maker
+    spec:
+      containers:
+      - name: kafka-mirror-maker
+        image: mesosphere/kafka:1.0.1-2.3.1
+        imagePullPolicy: Always
+        command:
+          - bash
+          - -c
+        args:
+          - exec ${KAFKA_HOME}/bin/kafka-mirror-maker.sh \
+            {{ if eq .Params.MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE "SOURCE" }}
+            --consumer.config="/mirror-maker-config/external.properties" 
+            --producer.config="/mirror-maker-config/self.properties" \
+            {{ else }}
+            --consumer.config="/mirror-maker-config/self.properties" 
+            --producer.config="/mirror-maker-config/external.properties" \
+            {{ end }}
+            --abort.on.send.failure={{ .Params.MIRROR_MAKER_ABORT_ON_SEND_FAILURE }} 
+            --num.streams={{ .Params.MIRROR_MAKER_NUM_STREAMS }} 
+            --offset.commit.interval.ms={{ .Params.MIRROR_MAKER_OFFSET_COMMIT_INTERVAL }} 
+            --whitelist={{ .Params.MIRROR_MAKER_TOPIC_WHITELIST }}
+        resources:
+          requests:
+            cpu: {{ .Params.MIRROR_MAKER_CPUS }}
+            memory: {{ .Params.MIRROR_MAKER_MEM }}
+          limits:
+            cpu: {{ .Params.MIRROR_MAKER_CPUS_LIMIT }}
+            memory: {{ .Params.MIRROR_MAKER_MEM_LIMIT }}
+        volumeMounts:
+          - name: mirror-maker-config
+            mountPath: /mirror-maker-config
+      volumes:
+        - name: mirror-maker-config
+          configMap:
+            name: {{ .Name }}-mirror-maker-config
+  strategy:
+    type: Recreate
+{{ end }}

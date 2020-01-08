@@ -11,8 +11,11 @@ kubectl:
 - kudo install --skip-instance ./repository/mysql/operator/
 - kudo install --skip-instance ./repository/redis/operator/
 - kudo install --skip-instance ./repository/zookeeper/operator/
+- kudo install --skip-instance ./repository/confluent-schema-registry/operator/
+- kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
 testDirs:
 - ./repository/zookeeper/tests
+- ./repository/kafka/tests
 startKIND: true
 startKUDO: true
 timeout: 300

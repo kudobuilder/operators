@@ -34,7 +34,7 @@ tasks:
     spec:
       resources:
         - backup.yaml
-  - name: backup-clenaup
+  - name: backup-cleanup
     kind: Delete
     spec:
       resources:
@@ -79,7 +79,7 @@ plans:
               - backup
           - name: cleanup
             tasks:
-              - backup-clenaup
+              - backup-cleanup
   restore:
     strategy: serial
     phases:

@@ -10,10 +10,6 @@ data:
     cp /health-check-script/health-check.sh health-check.sh;
     chmod +x health-check.sh;
 
-    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
-    /etc/tls/bin/enable-tls.sh
-    {{ end }}
-
     {{ if eq .Params.KERBEROS_ENABLED "true" }}
     cat /kafka-keytab/kafka.keytab | base64 --decode > kafka.keytab;
     cp /jass-config/kafka_server_jaas.conf $KAFKA_HOME/config/kafka_server_jaas.conf;
@@ -58,7 +54,7 @@ data:
     LISTENERS=("${LISTENERS[@]}" "EXTERNAL://0.0.0.0:${KAFKA_BROKER_PORT}")
     ADVERTISED_LISTENERS=("${ADVERTISED_LISTENERS[@]}" "EXTERNAL://$(hostname -f):${KAFKA_BROKER_PORT}")
     {{ end }}
-    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SSL,EXTERNAL:PLAINTEXT"
+    LISTENER_SECURITY_PROTOCOL_MAP="INTERNAL:SSL"
     #
     {{ else }}
     # No TLS, no Kerberos, Plaintext only
@@ -95,6 +91,27 @@ data:
     if [[ -e ${KAFKA_HOME}/init/rack.id ]]; then
       export RACK_ID=$(cat ${KAFKA_HOME}/init/rack.id)
     fi
+
+    {{ if eq .Params.EXTERNAL_ADVERTISED_LISTENER "true" }}
+    export LISTENER_SECURITY_PROTOCOL_MAP="$LISTENER_SECURITY_PROTOCOL_MAP"
+    /opt/kafka/kafka-utils
+    {{ end }}
+    EXTERNAL_LISTENERS=$(cat /opt/kafka/external.listeners 2>/dev/null)
+    EXTERNAL_ADVERTISED_LISTENERS=$(cat /opt/kafka/external.advertised.listeners 2>/dev/null)
+    EXTERNAL_SECURITY_MAP=$(cat /opt/kafka/external.listener.security.protocol.map 2>/dev/null)
+    if [[ ! -z ${EXTERNAL_SECURITY_MAP} ]]; then
+      LISTENER_SECURITY_PROTOCOL_MAP="${LISTENER_SECURITY_PROTOCOL_MAP},${EXTERNAL_SECURITY_MAP}"
+    fi
+    if [[ ! -z ${EXTERNAL_ADVERTISED_LISTENERS} ]]; then
+      ADVERTISED_LISTENERS="${ADVERTISED_LISTENERS},${EXTERNAL_ADVERTISED_LISTENERS}"
+    fi
+    if [[ ! -z ${EXTERNAL_LISTENERS} ]]; then
+      LISTENERS="${LISTENERS},${EXTERNAL_LISTENERS}"
+    fi
+
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        /etc/tls/bin/enable-tls.sh
+    {{ end }}
 
     {{ if eq .Params.AUTHORIZATION_ENABLED "true" }}
     # Calculate Kafka Authorization Super Users

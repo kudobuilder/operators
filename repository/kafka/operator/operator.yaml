@@ -1,9 +1,9 @@
 apiVersion: kudo.dev/v1beta1
 name: "kafka"
-version: "1.0.2"
+version: "1.1.0"
 kudoVersion: 0.8.0
 kubernetesVersion: 1.14.8
-appVersion: 2.3.1
+appVersion: 2.4.0
 maintainers:
   - name: Zain Malik
     email: zmalik@d2iq.com
@@ -15,7 +15,13 @@ tasks:
     kind: Apply
     spec:
       resources:
+        - serviceaccount.yaml
+        - role.yaml
+        - rolebinding.yaml
+        - clusterrole.yaml
+        - clusterrolebinding.yaml
         - service.yaml
+        - external-service.yaml
         - pdb.yaml
         - server.properties.yaml
         - bootstrap.yaml
@@ -25,21 +31,14 @@ tasks:
         - jaas-config.yaml
         - krb5-config.yaml
         - service-monitor.yaml
+        - user-workload.yaml
         - statefulset.yaml
-  - name: update
+  - name: mirrormaker
     kind: Apply
     spec:
       resources:
-        - service.yaml
-        - pdb.yaml
-        - server.properties.yaml
-        - bootstrap.yaml
-        - metrics-config.yaml
-        - health-check.yaml
-        - enable-tls.yaml
-        - jaas-config.yaml
-        - krb5-config.yaml
-        - statefulset.yaml
+        - mirror-maker-config.yaml
+        - mirror-maker.yaml
   - name: not-allowed
     kind: Apply
     spec:
@@ -54,6 +53,15 @@ plans:
           - name: deploy
             tasks:
               - deploy
+  mirrormaker:
+    strategy: serial
+    phases:
+      - name: deploy-mirror-maker
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - mirrormaker
   # this plan is triggered when some parameter present in limitations is updated
   # https://github.com/kudobuilder/operators/blob/master/repository/kafka/docs/latest/limitations.md
   not-allowed:

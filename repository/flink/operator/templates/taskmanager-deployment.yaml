@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: taskmanager
+  name: {{ .Name }}-taskmanager
   namespace: {{ .Namespace }}
 spec:
   replicas: {{ .Params.flink_taskmanager_replicas }}
