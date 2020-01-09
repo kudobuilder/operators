@@ -30,7 +30,7 @@ spec:
             cpu: {{ .Params.CPUS_LIMIT }}
         ports:
         - containerPort: {{ .Params.REST_PROXY_PORT }}
-          name: confluent-rest-proxy
+          name: rp-port
         env:
         - name: KAFKA_REST_SCHEMA_REGISTRY_URL 
           value: {{ .Params.SCHEMA_REGISTRY_URL }}
