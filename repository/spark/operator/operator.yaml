@@ -1,7 +1,7 @@
 apiVersion: kudo.dev/v1beta1
 name: "spark"
-version: "beta1"
-kudoVersion: 0.8.0
+operatorVersion: "beta1"
+kudoVersion: 0.10.0
 kubernetesVersion: 1.15.0
 appVersion: "2.4.3"
 maintainers:
