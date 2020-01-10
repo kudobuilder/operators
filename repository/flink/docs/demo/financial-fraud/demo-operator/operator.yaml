@@ -1,6 +1,6 @@
 name: "flink-demo"
-version: "0.1.2"
-kudoVersion: 0.8.0
+operatorVersion: "0.1.3"
+kudoVersion: 0.10.0
 kubernetesVersion: 1.15.0
 maintainers:
   - name: Fabian Baier
