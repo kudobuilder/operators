@@ -30,8 +30,8 @@ if [[ ! -d "${REPO_DIR}" ]]; then
 fi
 
 
-#  test to confirm community repo is configured
-# this command will fail if it exists non-zero
+# test to confirm community repo is configured
+# this command will fail non-zero unless it exists
 $CMD repo context community
 
 $CMD repo index $REPO_DIR --merge-repo community --url-repo community
