@@ -11,82 +11,16 @@ when monitoring is enabled.
 #### Exporting Spark Operator and Spark Application metrics to Prometheus
 
 ##### Prerequisites
+* KUDO v0.10.0 or later
 * The *`prometheus-operator`*.
 If you don't already have the `prometheus-operator` installed on your Kubernetes cluster, you can do so by following
 the [quick start guide](https://github.com/coreos/prometheus-operator#quickstart).
 
 ##### Metrics configuration
-Metrics configuration used by KUDO Spark can be specified by providing the following parameters:
-```bash
-kubectl kudo install spark --instance=spark-operator \
-        -p enableMetrics=true \
-        -p operatorMetricsPort=10254 \
-        -p appMetricsPort=8090 \
-        -p metricsEndpoint=/metrics \
-        -p metricsPrefix="" \
-        -p metricsPollingInterval="5s"
-```
+Metrics reporting is enabled by default. Service endpoints and ServiceMonitor resources are configured to work with Prometheus Operator
+out of the box.
 
-Full list of configuration parameters and defaults is available in KUDO Spark [params.yaml](../../operator/params.yaml).
-
-##### Installing Service Monitors
-1) Create a `ServiceMonitor` for Spark Operator:
-   ```bash
-   cat <<EOF | kubectl apply -f -
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: spark-operator-metrics
-     labels:
-       "spark/servicemonitor": "true"
-   spec:
-     ports:
-       - port: 10254
-         name: metrics
-     clusterIP: None
-     selector:
-       "app.kubernetes.io/name": spark
-   EOF
-   ```
-
-1) Create a `ServiceMonitor` for Spark: 
-   ```bash
-   cat <<EOF | kubectl apply -f -
-   apiVersion: monitoring.coreos.com/v1
-   kind: ServiceMonitor
-   metadata:
-     labels:
-       app: prometheus-operator
-       release: prometheus-kubeaddons
-     name: spark-cluster-monitor
-   spec:
-     endpoints:
-       - interval: 5s
-         port: metrics
-     selector:
-       matchLabels:
-         spark/servicemonitor: "true"
-   EOF
-   ```
-1) Create the metrics endpoint service. Feel free to modify the service port in the yaml in case you are going to expose 
-the metrics on other one and see further instructions in next step.
-   ```bash
-   cat <<EOF | kubectl apply -f - 
-   apiVersion: v1
-   kind: Service
-   metadata:
-     name: spark-application-metrics
-     labels:
-       "spark/servicemonitor": "true"
-   spec:
-     ports:
-       - port: 8090
-         name: metrics
-     clusterIP: None
-     selector:
-       "metrics-exposed": "true"
-   EOF
-   ```
+Full list of metrics configuration parameters and defaults is available in KUDO Spark [params.yaml](../../operator/params.yaml).
 
 ##### Running Spark Application with metrics enabled
 1) Composing your Spark Application yaml:
@@ -98,14 +32,16 @@ the metrics on other one and see further instructions in next step.
          exposeExecutorMetrics: true
          prometheus:
            jmxExporterJar: "/prometheus/jmx_prometheus_javaagent-0.11.0.jar"
-           port: 8090
+           port: 8090 
      ```  
+     `spec.momitoring.prometheus.port` value should be the same for all submitted Spark Applications in order for metrics to be scraped.
    - if it's necessary to expose the metrics endpoint on a port other than `8090`, do the following:
-     1) change the `port` value in the `SparkApplication` yaml definition (`spec.monitoring.prometheus.port`)
-     1) specify the same port when installing the `kudo-spark-operator`:  
+     - specify desired port when installing the `kudo-spark-operator`:  
+ 
      ```
      kubectl kudo install <operator> -p appMetricsPort=<desired_port>
      ```
+     - change the `port` value in the `SparkApplication` yaml definition (`spec.monitoring.prometheus.port`)    
    - Mark `driver` and/or `executor` with the label `metrics-exposed: "true"` -
      ```yaml
      spec:
@@ -120,10 +56,7 @@ the metrics on other one and see further instructions in next step.
      ```
      kubectl apply -f <path_to_the_application_yaml>   
      ```
-   Full application configuration example is available in [spark-application-with-metrics.yaml](resources/monitoring/spark-application-with-metrics.yaml),
-   the ServiceMonitor - [spark-service-monitor.yaml](resources/monitoring/spark-service-monitor.yaml), 
-   Kubernetes Services - [spark-application-metrics-service.yaml](resources/monitoring/spark-application-metrics-service.yaml), 
-   [spark-operator-metrics-service.yaml](resources/monitoring/spark-operator-metrics-service.yaml).
+   Full application configuration example is available in [spark-application-with-metrics.yaml](resources/monitoring/spark-application-with-metrics.yaml)
 1) Now, go to the prometheus dashboard (e.g. `<kubernetes_endpoint_url>/ops/portal/prometheus/graph`) and search for metrics 
 starting with 'spark'. The Prometheus URI might be different depending on how you configured and installed the `prometheus-operator`. 
 
