@@ -25,6 +25,7 @@ tasks:
         - webhook-service.yaml
         - spark-history-server-deployment.yaml
         - spark-history-server-service.yaml
+        - spark-monitoring.yaml
 
 plans:
   deploy:
