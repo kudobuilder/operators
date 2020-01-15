@@ -32,7 +32,7 @@ Full list of metrics configuration parameters and defaults is available in KUDO 
          exposeExecutorMetrics: true
          prometheus:
            jmxExporterJar: "/prometheus/jmx_prometheus_javaagent-0.11.0.jar"
-           port: 8090 
+           port: 8090
      ```  
      `spec.momitoring.prometheus.port` value should be the same for all submitted Spark Applications in order for metrics to be scraped.
    - if it's necessary to expose the metrics endpoint on a port other than `8090`, do the following:
