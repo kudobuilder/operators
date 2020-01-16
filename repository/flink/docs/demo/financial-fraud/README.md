@@ -2,7 +2,7 @@
 
 This demo follows the outline provided by [DC/OS's](https://github.com/dcos/demos/tree/master/flink-k8s/1.11) demo
 
-### Architecture
+## Architecture
 
 ![Financial transaction processing demo architecture](https://github.com/dcos/demos/raw/master/flink-k8s/1.11/img/kafka-flink-arch.png)
 
@@ -17,91 +17,103 @@ The architecture follows more or less the [SMACK stack architecture](https://mes
 
 ## Prerequisites
 
-Before you get started:
+Before you get started, make sure you have a cluster at hand with enough resources.
 
-- Make sure you have a cluster at hand with enough resources, e.g.:
+### Run on [KinD](https://github.com/kubernetes-sigs/kind)
 
-
-For [KinD](https://github.com/kubernetes-sigs/kind):
-```
+```bash
 # Use make from operators repo:
-make create-cluster
+$ make create-cluster
 
 # or modify your own KinD cluster:
-kind create cluster
-export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
-kubectl delete storageclass standard
-kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
-kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
+$ kind create cluster
+$ export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
+$ kubectl delete storageclass standard
+$ kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/master/deploy/local-path-storage.yaml
+$ kubectl annotate storageclass --overwrite local-path storageclass.kubernetes.io/is-default-class=true
 ```
 *note:* cpus: 4 and mem: 8Gb was sufficient resources on docker for KinD to work (which is not the default)
 
-For [minikube](https://github.com/kubernetes/minikube):
-```.
-minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
+### Run on [minikube](https://github.com/kubernetes/minikube)
+
+```bash
+$ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
 ```
 
-- Have current KUDO CLI `v0.8.x` [installed](https://kudo.dev/docs/cli/#install)
+### Install KUDO and the KUDO CLI
+
+- Have current KUDO CLI `v0.10.x` [installed](https://kudo.dev/docs/cli.html#setup-the-kudo-kubectl-plugin)
     - Run `kubectl kudo version`, the output should look like:
-    ```bash
-    KUDO Version: version.Info{GitVersion:"0.8.0", GitCommit:"2a585aed", BuildDate:"2019-11-08T16:35:17Z", GoVersion:"go1.13.4", Compiler:"gc", Platform:"darwin/amd64"}
-    ```
-    - If not, upgrade to the latest version via `brew upgrade kudo-cli`
-    - Have current KUDO `v0.8.x` installed on your cluster:
+        ```bash
+        $ kubectl kudo version
+        KUDO Version: version.Info{GitVersion:"0.10.0", GitCommit:"d2310b12", BuildDate:"2020-01-10T18:54:59Z", GoVersion:"go1.13.6", Compiler:"gc", Platform:"darwin/amd64"}
+        ```
+    - If not, upgrade to the latest version via `brew upgrade kudo-cli` on macOS or follow the [installation instructions](https://kudo.dev/docs/cli.html#setup-the-kudo-kubectl-plugin) on other platforms.
+    - Have current KUDO `v0.10.x` installed on your cluster:
     - If you have KUDO already installed to the `kudo-system` namespace check its current Docker image tag to verify the version you are running:
-        - Make sure the output of `kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'` shows at least `v0.8.x` as Docker tag:
+        - Make sure the output of `kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'` shows at least `v0.10.x` as Docker tag:
         ```bash
         $ kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
-        kudobuilder/controller:v0.8.0
+        kudobuilder/controller:v0.10.0
         ```
-    - If not, use the following commands to install KUDO `v0.8.x` to your cluster:
-        - `kubectl kudo init`
-- Have the `zookeeper` Operator with `0.2.0` as OperatorVersion installed
-    - Use the KUDO CLI with the following command:
+    - If not, use the following commands to install KUDO `v0.10.x` to your cluster:
         ```bash
-        $ kubectl kudo install zookeeper --version=0.2.0 --skip-instance
-        operator.kudo.dev/v1beta1/zookeeper created
-        operatorversion.kudo.dev/v1beta1/zookeeper-0.2.0 created
+        $ kubectl kudo init
         ```
-- Have the `kafka` Operator with `0.1.3` as OperatorVersion installed
-    - Use the KUDO CLI with the following command:
-        ```bash
-        $ kubectl kudo install kafka --version=0.1.3 --skip-instance
-        operator.kudo.dev/v1beta1/kafka created
-        operatorversion.kudo.dev/v1beta1/kafka-0.1.3 created
-        ```
-- Have the `flink` Operator with `0.1.2` as OperatorVersion installed
-    - Use the KUDO CLI with the following command:
-        ```bash
-        $ kubectl kudo install flink --version=0.1.2 --skip-instance
-        operator.kudo.dev/v1beta1/flink created
-        operatorversion.kudo.dev/v1beta1/flink-0.1.2 created
-        ```
+
+### Install Required Operators
+
+- Have the `zookeeper` Operator with `0.3.0` as OperatorVersion installed
+    Use the KUDO CLI with the following command:
+    ```bash
+    $ kubectl kudo install zookeeper --operator-version=0.3.0 --skip-instance
+    operator.kudo.dev/v1beta1/zookeeper created
+    operatorversion.kudo.dev/v1beta1/zookeeper-0.3.0 created
+    ```
+- Have the `kafka` Operator with `1.2.0` as OperatorVersion installed
+    Use the KUDO CLI with the following command:
+    ```bash
+    $ kubectl kudo install kafka --operator-version=1.2.0 --skip-instance
+    operator.kudo.dev/v1beta1/kafka created
+    operatorversion.kudo.dev/v1beta1/kafka-1.2.0 created
+    ```
+- Have the `flink` Operator with `0.2.1` as OperatorVersion installed
+    Use the KUDO CLI with the following command:
+    ```bash
+    $ kubectl kudo install flink --operator-version=0.2.1 --skip-instance
+    operator.kudo.dev/v1beta1/flink created
+    operatorversion.kudo.dev/v1beta1/flink-0.2.1 created
+    ```
 
 Now you should have all required Operators installed.
 
-## Getting Started
+## Start the Demo
 
 Install the Flink `financial-fraud` demo from the main repository directory.
 
- - Get the KUDO Operators repository: `git clone git@github.com:kudobuilder/operators.git`
-    - Change directory into the cloned repository: `cd operators`
-    - Install the Flink demo objects straight out of the repository:
-        ```
-        $ kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
-        operator.kudo.dev/v1beta1/flink-demo created
-        operatorversion.kudo.dev/v1beta1/flink-demo-0.1.1 created
-        instance.kudo.dev/v1beta1/flink-demo created
-        ```
+Get the KUDO Operators repository and cd into the cloned repository:
+
+```bash
+$ git clone git@github.com:kudobuilder/operators.git
+$ cd operators
+```
+
+Install the Flink demo objects straight out of the repository:
+
+```bash
+$ kubectl kudo install repository/flink/docs/demo/financial-fraud/demo-operator --instance flink-demo
+operator.kudo.dev/v1beta1/flink-demo created
+operatorversion.kudo.dev/v1beta1/flink-demo-0.1.4 created
+instance.kudo.dev/v1beta1/flink-demo created
+```
 
 To see the status of the deploy plan for the Zookeeper operator we can utilize the CLI via:
 
-```
-
+```bash
 $ kubectl kudo plan status --instance zk
 Plan(s) for "zk" in namespace "default":
 .
-└── zk (Operator-Version: "zookeeper-0.2.0" Active-Plan: "deploy")
+└── zk (Operator-Version: "zookeeper-0.3.0" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [IN_PROGRESS]
     │   ├── Phase zookeeper [IN_PROGRESS]
     │   │   └── Step deploy (IN_PROGRESS)
@@ -117,11 +129,11 @@ Plan(s) for "zk" in namespace "default":
 
 If the Zookeeper Operator was successfully installed its plan status will show `COMPLETE`:
 
-```
+```bash
 $ kubectl kudo plan status --instance zk
 Plan(s) for "zk" in namespace "default":
 .
-└── zk (Operator-Version: "zookeeper-0.2.0" Active-Plan: "deploy")
+└── zk (Operator-Version: "zookeeper-0.3.0" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [COMPLETE]
     │   ├── Phase zookeeper [COMPLETE]
     │   │   └── Step deploy (COMPLETE)
@@ -137,11 +149,11 @@ Plan(s) for "zk" in namespace "default":
 
 Next, the Kafka operator will start its `deploy` plan, when completed we will see its status change to `COMPLETE` as well:
 
-```
+```bash
 $ kubectl kudo plan status --instance kafka
 Plan(s) for "kafka" in namespace "default":
 .
-└── kafka (Operator-Version: "kafka-0.1.3" Active-Plan: "deploy")
+└── kafka (Operator-Version: "kafka-1.2.0" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [COMPLETE]
     │   └── Phase deploy-kafka [COMPLETE]
     │       └── Step deploy (COMPLETE)
@@ -153,11 +165,11 @@ Plan(s) for "kafka" in namespace "default":
 
 Lastly, the Flink operator needs to be installed. We wait for its status to be completed similar to Zookeeper and Kafka:
 
-```
+```bash
 $ kubectl kudo plan status --instance flink
 Plan(s) for "flink" in namespace "default":
 .
-└── flink-demo-flink (Operator-Version: "flink-0.1.2" Active-Plan: "deploy")
+└── flink-demo-flink (Operator-Version: "flink-0.2.1" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase flink (serial strategy) [COMPLETE]
             └── Step jobmanager (COMPLETE)
@@ -166,11 +178,11 @@ Plan(s) for "flink" in namespace "default":
 Now, if we look at the overall Flink-Demo Operator status we see the combined status of all plans and phases run for the
 Flink demo:
 
-```
+```bash
 $ kubectl kudo plan status --instance flink-demo
 Plan(s) for "flink-demo" in namespace "default":
 .
-└── flink-demo (Operator-Version: "flink-demo-0.1.1" Active-Plan: "deploy")
+└── flink-demo (Operator-Version: "flink-demo-0.1.4" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [COMPLETE]
         ├── Phase dependencies [COMPLETE]
         │   ├── Step zookeeper (COMPLETE)
@@ -184,17 +196,18 @@ Plan(s) for "flink-demo" in namespace "default":
             └── Step submit (COMPLETE)
 ```
 
-Wonderful, all phases completed and our Flink job even got submitted. In order to verify it is running, let's have a look
-at the Flink dashboard:
+Wonderful, all phases completed and our Flink job even got submitted.
+
+## View the Demo Application
+
+In order to verify that the demo is running, let's have a look at the Flink dashboard:
 
 - Run `kubectl proxy` to make the dashboard available
 - Access in your web-browser: http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-jobmanager:ui/proxy/#/overview
 
-### Flink Job Output
-
 To see if the job was submitted successfully:
 
-```
+```bash
 $ kubectl logs $(kubectl get pod -l job-name=submit-flink-job -o jsonpath="{.items[0].metadata.name}")
 DOWNLOAD_URL: https://downloads.mesosphere.com/dcos-demo/flink/flink-job-1.0.jar FILE: flink-job-1.0.jar JOBMANAGER: flink-demo-flink-jobmanager
 fetch http://dl-cdn.alpinelinux.org/alpine/v3.9/main/x86_64/APKINDEX.tar.gz
@@ -217,8 +230,8 @@ SUBMITTED JOB!
 
 To get the fraud output from the actor:
 
-```
-kubectl logs $(kubectl get pod -l actor=flink-demo -o jsonpath="{.items[0].metadata.name}")
+```bash
+$ kubectl logs $(kubectl get pod -l actor=flink-demo -o jsonpath="{.items[0].metadata.name}")
 ```
 
 The output will look like:
@@ -238,7 +251,7 @@ Transaction{timestamp=1562784349000, origin=0, target='7', amount=7889}}
 
 Congratulations, you just installed a highly available Flink cluster that runs a financial fraud detection job!
 
-### Clean the state
+## Cleanup
 
 To successfully uninstall the demo follow those steps:
 
@@ -247,11 +260,11 @@ To successfully uninstall the demo follow those steps:
     - For Kafka: `kubectl delete pvc -l instance=kafka`
     - For Zookeeper: `kubectl delete pvc -l instance=zk`
 
-### Reference Scripts
+## Command Reference
 
 The required demo scripts without supportive text.  Please read above for explanations of each of these commands.
 
-```
+```bash
 # create kind cluster
 kind create cluster
 export KUBECONFIG="$(kind get kubeconfig-path --name="kind")"
@@ -265,10 +278,10 @@ kubectl kudo init --wait
 # verify correct version of manager
 kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
 
-# install o and ov
-kubectl kudo install zookeeper --version=0.2.0 --skip-instance
-kubectl kudo install kafka --version=0.1.3 --skip-instance
-kubectl kudo install flink --version=0.1.2 --skip-instance
+# install Operators and OperatorVersions
+kubectl kudo install zookeeper --operator-version=0.3.0 --skip-instance
+kubectl kudo install kafka --operator-version=1.2.0 --skip-instance
+kubectl kudo install flink --operator-version=0.2.1 --skip-instance
 
 
 # install demo
@@ -283,7 +296,8 @@ kubectl kudo plan status --instance flink-demo
 # watch pod deployments
 kubectl get pods -w
 
-#kubectl proxy
+# view the demo application
+kubectl proxy
 open http://127.0.0.1:8001/api/v1/namespaces/default/services/flink-jobmanager:ui/proxy/#/overview
 
 kubectl logs $(kubectl get pod -l job-name=submit-flink-job -o jsonpath="{.items[0].metadata.name}")

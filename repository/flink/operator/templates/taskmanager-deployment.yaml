@@ -5,6 +5,10 @@ metadata:
   namespace: {{ .Namespace }}
 spec:
   replicas: {{ .Params.flink_taskmanager_replicas }}
+  selector:
+    matchLabels:
+      app: flink
+      component: {{ .Name }}-taskmanager
   template:
     metadata:
       labels:
