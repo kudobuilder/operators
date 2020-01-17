@@ -7,6 +7,16 @@ data:
   bootstrap.sh: |
     #!/usr/bin/env bash
 
-    echo "Hello World!"
-    
+    {{ if .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
+    CUSTOM_CONFIGURATION_FILE=$(ls -d /custom-configuration/* | head -n 1)
+    cp $CUSTOM_CONFIGURATION_FILE /tmp/custom-configuration
+    echo "Appending custom configuration file to the schema-registry.properties..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1
+    SR_CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration)
+    echo ${SR_CUSTOM_CONFIGURATION}
+    cat >> /etc/confluent/docker/schema-registry.properties.template <<EOF
+    ${SR_CUSTOM_CONFIGURATION}
+    EOF
+
+    {{ end }}
+
     /etc/confluent/docker/run

@@ -16,6 +16,7 @@ tasks:
     spec:
       resources:
         - service.yaml
+        - bootstrap.yaml
         - deployment.yaml
 plans:
   deploy:
