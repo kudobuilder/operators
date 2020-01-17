@@ -58,7 +58,7 @@ spec:
         - name: bootstrap
           configMap:
             name: {{ .Name }}-bootstrap
-            defaultMode: 0777
+            defaultMode: 0755
         {{ if .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
         - name: custom-configuration
           configMap:
