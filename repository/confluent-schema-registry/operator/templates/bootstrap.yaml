@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-bootstrap
+  namespace: {{ .Namespace }}
+data:
+  bootstrap.sh: |
+    #!/usr/bin/env bash
+
+    echo "Hello World!"
+    
+    /etc/confluent/docker/run
