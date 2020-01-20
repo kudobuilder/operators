@@ -20,7 +20,11 @@ spec:
       containers:
       - name: confluent-rest-proxy
         image: confluentinc/cp-kafka-rest:5.3.2
-        command: ["/etc/confluent/docker/run"]
+        command:
+          - bash
+          - -c
+        args:
+          - /bootstrap/bootstrap.sh;
         resources:
           requests:
             memory: {{ .Params.MEMORY }}
@@ -30,7 +34,7 @@ spec:
             cpu: {{ .Params.CPUS_LIMIT }}
         ports:
         - containerPort: {{ .Params.REST_PROXY_PORT }}
-          name: confluent-rest-proxy
+          name: rp-port
         env:
         - name: KAFKA_REST_SCHEMA_REGISTRY_URL 
           value: {{ .Params.SCHEMA_REGISTRY_URL }}
@@ -38,6 +42,13 @@ spec:
           value: {{ .Params.HOST_NAME }}
         - name: KAFKA_REST_BOOTSTRAP_SERVERS
           value: {{ .Params.KAFKA_BOOTSTRAP_SERVERS }}
+        volumeMounts:
+        - name: bootstrap
+          mountPath: /bootstrap
+        {{ if .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          mountPath: /custom-configuration
+        {{ end }}
         livenessProbe:
           initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
           periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
@@ -45,3 +56,13 @@ spec:
           httpGet:
             path: /
             port: {{ .Params.REST_PROXY_PORT }}
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: {{ .Name }}-bootstrap
+            defaultMode: 0755
+        {{ if .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          configMap:
+            name: {{ .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        {{ end }}
