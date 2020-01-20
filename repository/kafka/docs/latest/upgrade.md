@@ -61,7 +61,7 @@ kafka-1.2.1       2m6s
 Check the plan status again:
 
 ```
-$ kubectl kudo plan status --instance=kafka
+$ kubectl kudo plan status --instance=kafka-instance
 Plan(s) for "kafka-instance" in namespace "default":
 .
 └── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")

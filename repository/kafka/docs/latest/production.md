@@ -153,7 +153,7 @@ BACKGROUND_THREADS=10
 
 ```
 $ kubectl kudo install kafka \
-    --instance=kafka --namespace=kudo-kafka -p ZOOKEEPER_URI=$ZOOKEEPER_URI \
+    --instance=kafka-instance --namespace=kudo-kafka -p ZOOKEEPER_URI=$ZOOKEEPER_URI \
     -p BROKER_CPUS=2000m \
     -p BROKER_COUNT=5 \
     -p BROKER_MEM=4096m \

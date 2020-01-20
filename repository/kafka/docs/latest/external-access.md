@@ -36,7 +36,7 @@ The parameter used to configure the external loadbalancers is `EXTERNAL_ADVERTIS
 When set to `LoadBalancer` it creates one service per broker to expose each broker externally. 
 
 ```
-$ kubectl kudo install kafka --instance=kafka \
+$ kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer
 ```
@@ -78,7 +78,7 @@ KUDO Kafka supports enabling and disabling of the parameter `EXTERNAL_ADVERTISED
 To enable the external access via load balancers:
 
 ```
-$ kubectl kudo update --instance=kafka \
+$ kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer 
 ```
@@ -86,7 +86,7 @@ $ kubectl kudo update --instance=kafka \
 To disable the external access via load balancers:
 
 ```
-$ kubectl kudo update --instance=kafka \
+$ kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
@@ -99,7 +99,7 @@ The parameter used to configure the external loadbalancers is `EXTERNAL_ADVERTIS
 When set to `NodePort` it creates one service per broker. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort
 ```
@@ -156,7 +156,7 @@ KUDO Kafka supports enabling and disabling of the parameter `EXTERNAL_ADVERTISED
 To enable the external access via node ports:
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort 
 ```
@@ -164,7 +164,7 @@ kubectl kudo update --instance=kafka \
 To disable the external access via load balancers:
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
@@ -177,14 +177,14 @@ Due to known kubernetes issue in [issues/221](https://github.com/kubernetes/kube
 First disable the external access
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
 Once the plan status is complete, we can enable again with `LoadBalancer` type
 
 ````
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer
 ````
@@ -194,14 +194,14 @@ kubectl kudo install kafka --instance=kafka \
 First disable the external access
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
 Once the plan status is complete, we can enable again with `NodePort` type
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort
 ```
@@ -215,7 +215,7 @@ kubectl kudo install kafka --instance=kafka \
 Exposing KUDO Kafka works with the TLS encryption enabled. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer \
 	-p CLIENT_PORT_ENABLED=false \
@@ -226,7 +226,7 @@ kubectl kudo install kafka --instance=kafka \
 And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
 
 ```
-> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
+> kubectl exec -ti kafka-instance-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
@@ -240,7 +240,7 @@ inter.broker.listener.name=INTERNAL
 Exposing KUDO Kafka works with the TLS encryption enabled. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort \
 	-p CLIENT_PORT_ENABLED=false \
@@ -251,7 +251,7 @@ kubectl kudo install kafka --instance=kafka \
 And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
 
 ```
-> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
+> kubectl exec -ti kafka-instance-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://34.214.27.71:30904

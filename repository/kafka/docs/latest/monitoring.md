@@ -28,7 +28,7 @@ To use the prometheus service monitor, it's necessary to have installed the [pro
 
 Users can monitor the Kafka cluster using independent service monitor. Or use the one that comes with KUDO Kafka
 
-`$ kubectl kudo install kafka --instance=kafka -p ADD_SERVICE_MONITOR=true`
+`$ kubectl kudo install kafka --instance=kafka-instance -p ADD_SERVICE_MONITOR=true`
 
 Or users can provide their own service-monitor. If Kafka is using the default namespace, we can create a [service-monitor](./resources/service-monitor.yaml) with the following:
 ```
@@ -42,5 +42,5 @@ Upload this [grafana json](./resources/grafana-dashboard.json) and you should se
 ### Disable the metrics
 
  ```
-$ kubectl kudo install kafka --instance=kafka --parameter METRICS_ENABLED=false
+$ kubectl kudo install kafka --instance=kafka-instance --parameter METRICS_ENABLED=false
  ```
