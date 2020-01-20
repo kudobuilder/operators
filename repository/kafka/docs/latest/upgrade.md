@@ -44,7 +44,7 @@ Plan(s) for "kafka-instance" in namespace "default":
 To update the Kafka cluster from version `0.1.2` to `0.2.0`:
 
 ```
-$ kubectl kudo upgrade kafka --version=1.2.1 --instance kafka-instance
+$ kubectl kudo upgrade kafka --operator-version=1.2.1 --instance kafka-instance
 
 operator.kudo.dev/kafka unchanged
 operatorversion.kudo.dev/v1beta1/kafka-1.2.1 created
