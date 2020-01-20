@@ -13,15 +13,15 @@ Requirements:
 Please read the [limitations](./limitations.md) docs before creating the KUDO Zookeeper cluster.
 
 ```
-kubectl kudo install zookeeper --instance=zk
+kubectl kudo install zookeeper
 ```
 
-Verify the if the deploy plan for `--instance=zk` is complete.
+Verify the if the deploy plan for `--instance=zookeeper-instance`, default instance name, is complete.
 ```
-kubectl kudo plan status --instance=zk
-Plan(s) for "zk" in namespace "default":
+kubectl kudo plan status --instance=zookeeper-instance
+Plan(s) for "zookeeper-instance" in namespace "default":
 .
-└── zk (Operator-Version: "zookeeper-0.2.0" Active-Plan: "deploy")
+└── zookeeper-instance (Operator-Version: "zookeeper-0.3.0" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [COMPLETE]
     │   ├── Phase zookeeper [COMPLETE]
     │   │   └── Step deploy (COMPLETE)
