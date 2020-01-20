@@ -15,7 +15,7 @@ To isolate our operators from other running installations over the cluster, we p
 
 Let us create a namespace `kudo-kafka` using:
 ```
-kubectl create ns kudo-kafka
+$ kubectl create ns kudo-kafka
 ```
 Sample output of this command:
         `namespace/kudo-kafka created`
@@ -24,13 +24,13 @@ Sample output of this command:
 
 KUDO Kafka should be backed by KUDO Zookeeper running in the background. To install KUDO Zookeeper in the namespace `kudo-kafka`:
 ```
-kubectl kudo install zookeeper --instance=zk --namespace=kudo-kafka
+$ kubectl kudo install zookeeper --instance=zk --namespace=kudo-kafka
 ```
 
 Sample output of this command:
 ```
 operator.kudo.dev/v1beta1/zookeeper created
-operatorversion.kudo.dev/v1beta1/zookeeper-0.2.0 created
+operatorversion.kudo.dev/v1beta1/zookeeper-0.3.0 created
 instance.kudo.dev/v1beta1/zk created
 ```
 
@@ -39,7 +39,7 @@ You can check for the successful deployment of Zookeeper service through:
 $ kubectl kudo plan status --instance=zk --namespace=kudo-kafka
 Plan(s) for "zk" in namespace "kudo-kafka":
 .
-└── zk (Operator-Version: "zookeeper-0.2.0" Active-Plan: "deploy")
+└── zk (Operator-Version: "zookeeper-0.3.0" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [COMPLETE]
     │   ├── Phase zookeeper [COMPLETE]
     │   │   └── Step deploy (COMPLETE)
@@ -63,7 +63,7 @@ KUDO Kafka can be deployed with some dummy user workload running over Kafka brok
 
 In order to install KUDO Kafka having user workload in the namespace `kudo-kafka`:
 ```
-kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
+$ kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
  -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
  -p RUN_USER_WORKLOAD=true \
  -p ADD_SERVICE_MONITOR=true
@@ -78,7 +78,7 @@ kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
 Sample output of this command:
 ```
 operator.kudo.dev/v1beta1/kafka created
-operatorversion.kudo.dev/v1beta1/kafka-1.0.1 created
+operatorversion.kudo.dev/v1beta1/kafka-1.2.1 created
 instance.kudo.dev/v1beta1/kafka created
 ```
 
@@ -99,9 +99,9 @@ zk-zookeeper-2                                  1/1     Running   0          128
 
 To wrap up, here is a summary of commands that should be executed in order to get the KUDO Kafka service up and running, with some dummy user workload present over it:
 ```
-kubectl create ns kudo-kafka
-kubectl kudo install zookeeper --instance=zk --namespace=kudo-kafka
-kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
+$ kubectl create ns kudo-kafka
+$ kubectl kudo install zookeeper --instance=zk --namespace=kudo-kafka
+$ kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
  -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
  -p RUN_USER_WORKLOAD=true \
  -p ADD_SERVICE_MONITOR=true

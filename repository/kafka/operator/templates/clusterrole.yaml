@@ -1,4 +1,5 @@
 {{ if eq .Params.EXTERNAL_ADVERTISED_LISTENER "true" }}
+{{ if eq  .Params.EXTERNAL_ADVERTISED_LISTENER_TYPE "NodePort" }}
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
@@ -7,4 +8,5 @@ rules:
 - apiGroups: [""]
   resources: ["nodes"]
   verbs: ["get", "list", "watch"]
+{{ end }}
 {{ end }}

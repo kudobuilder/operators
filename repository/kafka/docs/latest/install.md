@@ -25,17 +25,28 @@ kubectl kudo install kafka
 
 Verify the if the deploy plan for `--instance=kafka-instance` is complete.
 ```
-kubectl kudo plan status --instance=kafka-instance
+$ kubectl kudo plan status --instance=kafka-instance
 Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-instance (Operator-Version: "kafka-1.0.0" Active-Plan: "deploy")
+└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")
     ├── Plan deploy (serial strategy) [COMPLETE]
-    │  └── Phase deploy-kafka [COMPLETE]
-    │    └── Step deploy (COMPLETE)
-    └── Plan not-allowed (serial strategy) [NOT ACTIVE]
-        └── Phase not-allowed (serial strategy) [NOT ACTIVE]
-            └── Step not-allowed (serial strategy) [NOT ACTIVE]
-                └── not-allowed [NOT ACTIVE]
+    │   └── Phase deploy-kafka (serial strategy) [COMPLETE]
+    │       ├── Step configuration [COMPLETE]
+    │       ├── Step service [COMPLETE]
+    │       ├── Step app [COMPLETE]
+    │       └── Step addons [COMPLETE]
+    ├── Plan external-access (serial strategy) [NOT ACTIVE]
+    │   └── Phase external-access-resources (serial strategy) [NOT ACTIVE]
+    │       └── Step external [NOT ACTIVE]
+    ├── Plan mirrormaker (serial strategy) [NOT ACTIVE]
+    │   └── Phase deploy-mirror-maker (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
+    ├── Plan not-allowed (serial strategy) [NOT ACTIVE]
+    │   └── Phase not-allowed (serial strategy) [NOT ACTIVE]
+    │       └── Step not-allowed [NOT ACTIVE]
+    └── Plan service-monitor (serial strategy) [NOT ACTIVE]
+        └── Phase enable-service-monitor (serial strategy) [NOT ACTIVE]
+            └── Step add-service-monitor [NOT ACTIVE]
 ```
 
 You can view all configuration options [here](./configuration.md)

@@ -2,6 +2,15 @@
 
 ## latest
 
+## v1.2.1
+
+- Remove unused collectors from node exporter sidecar
+- Introduce new plans to fix the errors when re-running a plan
+
+## v1.2.0
+
+- Updated operator.yaml to adopt to KUDO `0.10.0`
+
 ## v1.1.0
 
 - Apache Kafka upgraded to 2.4.0

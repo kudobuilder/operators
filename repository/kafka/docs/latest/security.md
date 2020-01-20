@@ -11,20 +11,20 @@ By default, KUDO Kafka brokers use the plaintext protocol for its inter-broker c
 Create the TLS certificate to be used for Kafka TLS encryptions
 
 ```
-openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout tls.key -out tls.crt -subj "/CN=Kafka" -days 365
+$ openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout tls.key -out tls.crt -subj "/CN=Kafka" -days 365
 ```
 
 Create a kubernetes TLS secret using the certificate created in previous step 
 
 ```
-kubectl create secret tls kafka-tls -n kudo-kafka --cert=tls.crt --key=tls.key
+$ kubectl create secret tls kafka-tls -n kudo-kafka --cert=tls.crt --key=tls.key
 ```
 
 :warning: Make sure to create the certificate in the same namespace where the KUDO Kafka is being installed.
 
 ```
-kubectl kudo install kafka \
-    --instance=kafka --namespace=kudo-kafka \
+$ kubectl kudo install kafka \
+    --instance=kafka-instance --namespace=kudo-kafka \
     -p TRANSPORT_ENCRYPTION_ENABLED=true \
     -p TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT=false \
     -p SSL_AUTHENTICATION_ENABLED=false \
@@ -44,8 +44,8 @@ Follow the steps of creating the TLS secret for the [TLS encryption](#enabling-t
 And enable the TLS encryption and also set the parameter `SSL_AUTHENTICATION_ENABLED` to `true`
 
 ```
-kubectl kudo install kafka \
-  --instance=kafka --namespace=kudo-kafka \
+$ kubectl kudo install kafka \
+  --instance=kafka-instance --namespace=kudo-kafka \
     -p AUTHORIZATION_ENABLED=true \
     -p AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND=false \
     -p AUTHORIZATION_SUPER_USERS="User:User1" \
@@ -73,7 +73,7 @@ Kerberos authentication relies on a central authority to verify that Kafka clien
 
 The KUDO Kafka service requires a Kerberos principal for each broker to be deployed. Each principal must be of the form
 ```
-<service primary>/kafka-kafka-<broker index>.kafka-svc.<namespace>.svc.cluster.local@<service realm>
+<service primary>/kafka-instance-kafka-<broker index>.kafka-svc.<namespace>.svc.cluster.local@<service realm>
 ```
 with:
 * ```service primary = KERBEROS_PRIMARY```
@@ -83,8 +83,8 @@ with:
 
 For example, if installing with these options:
 ```
-kubectl kudo install kafka \
-  --instance=kafka --namespace=kudo-kafka \
+$ kubectl kudo install kafka \
+  --instance=kafka-instance --namespace=kudo-kafka \
     -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
     -p KERBEROS_ENABLED=true \
     -p KERBEROS_DEBUG=false\
@@ -97,9 +97,9 @@ kubectl kudo install kafka \
 ```
 then the principals to create would be:
 ```
-kafka/kafka-kafka-0.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
-kafka/kafka-kafka-1.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
-kafka/kafka-kafka-2.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+kafka/kafka-instance-kafka-0.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+kafka/kafka-instance-kafka-1.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+kafka/kafka-instance-kafka-2.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
 ```
 
 Use `KERBEROS_USE_TCP=true` parameter to use `TCP` protocol for KDC. By default it will try to use UDP. 
@@ -127,8 +127,8 @@ The KUDO Kafka service supports Kafka’s ACL-based authorization system.  To us
 Install the KUDO Kafka service with the following options in addition to your own (remember, Kerberos must be enabled):
 
 ```
-kubectl kudo install kafka \
-  --instance=kafka --namespace=kudo-kafka \
+$ kubectl kudo install kafka \
+  --instance=kafka-instance --namespace=kudo-kafka \
     -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
     -p BROKER_COUNT=3 \
     -p KERBEROS_ENABLED=true \
@@ -148,8 +148,8 @@ The format of the list is `User:user1;User:user2;....` Using Kerberos authentica
 Install the KUDO Kafka service with the following options in addition to your own (remember, TLS authentication must be enabled):
 
 ```
-kubectl kudo install kafka \
-  --instance=kafka --namespace=kudo-kafka \
+$ kubectl kudo install kafka \
+  --instance=kafka-instance --namespace=kudo-kafka \
     -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
     -p BROKER_CPUS=200m \
     -p BROKER_COUNT=3 \
@@ -162,7 +162,5 @@ kubectl kudo install kafka \
     -p TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT=false \
     -p SSL_AUTHENTICATION_ENABLED=true
 ```
-
-
 
 NOTE: It is possible to enable Authorization after initial installation but the service may become unavailable during the transition. Additionally, Kafka clients may fail to function if they do not have the correct ACLs assigned to their principals. During the transition `AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND` can be set to `true` to prevent clients from failing until their ACLs can be set correctly. After the transition, `AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND` should be reset back to `false`.

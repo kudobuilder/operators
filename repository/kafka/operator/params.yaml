@@ -62,6 +62,7 @@ parameters:
   - name: ADD_SERVICE_MONITOR
     description: "Create a service monitor for the kafka service"
     default: "false"
+    trigger: "service-monitor"
   - name: RUN_USER_WORKLOAD
     description: "Run dummy user workload on the kafka service"
     default: "false"
@@ -421,19 +422,23 @@ parameters:
     displayName: "Enable external advertised listeners"
     description: "Enable external advertised listeners"
     default: "false"
+    trigger: "external-access"
   - name: EXTERNAL_ADVERTISED_LISTENER_PORT
     displayName: "External advertised listener port"
     description: "External advertised listener port"
     default: "9097"
+    trigger: "external-access"
   - name: EXTERNAL_ADVERTISED_LISTENER_TYPE
     displayName: "External advertised listener load-balancer type"
     description: |
         External advertised listener load-balancer type, by default its using Node ports.
         Valid values are "NodePort" and "LoadBalancer"
     default: "NodePort"
+    trigger: "external-access"
   - name: EXTERNAL_NODE_PORT
     default: "30902"
     displayName: "External Node Port starting value."
+    trigger: "external-access"
   - name: FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS
     displayName: "fetch.purgatory.purge.interval.requests"
     description: "The purge interval (in number of requests) of the fetch request purgatory"

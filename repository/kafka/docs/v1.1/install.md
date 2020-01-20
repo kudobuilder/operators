@@ -20,7 +20,7 @@ kubectl kudo install zookeeper --instance=zk
 Please read the [limitations](./limitations.md) docs before creating the KUDO Kafka cluster. 
 
 ```
-kubectl kudo install kafka --instance=kafka
+kubectl kudo install kafka
 ```
 
 Verify the if the deploy plan for `--instance=kafka` is complete.

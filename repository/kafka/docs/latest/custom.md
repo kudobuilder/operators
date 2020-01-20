@@ -28,14 +28,14 @@ data:
 Create the ConfigMap in the namespace we will have the KUDO Kafka cluster
 
 ```
-> kubectl create -f custom-configuration.yaml -n kudo-kafka
+$ kubectl create -f custom-configuration.yaml -n kudo-kafka
 configmap/custom-configuration created
 ```
 
 Verify the ConfigMap is created correctly 
 
 ```
-> kubectl get configmap custom-configuration -n kudo-kafka -o yaml
+$ kubectl get configmap custom-configuration -n kudo-kafka -o yaml
 apiVersion: v1
 data:
   server.properties: |
@@ -54,7 +54,7 @@ metadata:
 Now we are ready to start the KUDO Kafka cluster with custom configuration to be used with default tuned configuration. 
 
 ```
-kubectl kudo install kafka \
+$ kubectl kudo install kafka \
     --instance=kafka --namespace=kudo-kafka \
     -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
     -p BROKER_COUNT=3 \
@@ -64,7 +64,7 @@ kubectl kudo install kafka \
 Verify in the logs if the custom configuration is being used in the Apache Kafka brokers and the `KafkaConfig` is correctly using `connection.failed.authentication.delay.ms` with value of `300` 
 
 ```
-> kubectl logs kafka-kafka-0 -n kudo-kafka
+$ kubectl logs kafka-kafka-0 -n kudo-kafka
 [2019-10-21 13:46:58,325] Appending custom configuration file to the server.properties...
 ssl.secure.random.implementation=SHA1PRNG
 connection.failed.authentication.delay.ms=300
@@ -83,14 +83,14 @@ The KUDO Kafka custom configuration ConfigMap isn't watched by the KUDO controll
 Edit the configmap with changes we want to rollout:
 
 ```
-> kubectl edit configmap custom-configuration -n kudo-kafka
+$ kubectl edit configmap custom-configuration -n kudo-kafka
 configmap/custom-configuration edited
 ```
 
 Perform a rolling restart on the statefulset to reload the configmap.
 
 ```
-> kubectl rollout restart statefulset kafka-kafka -n kudo-kafka
+$ kubectl rollout restart statefulset kafka-kafka -n kudo-kafka
 statefulset.apps/kafka-kafka restarted
 ```
 
@@ -133,14 +133,14 @@ To have KUDO Kafka detect correctly the custom metrics reporter configuration `d
 Create the ConfigMap in the namespace we will have the KUDO Kafka cluster
 
 ```
-> kubectl create -f metrics-configuration.yaml -n kudo-kafka
+$ kubectl create -f metrics-configuration.yaml -n kudo-kafka
 configmap/metrics-config created
 ```
 
 Verify the ConfigMap is created correctly 
 
 ```
-> kubectl get configmap metrics-config -n kudo-kafka -o yaml
+$ kubectl get configmap metrics-config -n kudo-kafka -o yaml
 apiVersion: v1
 data:
   metrics.properties: |
@@ -166,7 +166,7 @@ metadata:
 Now we are ready to start the KUDO Kafka cluster with custom metrics reporter configuration
 
 ```
-> kubectl kudo install kafka \
+$ kubectl kudo install kafka \
     --instance=kafka --namespace=kudo-kafka \
     -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
     -p BROKER_COUNT=3 \
@@ -176,7 +176,7 @@ Now we are ready to start the KUDO Kafka cluster with custom metrics reporter co
 Verify that brokers have the correct metrics reporter configuration
 
 ```
-> kubectl exec -ti kafka-kafka-0 cat /metrics/metrics.properties
+$ kubectl exec -ti kafka-kafka-0 cat /metrics/metrics.properties
 rules:
     # Special cases and very specific rules
     - pattern : kafka.server<type=(.+), name=(.+), clientId=(.+), topic=(.+), partition=(.*)><>Value
@@ -195,13 +195,13 @@ Like the custom configuration the custom metrics reporter is also not watched by
 Edit the configmap with changes we want to rollout:
 
 ```
-> kubectl edit configmap metrics-config -n kudo-kafka
+$ kubectl edit configmap metrics-config -n kudo-kafka
 configmap/metrics-config edited
 ```
 
 Perform a rolling restart on the statefulset to reload the configmap.
 
 ```
-> kubectl rollout restart statefulset kafka-kafka -n kudo-kafka
+$ kubectl rollout restart statefulset kafka-kafka -n kudo-kafka
 statefulset.apps/kafka-kafka restarted
 ```

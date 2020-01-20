@@ -17,7 +17,7 @@ This document optimizes for **data durability over performance**.
 Verify if there is a storage class installed in the Kubernetes cluster. In this example we will use the `aws-ebs-csi-driver` as the storage class reference.
 
 ```
-> kubectl get sc
+$ kubectl get sc
 NAME                             PROVISIONER       AGE
 awsebscsiprovisioner (default)   ebs.csi.aws.com   2d
 ```
@@ -27,7 +27,7 @@ awsebscsiprovisioner (default)   ebs.csi.aws.com   2d
 Verify if the storage class has the option `AllowVolumeExpansion` and is set to `true`.
 
 ```
-> kubectl describe sc awsebscsiprovisioner
+$ kubectl describe sc awsebscsiprovisioner
 Name:                  awsebscsiprovisioner
 IsDefaultClass:        Yes
 Annotations:           kubernetes.io/description=AWS EBS CSI provisioner StorageClass,storageclass.kubernetes.io/is-default-class=true
@@ -57,7 +57,7 @@ If the `StorageClass` is to be shared between many users, a common practice is t
 Let's see an example of a 3-broker KUDO Kafka cluster's `PersistentVolumes` where the `StorageClass` default `ReclaimPolicy` is `Delete` 
 
 ```
-> kubectl get pv
+$ kubectl get pv
 NAME                                       CAPACITY   ACCESS MODES   RECLAIM POLICY   STATUS   CLAIM                                                              STORAGECLASS           REASON   AGE
 pvc-6a9e69f4-b807-440f-b190-357c109e8ad9   5Gi        RWO            Delete           Bound    default/kafka-datadir-kafka-kafka-0                                awsebscsiprovisioner            18h
 pvc-8602a698-14a0-4c3d-85e6-67eb6da80a5d   5Gi        RWO            Delete           Bound    default/kafka-datadir-kafka-kafka-2                                awsebscsiprovisioner            18h
@@ -67,9 +67,9 @@ pvc-de527673-8bee-4e38-9e6d-399ec07c2728   5Gi        RWO            Delete     
 We can patch the `PersistentVolumes` to use the `ReclaimPolicy` of `Retain`
 
 ```
-kubectl patch pv pvc-6a9e69f4-b807-440f-b190-357c109e8ad9 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-kubectl patch pv pvc-8602a698-14a0-4c3d-85e6-67eb6da80a5d -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
-kubectl patch pv pvc-de527673-8bee-4e38-9e6d-399ec07c2728 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+$ kubectl patch pv pvc-6a9e69f4-b807-440f-b190-357c109e8ad9 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+$ kubectl patch pv pvc-8602a698-14a0-4c3d-85e6-67eb6da80a5d -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
+$ kubectl patch pv pvc-de527673-8bee-4e38-9e6d-399ec07c2728 -p '{"spec":{"persistentVolumeReclaimPolicy":"Retain"}}'
 
 persistentvolume/pvc-6a9e69f4-b807-440f-b190-357c109e8ad9 patched
 persistentvolume/pvc-8602a698-14a0-4c3d-85e6-67eb6da80a5d patched
@@ -79,7 +79,7 @@ persistentvolume/pvc-de527673-8bee-4e38-9e6d-399ec07c2728 patched
 Verify the `PersistentVolumes` `ReclaimPolicy` has been changed for all brokers:
 
 ```
-> kubectl get pv
+$ kubectl get pv
 pvc-6a9e69f4-b807-440f-b190-357c109e8ad9   5Gi        RWO            Retain           Bound    default/kafka-datadir-kafka-kafka-0                                awsebscsiprovisioner            18h
 pvc-8602a698-14a0-4c3d-85e6-67eb6da80a5d   5Gi        RWO            Retain           Bound    default/kafka-datadir-kafka-kafka-2                                awsebscsiprovisioner            18h
 pvc-de527673-8bee-4e38-9e6d-399ec07c2728   5Gi        RWO            Retain           Bound    default/kafka-datadir-kafka-kafka-1                                awsebscsiprovisioner            18h
@@ -152,7 +152,7 @@ BACKGROUND_THREADS=10
 ### Run the KUDO Kafka with tuned parameters
 
 ```
-kubectl kudo install kafka \
+$ kubectl kudo install kafka \
     --instance=kafka --namespace=kudo-kafka -p ZOOKEEPER_URI=$ZOOKEEPER_URI \
     -p BROKER_CPUS=2000m \
     -p BROKER_COUNT=5 \

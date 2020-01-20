@@ -1,6 +1,6 @@
 apiVersion: kudo.dev/v1beta1
 name: "kafka"
-operatorVersion: "1.2.0"
+operatorVersion: "1.2.1"
 kudoVersion: 0.10.0
 kubernetesVersion: 1.14.8
 appVersion: 2.4.0
@@ -15,23 +15,7 @@ tasks:
     kind: Apply
     spec:
       resources:
-        - serviceaccount.yaml
-        - role.yaml
-        - rolebinding.yaml
-        - clusterrole.yaml
-        - clusterrolebinding.yaml
-        - service.yaml
-        - external-service.yaml
         - pdb.yaml
-        - server.properties.yaml
-        - bootstrap.yaml
-        - metrics-config.yaml
-        - health-check.yaml
-        - enable-tls.yaml
-        - jaas-config.yaml
-        - krb5-config.yaml
-        - service-monitor.yaml
-        - user-workload.yaml
         - statefulset.yaml
   - name: mirrormaker
     kind: Apply
@@ -39,6 +23,38 @@ tasks:
       resources:
         - mirror-maker-config.yaml
         - mirror-maker.yaml
+  - name: user-workload
+    kind: Apply
+    spec:
+      resources:
+      - user-workload.yaml
+  - name: service
+    kind: Apply
+    spec:
+      resources:
+      - service.yaml
+      - service-monitor.yaml
+  - name: external-access
+    kind: Apply
+    spec:
+      resources:
+      - clusterrole.yaml
+      - clusterrolebinding.yaml
+      - external-service.yaml
+  - name: configuration
+    kind: Apply
+    spec:
+      resources:
+      - serviceaccount.yaml
+      - rolebinding.yaml
+      - role.yaml
+      - jaas-config.yaml
+      - krb5-config.yaml
+      - server.properties.yaml
+      - bootstrap.yaml
+      - metrics-config.yaml
+      - health-check.yaml
+      - enable-tls.yaml
   - name: not-allowed
     kind: Apply
     spec:
@@ -50,9 +66,20 @@ plans:
       - name: deploy-kafka
         strategy: serial
         steps:
-          - name: deploy
+          - name: configuration
+            tasks:
+              - configuration
+          - name: service
+            tasks:
+              - service
+          - name: app
             tasks:
               - deploy
+          - name: addons
+            tasks:
+              - external-access
+              - mirrormaker
+              - user-workload
   mirrormaker:
     strategy: serial
     phases:
@@ -62,6 +89,25 @@ plans:
           - name: deploy
             tasks:
               - mirrormaker
+  external-access:
+    strategy: serial
+    phases:
+      - name: external-access-resources
+        strategy: serial
+        steps:
+          - name: external
+            tasks:
+              - external-access
+              - deploy
+  service-monitor:
+    strategy: serial
+    phases:
+      - name: enable-service-monitor
+        strategy: serial
+        steps:
+        - name: add-service-monitor
+          tasks:
+            - service
   # this plan is triggered when some parameter present in limitations is updated
   # https://github.com/kudobuilder/operators/blob/master/repository/kafka/docs/latest/limitations.md
   not-allowed:
