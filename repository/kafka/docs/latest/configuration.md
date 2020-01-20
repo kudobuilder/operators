@@ -75,7 +75,7 @@ You can install the KUDO Zookeeper or you can use any other Zookeeper cluster yo
 You can configure KUDO Kafka to use Zookeeper using the parameter `ZOOKEEPER_URI`
 Let's see this with an example:
 ```
-$ kubectl kudo install kafka --instance=my-kafka-cluster \
+$ kubectl kudo install kafka --instance=my-kafka-name \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
 ```
 In the above example KUDO Kafka cluster will connect to the Zookeeper cluster available via following DNS names `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181`
@@ -87,7 +87,7 @@ To avoid this to happen, KUDO Kafka persists its cluster topology in zk node wit
 
 Let's for example see what will the zk path look like in the above example where we just configured `ZOOKEEPER_URI`:
 ```
-$ kubectl kudo install kafka --instance=my-kafka-cluster \
+$ kubectl kudo install kafka --instance=my-kafka-name \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
 ```
 
