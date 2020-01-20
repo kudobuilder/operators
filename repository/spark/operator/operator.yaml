@@ -7,22 +7,34 @@ appVersion: "2.4.3"
 maintainers:
   - name: Anton Kirillov
     email: akirillov@d2iq.com
-  - name: Uladzimir Krautsou
-    email: ukrautsou.c@d2iq.com
+  - name: Alexander Lembiewski
+    email: alembiyeuski.c@d2iq.com
 url: https://spark.apache.org/
 tasks:
-  - name: deploy
+  - name: deploy-cluster-scoped-resources
     kind: Apply
     spec:
       resources:
         - spark-operator-crds.yaml
         - spark-operator-rbac.yaml
+  - name: deploy-sa
+    kind: Apply
+    spec:
+      resources:
         - spark-operator-serviceaccount.yaml
         - spark-rbac.yaml
         - spark-serviceaccount.yaml
+  - name: deploy-webhook
+    kind: Apply
+    spec:
+      resources:
         - webhook-init-job.yaml
-        - spark-operator-deployment.yaml
         - webhook-service.yaml
+  - name: deploy-spark
+    kind: Apply
+    spec:
+      resources:
+        - spark-operator-deployment.yaml
         - spark-history-server-deployment.yaml
         - spark-history-server-service.yaml
         - spark-monitoring.yaml
@@ -31,9 +43,16 @@ plans:
   deploy:
     strategy: serial
     phases:
-      - name: deploy-spark
+      - name: deploy-spark-operator
         strategy: serial
         steps:
-          - name: deploy
+          - name: deploy-cluster-scoped-resources
             tasks:
-              - deploy
+              - deploy-cluster-scoped-resources
+          - name: deploy-sa
+            tasks:
+              - deploy-sa
+          - name: deploy-spark
+            tasks:
+              - deploy-webhook
+              - deploy-spark
