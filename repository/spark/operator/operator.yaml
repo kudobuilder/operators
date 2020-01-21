@@ -30,7 +30,7 @@ tasks:
       resources:
         - webhook-init-job.yaml
         - webhook-service.yaml
-  - name: deploy-spark
+  - name: deploy-spark-components
     kind: Apply
     spec:
       resources:
@@ -52,7 +52,9 @@ plans:
           - name: deploy-sa
             tasks:
               - deploy-sa
-          - name: deploy-spark
+          - name: deploy-webhook
             tasks:
               - deploy-webhook
-              - deploy-spark
+          - name: deploy-spark-components
+            tasks:
+              - deploy-spark-components
