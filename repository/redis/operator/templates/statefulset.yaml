@@ -1,23 +1,26 @@
 apiVersion: apps/v1
 kind: StatefulSet
 metadata:
-  name: {{ .Name }}
   namespace: {{ .Namespace }}
+  name: {{ .Name }}-{{ .OperatorName }}
   labels:
     app: redis
     redis: {{ .OperatorName }}
+    instance: {{ .Name }}
 spec:
-  serviceName: {{ .Name }}-svc
+  serviceName: {{ .Name }}-{{ .OperatorName }}-svc
   replicas: {{ .Params.masters | mul 2 }}
   selector:
     matchLabels:
       app: redis
       redis: {{ .OperatorName }}
+      instance: {{ .Name }}
   template:
     metadata:
       labels:
         app: redis
         redis: {{ .OperatorName }}
+        instance: {{ .Name }}
     spec:
       containers:
       - name: redis
@@ -43,7 +46,7 @@ spec:
       volumes:
       - name: conf
         configMap:
-          name: {{ .Name }}-redis
+          name: {{ .Name }}-{{ .OperatorName }}
           defaultMode: 0755
   volumeClaimTemplates:
   - metadata:
