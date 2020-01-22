@@ -4,8 +4,10 @@
 
 KUDO Kafka operator comes with builtin integration of [Kafka MirrorMaker](https://cwiki.apache.org/confluence/pages/viewpage.action?pageId=27846330).
 
-MirrorMaker is a tool to mirror a source Kafka cluster into a target (mirror) Kafka cluster. The tool uses a Kafka consumer to consume messages from the
-source cluster, and re-publishes those messages to the (target) cluster using an embedded Kafka producer.
+MirrorMaker is a tool to mirror a source Kafka cluster into a target (mirror) Kafka cluster.
+This tool uses a Kafka consumer and a Kafka producer.
+The consumer consumes messages from the source cluster
+The producer re-publishes those messages to the target cluster.
 
 MirrorMaker integration is disabled by default.
 
@@ -22,7 +24,7 @@ The following are necessary for this runbook:
 
 ## Steps
 
-## Preparation
+### Preparation
 
 ### 1. Set the shell variables
 
@@ -35,8 +37,10 @@ this_namespace_name=qa
 
 You also need the list of bootstrap servers of the `other` instance.
 
-If the `other` instance is also a KUDO Kafka instance running in the same kubernetes
-cluster, you can generate the list using the following command:
+**If the `other` instance is also a KUDO Kafka instance running in the same kubernetes
+cluster:**
+ 
+You can generate the list using the following commands:
 ```bash
 other_instance_name=kafka-prod
 other_namespace_name=production
@@ -53,8 +57,8 @@ Example output:
 kafka-prod-kafka-0.kafka-prod-svc.production.svc.cluster.local:9092,kafka-prod-kafka-1.kafka-prod-svc.production.svc.cluster.local:9092,kafka-prod-kafka-2.kafka-prod-svc.production.svc.cluster.local:9092
 ```
 
-If the `other` instance is *not* a KUDO Kafka instance, then please refer to its documentation regarding how
-to retrieve a valid list of bootstrap servers reachable from `this` instance.
+**Otherwise, please refer to its documentation regarding how
+to retrieve a valid list of bootstrap servers reachable from `this` instance.**
 
 ```bash
 other_bootstrap_servers=other-server-1.example.com,other-server-2.example.com
@@ -86,7 +90,7 @@ Parameter `MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE` takes one of two values:
 
 ### Disable MirrorMaker
 
-If MirrorMaker is running in a Kafka operator instance then to disable that scale the MirrorMaker
+To disable MirrorMaker, scale the
 pod count to 0, using the following command:
 
 ```sh
@@ -106,5 +110,5 @@ kubectl kudo update --instance=$this_instance_name --namespace=$this_namespace_n
 ### Limitations
 
 Currently MirrorMaker works with Kafka protocol `PLAINTEXT` only. It will not work if Kerberos and or TLS is
-enabled in the Kafka instance (external included). Future releases of KUDO Kafka will provide enhancements to
+enabled in the Kafka instance (external included). Future releases of KUDO Kafka will
 address this limitation through a MirrorMaker operator.
