@@ -1,39 +1,99 @@
 apiVersion: kudo.dev/v1beta1
-name: "spark"
-operatorVersion: "beta1"
-kudoVersion: 0.10.0
+appVersion: 2.4.3
 kubernetesVersion: 1.15.0
-appVersion: "2.4.3"
+kudoVersion: 0.10.0
 maintainers:
-  - name: Anton Kirillov
-    email: akirillov@d2iq.com
-  - name: Uladzimir Krautsou
-    email: ukrautsou.c@d2iq.com
-url: https://spark.apache.org/
-tasks:
-  - name: deploy
-    kind: Apply
-    spec:
-      resources:
-        - spark-operator-crds.yaml
-        - spark-operator-rbac.yaml
-        - spark-operator-serviceaccount.yaml
-        - spark-rbac.yaml
-        - spark-serviceaccount.yaml
-        - webhook-init-job.yaml
-        - spark-operator-deployment.yaml
-        - webhook-service.yaml
-        - spark-history-server-deployment.yaml
-        - spark-history-server-service.yaml
-        - spark-monitoring.yaml
-
+- email: akirillov@d2iq.com
+  name: Anton Kirillov
+- email: ukrautsou.c@d2iq.com
+  name: Uladzimir Krautsou
+name: spark
+operatorVersion: beta1
 plans:
   deploy:
-    strategy: serial
     phases:
-      - name: deploy-spark
-        strategy: serial
-        steps:
-          - name: deploy
-            tasks:
-              - deploy
+    - name: preconditions
+      steps:
+      - name: crds
+        tasks:
+        - crds
+      - name: service-account
+        tasks:
+        - service-account
+      - name: rbac
+        tasks:
+        - rbac
+      strategy: serial
+    - name: spark
+      steps:
+      - name: spark
+        tasks:
+        - spark
+      strategy: serial
+    - name: webhook
+      steps:
+      - name: webhook
+        tasks:
+        - webhook
+      strategy: serial
+    - name: monitoring
+      steps:
+      - name: monitoring
+        tasks:
+        - monitoring
+      strategy: serial
+    - name: history
+      steps:
+      - name: history-deploy
+        tasks:
+        - history-deploy
+      - name: history-service
+        tasks:
+        - history-service
+      strategy: serial
+    strategy: serial
+tasks:
+- kind: Apply
+  name: crds
+  spec:
+    resources:
+    - spark-operator-crds.yaml
+- kind: Apply
+  name: service-account
+  spec:
+    resources:
+    - spark-serviceaccount.yaml
+    - spark-operator-serviceaccount.yaml
+- kind: Apply
+  name: rbac
+  spec:
+    resources:
+    - spark-operator-rbac.yaml
+    - spark-rbac.yaml
+- kind: Apply
+  name: spark
+  spec:
+    resources:
+    - spark-operator-deployment.yaml
+- kind: Apply
+  name: webhook
+  spec:
+    resources:
+    - webhook-init-job.yaml
+    - webhook-service.yaml
+- kind: Apply
+  name: monitoring
+  spec:
+    resources:
+    - spark-monitoring.yaml
+- kind: Apply
+  name: history-deploy
+  spec:
+    resources:
+    - spark-history-server-deployment.yaml
+- kind: Apply
+  name: history-service
+  spec:
+    resources:
+    - spark-history-server-service.yaml
+url: https://spark.apache.org/
