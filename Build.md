@@ -4,9 +4,9 @@ The repository build process is a 2 step process. First build the set of operato
 
 The "community" repository is the repository for all operators in the community and is a default location for all operator builds. The build process expects the following prerequisites:
 
-1. `kubectl-kudo` is in the path
-2. `bash` is the shell
-3. you have online web access to the "community" repository during the build process.
+1. `kubectl-kudo` and `bash` are in the path
+1. your working directory is the root of the checked out `operators` Git repository
+1. you have online web access to the "community" repository during the build process.
 
 ## Step 1: Build Operators
 
@@ -23,15 +23,15 @@ Another convention is to have a version number associated with the build using t
 `./build-operator.sh cassandra 3.11`
 
 **NOTES:**
-1. All builds will be under `build/repo` under the project
-1. All operator packages built will be under `build/repo`. If you want to add more than 1 operator, build multiple operator packages before building the repository index.
+1. Built artifacts will be put under `build/repo` in the current directory.
+1. If you want to add more than 1 operator, build multiple operator packages before building the repository index.
 3. There is no rebuild and if the operator already exists the build will fail.
 
 ## Step 2: Build Repository Index
 
 To build the repository index simple run `./build-community-repo.sh` or `make index`.
 
-This will build a `index.yaml` file under `build/repo`
+This will build an `index.yaml` file under `build/repo`.
 
 ## Clean the build
 

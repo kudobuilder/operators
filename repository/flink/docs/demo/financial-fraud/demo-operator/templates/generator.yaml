@@ -4,6 +4,9 @@ metadata:
   name: generator
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      generator: {{ .Name }}
   template:
     metadata:
       name: flink-demo-generator

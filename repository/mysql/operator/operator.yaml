@@ -1,7 +1,7 @@
 apiVersion: kudo.dev/v1beta1
 name: "mysql"
-version: "0.1.0"
-kudoVersion: 0.3.0
+operatorVersion: "0.2.0"
+kudoVersion: 0.10.0
 kubernetesVersion: 1.15.0
 appVersion: 5.7
 maintainers:
