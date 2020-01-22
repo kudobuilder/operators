@@ -8,6 +8,8 @@ By default, KUDO Kafka brokers use the plaintext protocol for its inter-broker c
 
 ### Enabling  TLS encryption
 
+#### Manually generating certificate
+
 Create the TLS certificate to be used for Kafka TLS encryptions
 
 ```
@@ -29,6 +31,19 @@ $ kubectl kudo install kafka \
     -p TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT=false \
     -p SSL_AUTHENTICATION_ENABLED=false \
     -p TLS_SECRET_NAME=kafka-tls
+```
+
+#### Using Auto certificate generation
+
+KUDO Kafka can automatically generate a CA certificate and create secrets which are then used by the brokers to set up Kafka transport encryption. 
+
+```
+kubectl kudo install kafka \
+    --instance=kafka --namespace=kudo-kafka \
+    -p TRANSPORT_ENCRYPTION_ENABLED=true \
+    -p TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT=false \
+    -p SSL_AUTHENTICATION_ENABLED=false \
+    -p USE_AUTO_TLS_CERTIFICATE=true
 ```
 
 ## Authentication
