@@ -6,7 +6,7 @@ KUDO Kafka operator comes with builtin integration of [Kafka MirrorMaker](https:
 
 MirrorMaker is a tool to mirror a source Kafka cluster into a target (mirror) Kafka cluster.
 This tool uses a Kafka consumer and a Kafka producer.
-The consumer consumes messages from the source cluster
+The consumer consumes messages from the source cluster.
 The producer re-publishes those messages to the target cluster.
 
 MirrorMaker integration is disabled by default.
@@ -28,7 +28,7 @@ The following are necessary for this runbook:
 
 ### 1. Set the shell variables
 
-The examples below assume that the instance and namespace names are stored in the following shell variables. With this assumptions met, you should be able to copy-paste the commands easily.
+The examples below assume the following shell variables. With this assumptions met, you should be able to copy-paste the commands easily.
 
 ```bash
 this_instance_name=kafka-qa
@@ -57,8 +57,10 @@ Example output:
 kafka-prod-kafka-0.kafka-prod-svc.production.svc.cluster.local:9092,kafka-prod-kafka-1.kafka-prod-svc.production.svc.cluster.local:9092,kafka-prod-kafka-2.kafka-prod-svc.production.svc.cluster.local:9092
 ```
 
-**Otherwise, please refer to its documentation regarding how
-to retrieve a valid list of bootstrap servers reachable from `this` instance.**
+**Otherwise:**
+
+Please refer to its documentation about how to retrieve a list of bootstrap servers.
+These need to be reachable from `this` instance.
 
 ```bash
 other_bootstrap_servers=other-server-1.example.com,other-server-2.example.com
@@ -80,12 +82,15 @@ the instance.
 
 Parameter `MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE` takes one of two values:
 
-1. `SOURCE`: The Kafka cluster defined by `MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS` will be
-   used as a source cluster from which MirrorMaker will consume all the topics and produce those
-   to our `kafka` cluster instance.
+1. `SOURCE`:
 
-2. `DESTINATION`: MirrorMaker will consume topics from `kafka` cluster instance and produce those
-   to the cluster defined by `MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS`.
+   MirrorMaker will consume topics from the Kafka cluster defined by `MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS`.
+   It will then produce those to `this` cluster.
+
+2. `DESTINATION`:
+ 
+   MirrorMaker will consume topics from `this` cluster.
+   It will then produce those to the cluster defined by `MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS`.
 
 
 ### Disable MirrorMaker
