@@ -30,7 +30,7 @@ spec:
             cpu: {{ .Params.CPUS_LIMIT }}
         ports:
         - containerPort: {{ .Params.SCHEMA_REGISTRY_PORT }}
-          name: confluent-schema-registry
+          name: sr-port
         env:
         - name: SCHEMA_REGISTRY_HOST_NAME
           value: {{ .Params.HOST_NAME }}
