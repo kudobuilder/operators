@@ -31,7 +31,7 @@ NAME                              READY   STATUS    RESTARTS   AGE
 kafka-kafka-0                     2/2     Running   0          32m
 kafka-kafka-1                     2/2     Running   0          32m
 kafka-kafka-2                     2/2     Running   0          31m
-schema-registry-random-pod-name	  1/1     Running   0          9m52s
+schema-registry-random-pod-name   1/1     Running   0          9m52s
 zk-zookeeper-0                    1/1     Running   0          4h8m
 zk-zookeeper-1                    1/1     Running   0          4h8m
 zk-zookeeper-2                    1/1     Running   0          4h8m
@@ -47,9 +47,10 @@ prop.property1=value1 prop.property2=value2
 ===> ENV Variables ...
 ```
 
-Bash into pod to see the actual properties file which contains all added custom configuration properties:
+Bash into pod to see the actual properties file which contains all added custom configuration properties. To bash into pod, use command `kubectl exec -ti <pod-name> bash`, For example:
 
 ```
+$ kubectl exec -ti schema-registry-random-pod-name bash
 root@schema-registry-random-pod-name:/# cat /etc/schema-registry/schema-registry.properties 
 host.name=confluent-schema-registry
 kafkastore.bootstrap.servers=kafka-kafka-0.kafka-svc:9093,kafka-kafka-1.kafka-svc:9093,kafka-kafka-2.kafka-svc:9093
