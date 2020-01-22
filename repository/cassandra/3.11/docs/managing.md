@@ -4,6 +4,7 @@
 
 - [Updating parameters](#updating-parameters)
 - [Upgrading](#upgrading)
+- [Accessing Cassandra](#accessing)
 - [Debugging](#debugging)
   - [Plan status](#plan-status)
   - [Get pods](#get-pods)
@@ -13,7 +14,7 @@
   - [KUDO controller/manager logs](#kudo-controllermanager-logs)
   - [Get endpoints](#get-endpoints)
   - [Kubernetes events in the instance namespace](#kubernetes-events-in-the-instance-namespace)
-  - [Uninstall an operator instance](#uninstall-an-operator-instance)
+- [Uninstall an operator instance](#uninstall-an-operator-instance)
 
 ## Updating parameters
 
@@ -75,7 +76,11 @@ configurable settings.
 
 ## Upgrading
 
-TODO
+See the [document on upgrading](upgrading.md).
+
+## Accessing
+
+See the [document on accessing Cassandra](accessing.md).
 
 ## Debugging
 
@@ -152,7 +157,7 @@ kubectl get events \
         -n "${instance_namespace}"
 ```
 
-### Uninstall an operator instance
+## Uninstall an operator instance
 
 This will uninstall the instance and delete all its persistent volume claims
 causing **irreversible data loss**.

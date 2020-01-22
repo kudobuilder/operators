@@ -20,7 +20,7 @@ tasks:
         - jvm-options.yaml
         - stateful-set.yaml
         - cassandra-exporter-config-yml.yaml
-        - service-monitor-yaml.yaml
+        - service-monitor.yaml
         - node-readiness-probe-sh.yaml
 
 plans:

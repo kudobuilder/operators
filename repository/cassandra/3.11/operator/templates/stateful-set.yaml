@@ -20,6 +20,7 @@ spec:
       labels:
         app: {{ .Name }}
         cassandra: {{ .OperatorName }}
+        kudo.dev/instance: {{ .Name }}
     spec:
       securityContext:
         # FIXME(mpereira): are the two settings below necessary?
@@ -222,6 +223,6 @@ spec:
         resources:
           requests:
             storage: "{{ .Params.NODE_DISK_SIZE_GIB }}Gi"
-        {{ if eq .Params.NODE_STORAGE_CLASS "true" }}
+        {{ if .Params.NODE_STORAGE_CLASS }}
         storageClassName: {{ .Params.NODE_STORAGE_CLASS }}
         {{ end }}

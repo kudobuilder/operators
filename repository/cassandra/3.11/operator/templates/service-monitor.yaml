@@ -16,5 +16,6 @@ spec:
       - {{ .Namespace }}
   selector:
     matchLabels:
+      kudo.dev/instance: {{ .Name }}
       kudo.dev/servicemonitor: "true"
 {{ end }}
