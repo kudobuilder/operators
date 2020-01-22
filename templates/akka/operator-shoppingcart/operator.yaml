@@ -1,7 +1,8 @@
+apiVersion: kudo.dev/v1beta1
 name: "shoppingcartapp"
-version: "0.1.0"
-kudoVersion: 0.7.5
-kubernetesVersion: 1.15.0
+operatorVersion: "0.1.0"
+kudoVersion: 0.10.0
+kubernetesVersion: 1.16.0
 maintainers:
   - name: Michael Beisiegel
     email: michael.beisiegel@gmail.com
