@@ -20,7 +20,11 @@ spec:
       containers:
       - name: confluent-schema-registry
         image: confluentinc/cp-schema-registry:5.3.2
-        command: ["/etc/confluent/docker/run"]
+        command:
+          - bash
+          - -c
+        args:
+          - /bootstrap/bootstrap.sh;
         resources:
           requests:
             memory: {{ .Params.MEMORY }}
@@ -36,6 +40,13 @@ spec:
           value: {{ .Params.HOST_NAME }}
         - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
           value: {{ .Params.KAFKA_BOOTSTRAP_SERVERS }}
+        volumeMounts:
+        - name: bootstrap
+          mountPath: /bootstrap
+        {{ if .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          mountPath: /custom-configuration
+        {{ end }}
         livenessProbe:
           initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
           periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
@@ -43,3 +54,13 @@ spec:
           httpGet:
             path: /
             port: {{ .Params.SCHEMA_REGISTRY_PORT }}
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: {{ .Name }}-bootstrap
+            defaultMode: 0755
+        {{ if .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          configMap:
+            name: {{ .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
+        {{ end }}
