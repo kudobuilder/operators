@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-bootstrap
+  namespace: {{ .Namespace }}
+data:
+  bootstrap.sh: |
+    #!/usr/bin/env bash
+
+    {{ if .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+    CUSTOM_CONFIGURATION_FILE=$(ls -d /custom-configuration/* | head -n 1)
+    cp $CUSTOM_CONFIGURATION_FILE /tmp/custom-configuration
+    echo "Appending custom configuration file $CUSTOM_CONFIGURATION_FILE to the kafka-rest.properties..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1
+    RP_CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration)
+    echo ${RP_CUSTOM_CONFIGURATION}
+    cat >> /etc/confluent/docker/kafka-rest.properties.template <<EOF
+    ${RP_CUSTOM_CONFIGURATION}
+    EOF
+
+    {{ end }}
+
+    /etc/confluent/docker/run

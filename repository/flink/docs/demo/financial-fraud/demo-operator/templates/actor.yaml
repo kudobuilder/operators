@@ -4,6 +4,9 @@ metadata:
   name: actor
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      actor: {{ .Name }}
   template:
     metadata:
       name: flink-demo-actor

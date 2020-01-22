@@ -8,7 +8,7 @@ metadata:
   name: flink
 spec:
   operatorVersion:
-    name: flink-0.1.2
+    name: flink-0.2.1
     namespace: default
     type: OperatorVersions
   parameters:

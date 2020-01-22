@@ -1,0 +1,47 @@
+{{- if eq .Params.enableMetrics "true" }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-operator-metrics
+  namespace: {{ .Namespace }}
+  labels:
+    spark/servicemonitor: "true"
+spec:
+  ports:
+    - port: {{ .Params.operatorMetricsPort }}
+      name: metrics
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: spark
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: spark-application-metrics
+  namespace: {{ .Namespace }}
+  labels:
+    spark/servicemonitor: "true"
+spec:
+  ports:
+    - port: {{ .Params.appMetricsPort }}
+      name: metrics
+  clusterIP: None
+  selector:
+    metrics-exposed: "true"
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  labels:
+    app: prometheus-operator
+    release: prometheus-kubeaddons
+  name: spark-monitor
+  namespace: {{ .Namespace }}
+spec:
+  endpoints:
+    - interval: {{ .Params.metricsPollingInterval }}
+      port: metrics
+  selector:
+    matchLabels:
+      spark/servicemonitor: "true"
+{{- end }}

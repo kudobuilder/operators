@@ -20,6 +20,7 @@ spec:
       labels:
         app: kafka
         kafka: {{ .OperatorName }}
+        kudo.dev/instance: {{ .Name }}
     spec:
       terminationGracePeriodSeconds: 300
       serviceAccountName: {{ .Name }}

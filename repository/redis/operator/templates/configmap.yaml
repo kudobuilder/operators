@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: redis
+  name: {{ .Name }}-redis
 data:
   update-node.sh: |
     #!/bin/sh

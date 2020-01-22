@@ -53,6 +53,16 @@ parameters:
     default: 10254
     displayName: "Spark Operator Metrics port"
 
+  - name: appMetricsPort
+    desription: "The port the JMX exporter Java agent binds to for driver/executor pods"
+    default: 8090
+    displayName: "Spark Application Metrics port"
+
+  - name: metricsPollingInterval
+    description: "Interval at which metrics should be scraped"
+    default: "5s"
+    displayName: "Metrics polling interval"
+
   - name: metricsEndpoint
     description: "Metrics endpoint"
     default: "/metrics"

@@ -7,3 +7,7 @@ parameters:
     trigger: backup
   - name: PASSWORD
     default: "password"
+  - name: RESTORE_FILE
+    default: "backup.sql"
+    description: "Filename to restore the db from"
+    trigger: restore
