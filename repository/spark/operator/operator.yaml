@@ -3,10 +3,12 @@ appVersion: 2.4.3
 kubernetesVersion: 1.15.0
 kudoVersion: 0.10.0
 maintainers:
-- email: akirillov@d2iq.com
-  name: Anton Kirillov
-- email: ukrautsou.c@d2iq.com
-  name: Uladzimir Krautsou
+- name: Anton Kirillov
+  email: akirillov@d2iq.com
+- name: Alexander Lembiewski
+  email: alembiyeuski.c@d2iq.com
+- name: Ken Sipe
+  email: ken@d2iq.com
 name: spark
 operatorVersion: beta1
 plans:
