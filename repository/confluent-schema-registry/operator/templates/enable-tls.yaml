@@ -17,7 +17,7 @@ data:
     cp /etc/tls/certs/tls.crt /tmp/kafka/tls/tls.crt
     cp /etc/tls/certs/tls.key /tmp/kafka/tls/tls.key
     # GENERATE KEYSTORE AND TRUSTSTORE
-    keytool -keystore kafka.server.keystore.jks \
+    keytool -keystore kafka.client.keystore.jks \
             -alias ${1} \
             -validity 900 \
             -genkey \
@@ -40,7 +40,7 @@ data:
             -storepass changeit \
             -noprompt
     # Create a certificate signing request
-    keytool -keystore kafka.server.keystore.jks \
+    keytool -keystore kafka.client.keystore.jks \
             -alias ${1} \
             -certreq \
             -file cert-req \
@@ -72,22 +72,20 @@ data:
         -passin pass:changeit \
         -extfile csr.conf \
         -extensions req_ext
-    # Import the CA cert into server keystore
-    keytool -keystore kafka.server.keystore.jks \
+    # Import the CA cert into client keystore
+    keytool -keystore kafka.client.keystore.jks \
             -alias CARoot \
             -import \
             -file /tmp/kafka/tls/tls.crt \
             -storepass changeit -noprompt
-    # Import the signed certificate into server keystore
-    keytool -keystore kafka.server.keystore.jks \
+    # Import the signed certificate into client keystore
+    keytool -keystore kafka.client.keystore.jks \
             -alias ${1} \
             -import \
             -file cert-signed \
             -storepass changeit -noprompt
     echo "Here I'll print file list"
     ls -la
-    stat kafka.server.keystore.jks 
+    stat kafka.client.keystore.jks 
     popd
     popd
-
-
