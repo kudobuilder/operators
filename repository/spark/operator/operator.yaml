@@ -26,17 +26,17 @@ plans:
         tasks:
         - rbac
       strategy: serial
-    - name: spark
-      steps:
-      - name: spark
-        tasks:
-        - spark
-      strategy: serial
     - name: webhook
       steps:
       - name: webhook
         tasks:
         - webhook
+      strategy: serial
+    - name: spark
+      steps:
+      - name: spark
+        tasks:
+        - spark
       strategy: serial
     - name: monitoring
       steps:
