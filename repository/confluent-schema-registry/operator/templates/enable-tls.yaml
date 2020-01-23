@@ -84,8 +84,5 @@ data:
             -import \
             -file cert-signed \
             -storepass changeit -noprompt
-    echo "Here I'll print file list"
-    ls -la
-    stat kafka.client.keystore.jks 
     popd
     popd
