@@ -1,0 +1,93 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-enable-tls
+  namespace: {{ .Namespace }}
+data:
+  enable-tls.sh: |
+    #!/usr/bin/env bash
+    # set -e
+    mkdir /tmp/kafka
+    mkdir /tmp/kafka/tls
+    pushd /tmp/kafka
+    mkdir -p tls
+    pushd tls
+    rm -rf *
+    # COPY CA AUTHORITY CERTIFICATE AND KEY OBTAINED FROM SECRETS
+    cp /etc/tls/certs/tls.crt /tmp/kafka/tls/tls.crt
+    cp /etc/tls/certs/tls.key /tmp/kafka/tls/tls.key
+    # GENERATE KEYSTORE AND TRUSTSTORE
+    keytool -keystore kafka.server.keystore.jks \
+            -alias ${1} \
+            -validity 900 \
+            -genkey \
+            -keyalg RSA \
+            -dname "CN=${1}" \
+            -storepass changeit \
+            -keypass changeit \
+            -noprompt
+    # Add the CACert to the client and server truststores so that clients and server can trust this CA
+    keytool -keystore kafka.client.truststore.jks \
+            -alias CARoot \
+            -import \
+            -file /tmp/kafka/tls/tls.crt \
+            -storepass changeit \
+            -noprompt
+    keytool -keystore kafka.server.truststore.jks \
+            -alias CARoot \
+            -importcert \
+            -file /tmp/kafka/tls/tls.crt \
+            -storepass changeit \
+            -noprompt
+    # Create a certificate signing request
+    keytool -keystore kafka.server.keystore.jks \
+            -alias ${1} \
+            -certreq \
+            -file cert-req \
+            -storepass changeit
+    # Add openssl certificate signing extension config file
+    cat > csr.conf <<EOF
+    [ req_ext ]
+    subjectAltName = @alt_names
+    extendedKeyUsage = serverAuth, clientAuth
+
+    [ alt_names ]
+    DNS.1 = localhost
+    DNS.2 = 127.0.0.1
+    DNS.3 = $(hostname -f)
+    DNS.4 = $(hostname -i)
+    DNS.5 = $(hostname)
+    IP.1 = 0.0.0.0
+    IP.2 = 127.0.0.1
+    IP.3 = $(hostname -i)
+    EOF
+    # Sign the certificate with the CA & CAKey
+    openssl x509 -req \
+        -CA /tmp/kafka/tls/tls.crt \
+        -CAkey /tmp/kafka/tls/tls.key \
+        -in cert-req \
+        -out cert-signed \
+        -days 900 \
+        -CAcreateserial \
+        -passin pass:changeit \
+        -extfile csr.conf \
+        -extensions req_ext
+    # Import the CA cert into server keystore
+    keytool -keystore kafka.server.keystore.jks \
+            -alias CARoot \
+            -import \
+            -file /tmp/kafka/tls/tls.crt \
+            -storepass changeit -noprompt
+    # Import the signed certificate into server keystore
+    keytool -keystore kafka.server.keystore.jks \
+            -alias ${1} \
+            -import \
+            -file cert-signed \
+            -storepass changeit -noprompt
+    echo "Here I'll print file list"
+    ls -la
+    stat kafka.server.keystore.jks 
+    popd
+    popd
+
+

@@ -16,6 +16,7 @@ tasks:
     spec:
       resources:
         - service.yaml
+        - enable-tls.yaml
         - bootstrap.yaml
         - deployment.yaml
 plans:

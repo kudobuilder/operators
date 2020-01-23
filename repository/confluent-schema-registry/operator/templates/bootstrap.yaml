@@ -19,4 +19,8 @@ data:
 
     {{ end }}
 
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        /etc/tls/bin/enable-tls.sh SchemaRegistryClient
+    {{ end }}
+
     /etc/confluent/docker/run

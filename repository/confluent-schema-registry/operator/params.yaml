@@ -40,3 +40,11 @@ parameters:
     displayName: "custom server properties configmap name"
     description: "The properties present in this configmap will be appended to the Schema Registry properties"
     required: false
+  - name: TRANSPORT_ENCRYPTION_ENABLED
+    displayName: "Enable transport encryption (TLS)"
+    description: "Enable transport encryption (TLS)"
+    default: "false"
+  - name: TLS_SECRET_NAME
+    default: "kafka-tls"
+    displayName: "kafka-tls"
+    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
