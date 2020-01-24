@@ -43,3 +43,18 @@ parameters:
     displayName: "custom server properties configmap name"
     description: "The properties present in this configmap will be appended to the Rest Proxy properties"
     required: false
+  - name: TRANSPORT_ENCRYPTION_ENABLED
+    displayName: "Enable transport encryption (TLS)"
+    description: "Enable transport encryption (TLS)"
+    default: "false"
+  - name: TLS_SECRET_NAME
+    default: "confluent-rest-proxy-tls"
+    displayName: "confluent-rest-proxy-tls"
+    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to rest proxy."
+  - name: TRANSPORT_ENCRYPTION_CIPHERS
+    displayName: "Cipher Suite Names"
+    description: "Comma-separated list of JSSE Cipher Suite Names"
+    default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - name: SSL_AUTHENTICATION_CLIENT_NAME
+    default: "RestProxyClient"
+    

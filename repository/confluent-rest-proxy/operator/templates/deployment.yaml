@@ -49,6 +49,12 @@ spec:
         - name: custom-configuration
           mountPath: /custom-configuration
         {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        - name: confluent-rest-proxy-tls
+          mountPath: /etc/tls/certs
+        - name: enable-tls
+          mountPath: /etc/tls/bin
+        {{ end }}
         livenessProbe:
           initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
           periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
@@ -65,4 +71,13 @@ spec:
         - name: custom-configuration
           configMap:
             name: {{ .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        - name: confluent-rest-proxy-tls
+          secret:
+            secretName: {{ .Params.TLS_SECRET_NAME }}
+        - name: enable-tls
+          configMap:
+            name:  {{ .Name }}-enable-tls
+            defaultMode: 0755
         {{ end }}

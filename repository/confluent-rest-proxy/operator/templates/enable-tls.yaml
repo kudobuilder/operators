@@ -1,0 +1,97 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-enable-tls
+  namespace: {{ .Namespace }}
+data:
+  enable-tls.sh: |
+    #!/usr/bin/env bash
+
+    set -euxo pipefail
+    
+    mkdir -p /tmp/confluent-rest-proxy/tls
+    pushd /tmp/confluent-rest-proxy/tls
+    
+    readonly certificate="tls.crt"
+    readonly private_key="tls.key"
+    
+    # In days.
+    readonly validity=900
+    
+    readonly server_keystore="confluent-rest-proxy.server.keystore.jks"
+    readonly server_truststore="confluent-rest-proxy.server.truststore.jks"
+    readonly client_truststore="confluent-rest-proxy.client.truststore.jks"
+    
+    # Copy CA authority certificate and key obtained from secrets.
+    cp /etc/tls/certs/tls.crt /tmp/confluent-rest-proxy/tls/tls.crt
+    cp /etc/tls/certs/tls.key /tmp/confluent-rest-proxy/tls/tls.key
+    
+
+    # GENERATE KEYSTORE AND TRUSTSTORE
+    keytool -keystore "${server_keystore}" \
+            -alias ${1} \
+            -validity ${validity} \
+            -genkey \
+            -keyalg RSA \
+            -dname "CN=${1}" \
+            -storepass changeit \
+            -keypass changeit \
+            -noprompt
+    # Add the CACert to the client and server truststores so that clients and server can trust this CA
+    keytool -keystore "${client_truststore}" \
+            -alias CARoot \
+            -import \
+            -file "${certificate}" \
+            -storepass changeit \
+            -noprompt
+    keytool -keystore "${server_truststore}" \
+            -alias CARoot \
+            -importcert \
+            -file "${certificate}" \
+            -storepass changeit \
+            -noprompt
+    # Create a certificate signing request
+    keytool -keystore "${server_keystore}" \
+            -alias ${1} \
+            -certreq \
+            -file cert-req \
+            -storepass changeit
+    # Add openssl certificate signing extension config file
+    cat > csr.conf <<EOF
+    [ req_ext ]
+    subjectAltName = @alt_names
+    extendedKeyUsage = serverAuth, clientAuth
+    [ alt_names ]
+    DNS.1 = localhost
+    DNS.2 = 127.0.0.1
+    DNS.3 = $(hostname -f)
+    DNS.4 = $(hostname -i)
+    DNS.5 = $(hostname)
+    IP.1 = 0.0.0.0
+    IP.2 = 127.0.0.1
+    IP.3 = $(hostname -i)
+    EOF
+    # Sign the certificate with the CA & CAKey
+    openssl x509 -req \
+        -CA /tmp/confluent-rest-proxy/tls/${certificate} \
+        -CAkey /tmp/confluent-rest-proxy/tls/${private_key} \
+        -in cert-req \
+        -out cert-signed \
+        -days ${validity} \
+        -CAcreateserial \
+        -passin pass:changeit \
+        -extfile csr.conf \
+        -extensions req_ext
+    # Import the CA cert into server keystore
+    keytool -keystore "${server_keystore}" \
+            -alias CARoot \
+            -import \
+            -file "/tmp/confluent-rest-proxy/tls/${certificate}" \
+            -storepass changeit -noprompt
+    # Import the signed certificate into server keystore
+    keytool -keystore "${server_keystore}" \
+            -alias ${1} \
+            -import \
+            -file cert-signed \
+            -storepass changeit -noprompt
+    popd
