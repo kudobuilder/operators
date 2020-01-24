@@ -45,7 +45,7 @@ parameters:
   ## Metrics
   - name: enableMetrics
     description: "Enable metrics"
-    default: true
+    default: false
     displayName: "Enable metrics"
 
   - name: operatorMetricsPort
@@ -193,4 +193,3 @@ parameters:
     description: "Leader election retry period."
     default: 4s
     displayName: "Leader election retry period"
-
