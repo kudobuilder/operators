@@ -45,6 +45,12 @@ parameters:
     description: "Enable transport encryption (TLS)"
     default: "false"
   - name: TLS_SECRET_NAME
-    default: "kafka-tls"
-    displayName: "kafka-tls"
-    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
+    default: "confluent-schema-registry-tls"
+    displayName: "confluent-schema-registry-tls"
+    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to Schema Registry."
+  - name: TRANSPORT_ENCRYPTION_CIPHERS
+    displayName: "Cipher Suite Names"
+    description: "Comma-separated list of JSSE Cipher Suite Names"
+    default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - name: SSL_AUTHENTICATION_CLIENT_NAME
+    default: "SchemaRegistryClient"

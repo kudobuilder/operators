@@ -16,11 +16,31 @@ data:
     cat >> /etc/confluent/docker/schema-registry.properties.template <<EOF
     ${SR_CUSTOM_CONFIGURATION}
     EOF
-
     {{ end }}
 
     {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
-        /etc/tls/bin/enable-tls.sh SchemaRegistryClient
+    # This is required as confluent uses admin.properties only when this is set
+    export SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL=SSL
+
+    /etc/tls/bin/enable-tls.sh {{ .Params.SSL_AUTHENTICATION_CLIENT_NAME }}
+    
+    cat >> /etc/confluent/docker/admin.properties.template <<EOF
+    security.protocol=SSL
+    ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
+    ssl.keystore.password=changeit
+    ssl.truststore.password=changeit
+    ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
+    EOF
+    
+    cat >> /etc/confluent/docker/schema-registry.properties.template <<EOF
+    security.protocol=SSL
+    ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
+    ssl.keystore.password=changeit
+    ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
+    ssl.truststore.password=changeit
+    EOF
     {{ end }}
 
     /etc/confluent/docker/run

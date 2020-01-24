@@ -40,18 +40,6 @@ spec:
           value: {{ .Params.HOST_NAME }}
         - name: SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS
           value: {{ .Params.KAFKA_BOOTSTRAP_SERVERS }}
-        - name: SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL
-          value: "SSL"
-        - name: SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_LOCATION
-          value: "/tmp/kafka/tls/kafka.client.truststore.jks"
-        - name: SCHEMA_REGISTRY_KAFKASTORE_SSL_TRUSTSTORE_PASSWORD
-          value: "changeit"
-        - name: SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_LOCATION
-          value: "/tmp/kafka/tls/kafka.client.keystore.jks"
-        - name: SCHEMA_REGISTRY_KAFKASTORE_SSL_KEYSTORE_PASSWORD
-          value: "changeit"
-        - name: SCHEMA_REGISTRY_KAFKASTORE_SSL_KEY_PASSWORD
-          value: "changeit"
         volumeMounts:
         - name: bootstrap
           mountPath: /bootstrap
@@ -60,7 +48,7 @@ spec:
           mountPath: /custom-configuration
         {{ end }}
         {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
-        - name: kafka-tls
+        - name: confluent-schema-registry-tls
           mountPath: /etc/tls/certs
         - name: enable-tls
           mountPath: /etc/tls/bin
@@ -83,11 +71,11 @@ spec:
             name: {{ .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
         {{ end }}
         {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
-        - name: kafka-tls
+        - name: confluent-schema-registry-tls
           secret:
             secretName: {{ .Params.TLS_SECRET_NAME }}
         - name: enable-tls
           configMap:
             name:  {{ .Name }}-enable-tls
-            defaultMode: 0777
+            defaultMode: 0755
         {{ end }}
