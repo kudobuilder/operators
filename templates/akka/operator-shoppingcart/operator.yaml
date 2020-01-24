@@ -7,11 +7,13 @@ maintainers:
   - name: Michael Beisiegel
     email: michael.beisiegel@gmail.com
 tasks:
-  deploy-cluster:
-    resources:
-      - rolebinding.yaml
-      - service.yaml
-      - deployment.yaml
+  - name: deploy-cluster
+    kind: Apply
+    spec:
+      resources:
+        - rolebinding.yaml
+        - service.yaml
+        - deployment.yaml
 plans:
   deploy:
     strategy: serial
