@@ -36,7 +36,7 @@ The parameter used to configure the external loadbalancers is `EXTERNAL_ADVERTIS
 When set to `LoadBalancer` it creates one service per broker to expose each broker externally. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+$ kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer
 ```
@@ -46,7 +46,7 @@ kubectl kudo install kafka --instance=kafka \
 For these Kubernetes Services, KUDO Kafka uses the `externalTrafficPolicy:local` to avoid any second hop. As each broker gets its own loadbalancer we can avoid the extra hops and get a better network performance.
 
 ```
-kubectl get svc
+$ kubectl get svc
 NAME                     TYPE           CLUSTER-IP    EXTERNAL-IP                                                               PORT(S)                      AGE
 kafka-kafka-0-external   LoadBalancer   10.0.13.34    aebb0d2f2adda4b22b7d9b0c07a865b8-1700665253.us-west-2.elb.amazonaws.com   9097:31713/TCP               11s
 kafka-kafka-1-external   LoadBalancer   10.0.45.151   a8ae206a726b24fed91b82eb9110e0d1-1872607345.us-west-2.elb.amazonaws.com   9097:30786/TCP               11s
@@ -58,7 +58,7 @@ Producers and consumers can connect to `aebb0d2f2adda4b22b7d9b0c07a865b8-1700665
 To verify if the `server.properties` has the correct configuration for the `listeners`,`advertised.listeners` and `listener.security.protocol.map`, users can check the `server.properties` content in the broker pods. For example for broker `2` you just need to run the following command:
 
 ```
-> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
+$ kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
@@ -78,7 +78,7 @@ KUDO Kafka supports enabling and disabling of the parameter `EXTERNAL_ADVERTISED
 To enable the external access via load balancers:
 
 ```
-kubectl kudo update --instance=kafka \
+$ kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer 
 ```
@@ -86,7 +86,7 @@ kubectl kudo update --instance=kafka \
 To disable the external access via load balancers:
 
 ```
-kubectl kudo update --instance=kafka \
+$ kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
@@ -99,7 +99,7 @@ The parameter used to configure the external loadbalancers is `EXTERNAL_ADVERTIS
 When set to `NodePort` it creates one service per broker. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort
 ```
@@ -156,7 +156,7 @@ KUDO Kafka supports enabling and disabling of the parameter `EXTERNAL_ADVERTISED
 To enable the external access via node ports:
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort 
 ```
@@ -164,7 +164,7 @@ kubectl kudo update --instance=kafka \
 To disable the external access via load balancers:
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
@@ -177,14 +177,14 @@ Due to known kubernetes issue in [issues/221](https://github.com/kubernetes/kube
 First disable the external access
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
 Once the plan status is complete, we can enable again with `LoadBalancer` type
 
 ````
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer
 ````
@@ -194,14 +194,14 @@ kubectl kudo install kafka --instance=kafka \
 First disable the external access
 
 ```
-kubectl kudo update --instance=kafka \
+kubectl kudo update --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=false
 ```
 
 Once the plan status is complete, we can enable again with `NodePort` type
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort
 ```
@@ -215,7 +215,7 @@ kubectl kudo install kafka --instance=kafka \
 Exposing KUDO Kafka works with the TLS encryption enabled. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=LoadBalancer \
 	-p CLIENT_PORT_ENABLED=false \
@@ -226,7 +226,7 @@ kubectl kudo install kafka --instance=kafka \
 And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
 
 ```
-> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
+> kubectl exec -ti kafka-instance-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://a252e64a36f4443ecbea2fa4c4bf8441-1574422153.us-west-2.elb.amazonaws.com:9097
@@ -240,7 +240,7 @@ inter.broker.listener.name=INTERNAL
 Exposing KUDO Kafka works with the TLS encryption enabled. 
 
 ```
-kubectl kudo install kafka --instance=kafka \
+kubectl kudo install kafka --instance=kafka-instance \
 	-p EXTERNAL_ADVERTISED_LISTENER=true \
 	-p EXTERNAL_ADVERTISED_LISTENER_TYPE=NodePort \
 	-p CLIENT_PORT_ENABLED=false \
@@ -251,7 +251,7 @@ kubectl kudo install kafka --instance=kafka \
 And we can verify that `EXTERNAL_INGRESS` is using `SSL` protocol.
 
 ```
-> kubectl exec -ti kafka-kafka-2 -c k8skafka cat server.properties
+> kubectl exec -ti kafka-instance-kafka-2 -c k8skafka cat server.properties
 [ ... lines removed for clarity ...]
 listeners=INTERNAL://0.0.0.0:9095,EXTERNAL_INGRESS://0.0.0.0:9097
 advertised.listeners=INTERNAL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095,EXTERNAL_INGRESS://34.214.27.71:30904

@@ -20,51 +20,70 @@ The following upgrade procedure assumes one running Kafka cluster and one Kafka 
 Check for running instances:
 
 ```
-kubectl get instances
-NAME           AGE
-kafka-fc6vzn   29h
+$ kubectl get instances
+NAME             AGE
+kafka-instance   29h
 ```
 
-We can check the plan status of our Kafka cluster `kafka-fc6vzn` with:
+We can check the plan status of our Kafka cluster `kafka-instance` with:
 ```
-kubectl kudo plan status --instance=kafka-fc6vzn
-Plan(s) for "kafka-fc6vzn" in namespace "default":
+$ kubectl kudo plan status --instance=kafka-instance
+Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-fc6vzn (Operator-Version: "kafka-0.1.2" Active-Plan: "kafka-fc6vzn-deploy-414458000")
-    └── Plan deploy (serial strategy) [COMPLETE]
-        └── Phase deploy-kafka (serial strategy) [COMPLETE]
-            └── Step deploy (COMPLETE)
+└── kafka-instance (Operator-Version: "kafka-1.1.0" Active-Plan: "deploy")
+    ├── Plan deploy (serial strategy) [COMPLETE]
+    │  └── Phase deploy-kafka [COMPLETE]
+    │    └── Step deploy (COMPLETE)
+    └── Plan not-allowed (serial strategy) [NOT ACTIVE]
+        └── Phase not-allowed (serial strategy) [NOT ACTIVE]
+            └── Step not-allowed (serial strategy) [NOT ACTIVE]
+                └── not-allowed [NOT ACTIVE]
 ```
-**Note:** the operator version is `kafka-0.1.2`
+**Note:** the operator version is `kafka-1.1.0`
 
 To update the Kafka cluster from version `0.1.2` to `0.2.0`:
 
 ```
-kubectl kudo upgrade kafka --version=0.2.0 --instance kafka
+$ kubectl kudo upgrade kafka --operator-version=1.2.1 --instance kafka-instance
 
 operator.kudo.dev/kafka unchanged
-operatorversion.kudo.dev/v1beta1/kafka-0.2.0 created
+operatorversion.kudo.dev/v1beta1/kafka-1.2.1 created
 ```
 Now there are two operator versions installed:
 ```
 kubectl  get operatorversions.kudo.k8s.io
 
 NAME              AGE
-kafka-0.1.2       2d2h
-kafka-0.2.0       2m6s
+kafka-1.1.0       2d2h
+kafka-1.2.1       2m6s
 ```
 
 Check the plan status again:
 
 ```
-kubectl kudo plan status --instance=kafka
-Plan(s) for "kafka" in namespace "default":
+$ kubectl kudo plan status --instance=kafka-instance
+Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka (Operator-Version: "kafka-0.2.0" Active-Plan: "kafka-deploy-575561000")
-    └── Plan deploy (serial strategy) [COMPLETE]
-        └── Phase deploy-kafka (serial strategy) [COMPLETE]
-            └── Step deploy (COMPLETE)
+└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")
+    ├── Plan deploy (serial strategy) [IN_PROGRESS]
+    │   └── Phase deploy-kafka (serial strategy) [COMPLETE]
+    │       ├── Step configuration [COMPLETE]
+    │       ├── Step service [COMPLETE]
+    │       ├── Step app [COMPLETE]
+    │       └── Step addons [COMPLETE]
+    ├── Plan external-access (serial strategy) [NOT ACTIVE]
+    │   └── Phase external-access-resources (serial strategy) [NOT ACTIVE]
+    │       └── Step external [NOT ACTIVE]
+    ├── Plan mirrormaker (serial strategy) [NOT ACTIVE]
+    │   └── Phase deploy-mirror-maker (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
+    ├── Plan not-allowed (serial strategy) [NOT ACTIVE]
+    │   └── Phase not-allowed (serial strategy) [NOT ACTIVE]
+    │       └── Step not-allowed [NOT ACTIVE]
+    └── Plan service-monitor (serial strategy) [NOT ACTIVE]
+        └── Phase enable-service-monitor (serial strategy) [NOT ACTIVE]
+            └── Step add-service-monitor [NOT ACTIVE]
 ```
 
-**Note:** the operator-version is now `kafka-0.2.0` meaning the Kafka Operator has successfully been upgraded.
+**Note:** the operator-version is now `kafka-1.2.1` meaning the Kafka Operator has been successfully upgraded.
 

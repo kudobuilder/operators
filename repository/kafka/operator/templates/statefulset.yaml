@@ -47,6 +47,37 @@ spec:
             - --web.listen-address=0.0.0.0:{{ .Params.KAFKA_NODE_EXPORTER_PORT }}
             - --web.disable-exporter-metrics
             - --collector.filesystem
+            - --no-collector.arp
+            - --no-collector.bcache
+            - --no-collector.bonding
+            - --no-collector.conntrack
+            - --no-collector.cpu
+            - --no-collector.cpufreq
+            - --no-collector.diskstats
+            - --no-collector.edac
+            - --no-collector.entropy
+            - --no-collector.filefd
+            - --no-collector.hwmon
+            - --no-collector.infiniband
+            - --no-collector.ipvs
+            - --no-collector.loadavg
+            - --no-collector.mdadm
+            - --no-collector.meminfo
+            - --no-collector.netclass
+            - --no-collector.netdev
+            - --no-collector.netstat
+            - --no-collector.nfs
+            - --no-collector.nfsd
+            - --no-collector.pressure
+            - --no-collector.sockstat
+            - --no-collector.stat
+            - --no-collector.textfile
+            - --no-collector.time
+            - --no-collector.timex
+            - --no-collector.uname
+            - --no-collector.vmstat
+            - --no-collector.xfs
+            - --no-collector.zfs
         {{ end }}
         - name: k8skafka
           imagePullPolicy: Always

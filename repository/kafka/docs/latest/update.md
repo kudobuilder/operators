@@ -18,13 +18,13 @@ There are a few constraints related to storage. These constraints are documented
 Enable the `delete.topic.enable`
 
 ```
-> kubectl kudo update kafka -p DELETE_TOPIC_ENABLE=true 
+$ kubectl kudo update kafka -p DELETE_TOPIC_ENABLE=true 
 ```
 
 Enable the `auto.create.topics.enable`
 
 ```
-> kubectl kudo update kafka -p  AUTO_CREATE_TOPICS_ENABLE=true
+$ kubectl kudo update kafka -p  AUTO_CREATE_TOPICS_ENABLE=true
 ```
 
 ## Scaling the brokers
@@ -38,43 +38,73 @@ It is recommended that users closely monitor and control broker scaling due to t
 To scale horizontally, we can increase the broker count. Lets update the broker count from default `3` to `5`
 
 ```
-> kubectl kudo update kafka -p BROKER_COUNT=4
+$ kubectl kudo update kafka -p BROKER_COUNT=4
 ```
 
 Check the plan status:
 
 ```
-> kubectl kudo plan status --instance=kafka
-Plan(s) for "kafka" in namespace "default":
+$ kubectl kudo plan status --instance=kafka-instance
+Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka (Operator-Version: "kafka-0.2.0" Active-Plan: "kafka-deploy-351387000")
-    └── Plan deploy (serial strategy) [IN_PROGRESS]
-        └── Phase deploy-kafka (serial strategy) [IN_PROGRESS]
-            └── Step deploy (IN_PROGRESS)
+└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")
+    ├── Plan deploy (serial strategy) [IN_PROGRESS]
+    │   └── Phase deploy-kafka (serial strategy) [IN_PROGRESS]
+    │       ├── Step configuration [COMPLETE]
+    │       ├── Step service [COMPLETE]
+    │       ├── Step app [IN_PROGRESS]
+    │       └── Step addons [PENDING]
+    ├── Plan external-access (serial strategy) [NOT ACTIVE]
+    │   └── Phase external-access-resources (serial strategy) [NOT ACTIVE]
+    │       └── Step external [NOT ACTIVE]
+    ├── Plan mirrormaker (serial strategy) [NOT ACTIVE]
+    │   └── Phase deploy-mirror-maker (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
+    ├── Plan not-allowed (serial strategy) [NOT ACTIVE]
+    │   └── Phase not-allowed (serial strategy) [NOT ACTIVE]
+    │       └── Step not-allowed [NOT ACTIVE]
+    └── Plan service-monitor (serial strategy) [NOT ACTIVE]
+        └── Phase enable-service-monitor (serial strategy) [NOT ACTIVE]
+            └── Step add-service-monitor [NOT ACTIVE]
 ```
 
 Once the plan status is complete
 
-```kubectl kudo plan status --instance=kafka
-> kubectl kudo plan status --instance=kafka
-Plan(s) for "kafka" in namespace "default":
+```kubectl kudo plan status --instance=kafka-instance
+$ kubectl kudo plan status --instance=kafka-instance
+Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka (Operator-Version: "kafka-0.2.0" Active-Plan: "kafka-deploy-351387000")
-    └── Plan deploy (serial strategy) [COMPLETE]
-        └── Phase deploy-kafka (serial strategy) [COMPLETE]
-            └── Step deploy (COMPLETE)
+└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")
+    ├── Plan deploy (serial strategy) [IN_PROGRESS]
+    │   └── Phase deploy-kafka (serial strategy) [COMPLETE]
+    │       ├── Step configuration [COMPLETE]
+    │       ├── Step service [COMPLETE]
+    │       ├── Step app [COMPLETE]
+    │       └── Step addons [COMPLETE]
+    ├── Plan external-access (serial strategy) [NOT ACTIVE]
+    │   └── Phase external-access-resources (serial strategy) [NOT ACTIVE]
+    │       └── Step external [NOT ACTIVE]
+    ├── Plan mirrormaker (serial strategy) [NOT ACTIVE]
+    │   └── Phase deploy-mirror-maker (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
+    ├── Plan not-allowed (serial strategy) [NOT ACTIVE]
+    │   └── Phase not-allowed (serial strategy) [NOT ACTIVE]
+    │       └── Step not-allowed [NOT ACTIVE]
+    └── Plan service-monitor (serial strategy) [NOT ACTIVE]
+        └── Phase enable-service-monitor (serial strategy) [NOT ACTIVE]
+            └── Step add-service-monitor [NOT ACTIVE]
 ```
 
 We can see that we have 5 brokers up and running
 
 ```
-> kubectl get pods -l app=kafka
-NAME            READY   STATUS    RESTARTS   AGE
-kafka-kafka-0   1/1     Running   0          7m26s
-kafka-kafka-1   1/1     Running   0          8m26s
-kafka-kafka-2   1/1     Running   0          8m53s
-kafka-kafka-3   1/1     Running   0          10m
-kafka-kafka-4   1/1     Running   0          9m21s
+$ kubectl get pods -l app=kafka
+NAME                     READY   STATUS    RESTARTS   AGE
+kafka-instance-kafka-0   2/2     Running   0          3h12m
+kafka-instance-kafka-1   2/2     Running   0          3h13m
+kafka-instance-kafka-2   2/2     Running   0          3h13m
+kafka-instance-kafka-3   2/2     Running   0          3h14m
+kafka-instance-kafka-4   2/2     Running   0          3h14m
 ```
 
 
@@ -84,7 +114,7 @@ kafka-kafka-4   1/1     Running   0          9m21s
 To scale vertically, we can update the broker's statefulset.
 
 ```
-> kubectl describe statefulset kafka-kafka
+$ kubectl describe statefulset kafka-kafka
 [ ... lines removed for clarity ...]
     Requests:
       cpu:      500m
@@ -97,13 +127,13 @@ To scale vertically, we can update the broker's statefulset.
 Let's increase the cpu request from `500m` to `700m` and double the memory request from `2048Mi` to `4096Mi`. Also important is increasing the limits as they cannot be lower than the requested resources. 
 
 ```
-kubectl kudo update kafka -p BROKER_CPUS=700m -p BROKER_MEM=4096Mi -p BROKER_CPUS_LIMIT=3000m -p BROKER_MEM_LIMIT=6144Mi
+$ kubectl kudo update kafka -p BROKER_CPUS=700m -p BROKER_MEM=4096Mi -p BROKER_CPUS_LIMIT=3000m -p BROKER_MEM_LIMIT=6144Mi
 ```
 
 This will initiate a rolling upgrade of the pods to a new statefulset.
 
 ```
-> kubectl describe statefulset kafka-kafka
+$ kubectl describe statefulset kafka-kafka
 [ ... lines removed for clarity ...]
     Requests:
       cpu:      700m
