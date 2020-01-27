@@ -12,6 +12,7 @@ ifeq "$(MACHINE)" "x86_64"
 endif
 
 export PATH := $(shell pwd)/bin/:$(PATH)
+export KUBECONFIG := $(shell pwd)/kubeconfig
 
 bin/:
 	mkdir -p bin/
