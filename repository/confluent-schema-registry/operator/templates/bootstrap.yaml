@@ -30,16 +30,18 @@ data:
     ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
     ssl.keystore.password=changeit
     ssl.truststore.password=changeit
+    ssl.key.password=changeit
     ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
     EOF
     
     cat >> /etc/confluent/docker/schema-registry.properties.template <<EOF
-    security.protocol=SSL
-    ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
-    ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
-    ssl.keystore.password=changeit
-    ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
-    ssl.truststore.password=changeit
+    kafkastore.security.protocol=SSL
+    kafkastore.ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    kafkastore.ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
+    kafkastore.ssl.keystore.password=changeit
+    kafkastore.ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
+    kafkastore.ssl.truststore.password=changeit
+    kafkastore.ssl.key.password=changeit
     EOF
     {{ end }}
 
