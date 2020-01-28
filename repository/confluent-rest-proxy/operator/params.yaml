@@ -15,6 +15,9 @@ parameters:
   - name: REST_PROXY_PORT
     description: "Port on which Confluent REST Proxy will be exported to listen on for new connections"
     default: 8082
+  - name: REST_PROXY_PORT_TLS
+    description: "Port on which Confluent REST Proxy will be exported to listen on for new connections when transport encryption is enabled"
+    default: 8083
   - name: MEMORY
     description: "Amount of memory to provide to Confluent REST Proxy pods"
     default: "256Mi"
@@ -55,7 +58,27 @@ parameters:
     displayName: "Cipher Suite Names"
     description: "Comma-separated list of JSSE Cipher Suite Names"
     default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
-  - name: SSL_AUTHENTICATION_CLIENT_NAME
+  - name: TRANSPORT_ENCRYPTION_CLIENT_ALLOW_PLAINTEXT
+    displayName: "Allow Plaintext Traffic with rest-proxy clients"
+    description: "Allow plaintext alongside encrypted traffic with rest-proxy clients"
+    default: "false"
+  - name: SSL_AUTHENTICATION_KAFKA_CLIENT_NAME
     displayName: "SSL Authentication Client Name"
-    description: "The name used as the client certificate CN(Common Name)"
+    description: "The name used as the client certificate CN(Common Name) when communicating with Kafka over TLS"
     default: "RestProxyClient"
+  - name: TRANSPORT_ENCRYPTION_CLIENT_ENABLED
+    displayName: "Enable transport encryption (TLS) with rest proxy clients"
+    description: "Enable transport encryption (TLS) with rest proxy clients"
+    default: "false"
+  - name: SSL_AUTHENTICATION_CLIENT_ENABLED
+    displayName: "Enable SSL authentication for Rest-Proxy clients"
+    description: "Enable SSL authentication for Rest-Proxy clients"
+    default: "false"
+  - name: TLS_CLIENT_SECRET_NAME
+    default: "confluent-rest-proxy-client-tls"
+    displayName: "confluent-rest-proxy-client-tls"
+    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to rest proxy."
+  - name: TRANSPORT_ENCRYPTION_CLIENT_CIPHERS
+    displayName: "Cipher Suite Names"
+    description: "Comma-separated list of JSSE Cipher Suite Names"
+    default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"

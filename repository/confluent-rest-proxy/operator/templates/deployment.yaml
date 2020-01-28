@@ -35,6 +35,10 @@ spec:
         ports:
         - containerPort: {{ .Params.REST_PROXY_PORT }}
           name: rp-port
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+        - containerPort: {{ .Params.REST_PROXY_PORT_TLS }}
+          name: rp-port-tls
+        {{ end }}
         env:
         - name: KAFKA_REST_SCHEMA_REGISTRY_URL 
           value: {{ .Params.SCHEMA_REGISTRY_URL }}
@@ -49,9 +53,15 @@ spec:
         - name: custom-configuration
           mountPath: /custom-configuration
         {{ end }}
+        {{ if or (eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true") (eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true") }}
         {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
         - name: confluent-rest-proxy-tls
           mountPath: /etc/tls/certs
+        {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+        - name: confluent-rest-proxy-client-tls
+          mountPath: /etc/tls/client-certs
+        {{ end }}
         - name: enable-tls
           mountPath: /etc/tls/bin
         {{ end }}
@@ -59,9 +69,12 @@ spec:
           initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
           periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
           timeoutSeconds: {{ .Params.LIVENESS_TIMEOUT_SECONDS }}
-          httpGet:
-            path: /
+          tcpSocket:
+            {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+            port: {{ .Params.REST_PROXY_PORT_TLS }}
+            {{ else }}
             port: {{ .Params.REST_PROXY_PORT }}
+            {{ end }}
       volumes:
         - name: bootstrap
           configMap:
@@ -72,10 +85,17 @@ spec:
           configMap:
             name: {{ .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
         {{ end }}
+        {{ if or (eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true") (eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true") }}
         {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
         - name: confluent-rest-proxy-tls
           secret:
             secretName: {{ .Params.TLS_SECRET_NAME }}
+        {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+        - name: confluent-rest-proxy-client-tls
+          secret:
+            secretName: {{ .Params.TLS_CLIENT_SECRET_NAME }}
+        {{ end }}
         - name: enable-tls
           configMap:
             name:  {{ .Name }}-enable-tls

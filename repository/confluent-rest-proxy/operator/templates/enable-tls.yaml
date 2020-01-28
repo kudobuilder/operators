@@ -9,22 +9,35 @@ data:
 
     set -euxo pipefail
     
-    mkdir -p /tmp/confluent-rest-proxy/tls
-    pushd /tmp/confluent-rest-proxy/tls
-    
+    if [ "$2" == "server" ]; then
+      mkdir -p /tmp/confluent-rest-proxy/tls
+      pushd /tmp/confluent-rest-proxy/tls
+    else
+      mkdir -p /tmp/confluent-rest-proxy/client-tls
+      pushd /tmp/confluent-rest-proxy/client-tls
+    fi
+
     readonly certificate="tls.crt"
     readonly private_key="tls.key"
     
     # In days.
     readonly validity=900
     
-    readonly server_keystore="confluent-rest-proxy.server.keystore.jks"
-    readonly server_truststore="confluent-rest-proxy.server.truststore.jks"
-    readonly client_truststore="confluent-rest-proxy.client.truststore.jks"
-    
-    # Copy CA authority certificate and key obtained from secrets.
-    cp /etc/tls/certs/tls.crt /tmp/confluent-rest-proxy/tls/tls.crt
-    cp /etc/tls/certs/tls.key /tmp/confluent-rest-proxy/tls/tls.key
+    if [ "$2" == "server" ]; then
+      readonly server_keystore="confluent-rest-proxy.server.keystore.jks"
+      readonly server_truststore="confluent-rest-proxy.server.truststore.jks"
+      readonly client_truststore="confluent-rest-proxy.client.truststore.jks"
+      # Copy CA authority certificate and key obtained from secrets.
+      cp /etc/tls/certs/tls.crt /tmp/confluent-rest-proxy/tls/tls.crt
+      cp /etc/tls/certs/tls.key /tmp/confluent-rest-proxy/tls/tls.key
+    else
+      readonly server_keystore="confluent-rest-proxy-client.server.keystore.jks"
+      readonly server_truststore="confluent-rest-proxy-client.server.truststore.jks"
+      readonly client_truststore="confluent-rest-proxy-client.client.truststore.jks"
+      # Copy CA authority certificate and key obtained from secrets.
+      cp /etc/tls/client-certs/tls.crt /tmp/confluent-rest-proxy/client-tls/tls.crt
+      cp /etc/tls/client-certs/tls.key /tmp/confluent-rest-proxy/client-tls/tls.key
+    fi
     
 
     # GENERATE KEYSTORE AND TRUSTSTORE
@@ -73,8 +86,8 @@ data:
     EOF
     # Sign the certificate with the CA & CAKey
     openssl x509 -req \
-        -CA /tmp/confluent-rest-proxy/tls/${certificate} \
-        -CAkey /tmp/confluent-rest-proxy/tls/${private_key} \
+        -CA ${certificate} \
+        -CAkey ${private_key} \
         -in cert-req \
         -out cert-signed \
         -days ${validity} \
@@ -86,7 +99,7 @@ data:
     keytool -keystore "${server_keystore}" \
             -alias CARoot \
             -import \
-            -file "/tmp/confluent-rest-proxy/tls/${certificate}" \
+            -file "${certificate}" \
             -storepass changeit -noprompt
     # Import the signed certificate into server keystore
     keytool -keystore "${server_keystore}" \
