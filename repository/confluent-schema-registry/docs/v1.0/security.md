@@ -51,7 +51,7 @@ $ kubectl kudo install kafka \
     -p SSL_AUTHENTICATION_ENABLED=true
 ```
 
-Now, we can connect Confluent Schema Registry with Kafka Brokers using TLS Authentication, similar to the [TLS encryption](#enabling--tls-encryption):
+Now, we can connect Confluent Schema Registry with Kafka Brokers using TLS Authentication, similar to the [TLS encryption](#enabling-tls-encryption):
 
 ```
 $ kubectl kudo install confluent-schema-registry \
@@ -91,7 +91,7 @@ $ kubectl kudo install kafka \
 
 NOTE: Here, we need to supply `AUTHORIZATION_SUPER_USERS` parameter as the client name that we provide to our Confluent Schema Registry client. It can be configured by `SSL_AUTHENTICATION_CLIENT_NAME` parameter of Schema Registry and its default value is `SchemaRegistryClient`.
 
-Now, we can connect Confluent Schema Registry with Kafka Brokers using TLS Authentication, similar to the [TLS encryption](#enabling--tls-encryption), by supplying the client name to the `SSL_AUTHENTICATION_CLIENT_NAME` parameter, as configured in Kafka Broker's ACL during KUDO Kafka's deployment:
+Now, we can connect Confluent Schema Registry with Kafka Brokers using TLS Authentication, similar to the [TLS encryption](#enabling-tls-encryption), by supplying the client name to the `SSL_AUTHENTICATION_CLIENT_NAME` parameter, as configured in Kafka Broker's ACL during KUDO Kafka's deployment:
 
 ```
 $ kubectl kudo install confluent-schema-registry \
