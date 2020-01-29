@@ -46,6 +46,8 @@ kubectl kudo install kafka \
     -p USE_AUTO_TLS_CERTIFICATE=true
 ```
 
+:warning: If both `USE_AUTO_TLS_CERTIFICATE` and `TLS_SECRET_NAME` is provided, the operator will give precedence to Auto TLS certificates over the user provided TLS secret.
+
 ## Authentication
 
 KUDO Kafka supports two authentication mechanisms, TLS and Kerberos. The two are supported independently and may not be combined. If both TLS and Kerberos authentication are enabled, the service will use Kerberos authentication
