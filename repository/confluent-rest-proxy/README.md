@@ -4,3 +4,7 @@ The Confluent REST Proxy provides a RESTful interface to a Kafka cluster, making
 
 Source: [Confluent at GitHub](https://github.com/confluentinc/kafka-rest)
 DockerFile: [Rest Proxy 5.3.2](https://github.com/confluentinc/cp-docker-images/blob/v5.3.2/debian/kafka-rest/Dockerfile)
+
+## Documentation
+
+- [Security](./docs/security.md)
