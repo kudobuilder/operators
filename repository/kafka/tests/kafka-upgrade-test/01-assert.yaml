@@ -32,6 +32,7 @@ kind: Pod
 metadata:
   name: kafka-kafka-0
   labels:
+    heritage: kudo
     app: kafka
     kafka: kafka
     kudo.dev/instance: kafka
