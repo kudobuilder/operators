@@ -1,0 +1,31 @@
+apiVersion: kudo.dev/v1beta1
+name: "rabbitmq"
+operatorVersion: "0.1.0"
+kudoVersion: 0.10.0
+kubernetesVersion: 1.13.0
+appVersion: 3.8.0
+maintainers:
+  - name: Harry Ge
+    email: <hge@d2iq.com>
+url: https://www.rabbitmq.com
+tasks:
+  - name: node
+    kind: Apply
+    spec:
+      resources:
+        - serviceaccount.yaml
+        - role.yaml
+        - rolebinding.yaml
+        - configmap.yaml
+        - service.yaml
+        - statefulset.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: main
+        strategy: parallel
+        steps:
+          - name: everything
+            tasks:
+              - node
