@@ -4,3 +4,8 @@ Confluent Schema Registry provides a serving layer for your metadata. It provide
 
 Source: [Confluent at GitHub](https://github.com/confluentinc/schema-registry)
 DockerFile: [Schema Registry 5.3.2](https://github.com/confluentinc/cp-docker-images/blob/v5.3.2/debian/schema-registry/Dockerfile)
+
+## Documentation
+
+- [Custom Configuration](./docs/runbook_custom_configuration.md)
+- [Security](./docs/security.md)
