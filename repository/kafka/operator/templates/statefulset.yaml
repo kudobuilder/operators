@@ -185,8 +185,15 @@ spec:
               readOnly: true
           {{ end }}
           {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+          {{ if eq .Params.USE_AUTO_TLS_CERTIFICATE "true" }}
+            - name: kafka-tls-key
+              mountPath: /etc/tls/certs/key
+            - name: kafka-tls-crt
+              mountPath: /etc/tls/certs/crt
+          {{ else }}
             - name: kafka-tls
               mountPath: /etc/tls/certs
+          {{ end }}
             - name: enable-tls
               mountPath: /etc/tls/bin
           {{ end }}
@@ -259,9 +266,18 @@ spec:
             secretName: {{ .Params.KERBEROS_KEYTAB_SECRET }}
         {{ end }}
         {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        {{ if eq .Params.USE_AUTO_TLS_CERTIFICATE "true" }}
+        - name: kafka-tls-key
+          secret:
+            secretName: {{ .Pipes.privatekey }}
+        - name: kafka-tls-crt
+          secret:
+            secretName: {{ .Pipes.certificate }}
+        {{ else }}
         - name: kafka-tls
           secret:
             secretName: {{ .Params.TLS_SECRET_NAME }}
+        {{ end }}
         - name: enable-tls
           configMap:
             name:  {{ .Name }}-enable-tls

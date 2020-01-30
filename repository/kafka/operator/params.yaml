@@ -629,7 +629,10 @@ parameters:
   - name: TLS_SECRET_NAME
     default: "kafka-tls"
     displayName: "kafka-tls"
-    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to the brokers."
+  - name: USE_AUTO_TLS_CERTIFICATE
+    default: "false"
+    displayName: "kafka-auto-tls"
+    description: "The operator will auto create secrets that contains TLS certificate and is mounted as a volume to make them available to the brokers."
   - name: CUSTOM_SERVER_PROPERTIES_CM_NAME
     displayName: "custom server properties configmap name"
     description: "The properties present in this configmap will be appended to the Kafka server properties"

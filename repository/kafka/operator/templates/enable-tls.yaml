@@ -10,8 +10,13 @@ data:
     mkdir -p /home/kafka/tls
     pushd /home/kafka/tls
     # COPY CA AUTHORITY CERTIFICATE AND KEY OBTAINED FROM SECRETS
+    {{ if eq .Params.USE_AUTO_TLS_CERTIFICATE "true" }}
+    cp /etc/tls/certs/crt/tls.crt /home/kafka/tls/tls.crt
+    cp /etc/tls/certs/key/tls.key /home/kafka/tls/tls.key
+    {{ else }}
     cp /etc/tls/certs/tls.crt /home/kafka/tls/tls.crt
     cp /etc/tls/certs/tls.key /home/kafka/tls/tls.key
+    {{ end }}
     # GENERATE KEYSTORE AND TRUSTSTORE
     keytool -keystore kafka.server.keystore.jks \
             -alias localhost \
