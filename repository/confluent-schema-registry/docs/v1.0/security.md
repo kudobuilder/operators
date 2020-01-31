@@ -10,7 +10,7 @@ By default, KUDO Kafka brokers use the plaintext protocol for its inter-broker c
 
 To connect KUDO Confluent Schema Registry with Kafka Brokers configured with TLS, the same TLS certificate and key that is used to setup Kafka's transport encryption needs to be used to create a new Kubernetes TLS secret. 
 
-Here, we are assuming that the TLS Certificate file name is `tls.cert` and key name is `tls.key` that is used for Kafka TLS encryptions. We create a new Kubernetes TLS secret for Confluent Schema Registry as:
+Here, we are assuming that the TLS Certificate file name is `tls.cert` and key name is `tls.key` that is used for Kafka TLS encryptions. We create a new Kubernetes TLS secret for KUDO Confluent Schema Registry as:
 
 ```
 $ kubectl create secret tls confluent-schema-registry-tls --cert=tls.crt --key=tls.key
@@ -33,7 +33,7 @@ $ kubectl kudo install confluent-schema-registry \
 
 ## Authentication
 
-Confluent Schema Registry service supports connecting with Kafka broker's configured with TLS authentication mechanism. TLS authentication requires TLS encryption to be enabled. 
+KUDO Confluent Schema Registry service supports connecting with Kafka broker's configured with TLS authentication mechanism. TLS authentication requires TLS encryption to be enabled. 
 
 ### Authenticating KUDO Confluent Schema Registry with a secure Kafka Cluster
 
@@ -49,7 +49,7 @@ $ kubectl kudo install kafka \
     -p SSL_AUTHENTICATION_ENABLED=true
 ```
 
-Now, we can connect Confluent Schema Registry with Kafka Brokers using TLS Authentication, similar to the [TLS encryption](#enabling-tls-encryption):
+Now, we can connect KUDO Confluent Schema Registry with Kafka Brokers using TLS Authentication, similar to the [TLS encryption](#enabling-tls-encryption):
 
 ```
 $ kubectl kudo install confluent-schema-registry \
