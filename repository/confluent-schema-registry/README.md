@@ -7,5 +7,5 @@ DockerFile: [Schema Registry 5.3.2](https://github.com/confluentinc/cp-docker-im
 
 ## Documentation
 
-- [Custom Configuration](./docs/runbook_custom_configuration.md)
-- [Security](./docs/security.md)
+- [Custom Configuration](./docs/v1.0/runbook_custom_configuration.md)
+- [Security](./docs/v1.0/security.md)

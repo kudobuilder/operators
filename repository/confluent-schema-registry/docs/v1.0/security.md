@@ -16,7 +16,7 @@ Here, we are assuming that the TLS Certificate file name is `tls.cert` and key n
 $ kubectl create secret tls confluent-schema-registry-tls --cert=tls.crt --key=tls.key
 ```
 
-:warning: Make sure to create the certificate in the same namespace where the KUDO Kafka is being installed.
+:warning: Make sure to create the certificate in the same namespace where the Confluent Schema Registry is being installed.
 
 Now, to connect with Kafka Brokers configured with TLS:
 - Provide Fully Qualified Domain Name (FQDN) of each Kafka Broker(s) as `bootstrap.servers` parameter to connect with Kafka successfully. Eg. `KAFKA_BOOTSTRAP_SERVERS="SSL://kafka-kafka-0.kafka-svc.default.svc.cluster.local:9095,SSL://kafka-kafka-1.kafka-svc.default.svc.cluster.local:9095,SSL://kafka-kafka-2.kafka-svc.default.svc.cluster.local:9095"`.
