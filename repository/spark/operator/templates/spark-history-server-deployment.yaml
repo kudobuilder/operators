@@ -39,6 +39,24 @@ spec:
           value: "true"
         - name: SPARK_HISTORY_OPTS
           value: "{{ .Params.historyServerOpts }} -Dspark.history.fs.logDirectory={{ .Params.historyServerFsLogDirectory }} -Dspark.history.fs.cleaner.enabled={{ .Params.historyServerCleanerEnabled }} -Dspark.history.fs.cleaner.interval={{ .Params.historyServerCleanerInterval }} -Dspark.history.fs.cleaner.maxAge={{ .Params.historyServerCleanerMaxAge }}"
+        {{- if .Params.awsCredentialsSecretName }}
+        - name: AWS_ACCESS_KEY_ID
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Params.awsCredentialsSecretName }}
+              key: AWS_ACCESS_KEY_ID
+        - name: AWS_SECRET_ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Params.awsCredentialsSecretName }}
+              key: AWS_SECRET_ACCESS_KEY
+        - name: AWS_SESSION_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Params.awsCredentialsSecretName }}
+              key: AWS_SESSION_TOKEN
+              optional: true
+        {{- end }}
         ports:
         - containerPort: 18080
           name: "history-server"
