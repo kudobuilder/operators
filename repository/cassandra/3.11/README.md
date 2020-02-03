@@ -43,12 +43,12 @@ kubectl kudo install cassandra
 
 ## Documentation
 
-- [Installing](/docs/installing.md)
-- [Accessing](/docs/accessing.md)
-- [Managing](/docs/managing.md)
-- [Upgrading](/docs/upgrading.md)
-- [Monitoring](/docs/monitoring.md)
-- [Parameters reference](/docs/parameters.md)
+- [Installing](./docs/installing.md)
+- [Accessing](./docs/accessing.md)
+- [Managing](./docs/managing.md)
+- [Upgrading](./docs/upgrading.md)
+- [Monitoring](./docs/monitoring.md)
+- [Parameters reference](./docs/parameters.md)
 
 ## Version Chart
 
