@@ -23,6 +23,17 @@ tasks:
       resources:
         - mirror-maker-config.yaml
         - mirror-maker.yaml
+  - name: generate-tls-certificates
+    kind: Pipe
+    spec:
+      pod: cert-generator.yaml
+      pipe:
+        - file: /tmp/tls.key
+          kind: Secret
+          key: privatekey
+        - file: /tmp/tls.crt
+          kind: Secret
+          key: certificate
   - name: user-workload
     kind: Apply
     spec:
@@ -66,6 +77,9 @@ plans:
       - name: deploy-kafka
         strategy: serial
         steps:
+          - name: generate-tls-certificates
+            tasks:
+              - generate-tls-certificates 
           - name: configuration
             tasks:
               - configuration
