@@ -75,3 +75,66 @@ purpose KUDO Spark creates a `Role` for them and binds it to a service account p
 If `createRBAC` flag is set to `false`, a `Role` (with a `RoleBinding` linked to Spark Service Account) should be
 created or exist prior to submission of Spark Applications. `Role` configuration and a list of required permissions are
 available in [spark-rbac.yaml](../../operator/templates/spark-rbac.yaml) template file.
+
+### Integration with AWS S3
+This section describes the steps required to provide an access to S3 when using Spark History server 
+or accessing S3 buckets from Spark workloads. 
+With this method all sensitive data is stored as Kubernetes Secret and mounted to pods via environment variables.
+
+First, you need to convert AWS credentials to base64 as follows:
+```bash
+$ echo "<AWS_ACCESS_KEY_ID>" | base64                    
+  QVdTX0FDQ0VTU19LRVlfSUQK
+$ echo "<AWS_SECRET_ACCESS_KEY>" | base64                    
+  aVJhTVlQZVM1NTJzdFNpaDhVWDNEVkRyMndaMXpZOGxtWWlOKy9TQwo=    
+```
+Create a `Secret` with the following contents:
+```yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: aws-credentials
+  namespace: spark-operator
+type: Opaque
+data:
+  AWS_ACCESS_KEY_ID: QVdTX0FDQ0VTU19LRVlfSUQK
+  AWS_SECRET_ACCESS_KEY: aVJhTVlQZVM1NTJzdFNpaDhVWDNEVkRyMndaMXpZOGxtWWlOKy9TQwo=
+```
+Note: a Secret must be in the same namespace as an Spark Operator.
+
+To read more about Secrets, refer to the [official K8s documentation](https://kubernetes.io/docs/concepts/configuration/secret/).
+
+Here is the example using a Secret to pass AWS credentials as environment variables to `SparkApplication`: 
+```yaml
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-app
+  namespace: spark-operator
+spec:
+  ...
+  sparkConf:
+    "spark.eventLog.enabled": "true"
+    "spark.eventLog.dir": "s3a://<s3-location>"
+    "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
+  ...
+  driver:
+    env:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: aws-credentials
+            key: AWS_ACCESS_KEY_ID
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: aws-credentials
+            key: AWS_SECRET_ACCESS_KEY
+      # in case when Temporary Security Credentials are used
+      - name: AWS_SESSION_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: aws-credentials
+            key: AWS_SESSION_TOKEN
+            optional: true
+``` 

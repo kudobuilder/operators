@@ -5,30 +5,65 @@ Spark History Server Configuration
 
 Required software:
 * K8s cluster
-* [KUDO CLI Plugin](https://kudo.dev/docs/#install-kudo-cli) 0.8.0 or higher
+* [KUDO CLI Plugin](https://kudo.dev/docs/#install-kudo-cli) 0.10.1 or higher
 
 ## Installing Spark Operator with History Server Enabled
 
 ```bash
 kubectl kudo install spark --instance=spark-operator \
     -p enableHistoryServer=true \
-    -p historyServerFsLogDirectory="s3a://<BUCKET_NAME>/<FOLDER>" \
-    -p historyServerOpts="-Dspark.hadoop.fs.s3a.access.key=<AWS_ACCESS_KEY_ID> 
-        -Dspark.hadoop.fs.s3a.secret.key=<AWS_SECRET_ACCESS_KEY>
-        -Dspark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem"
+    -p historyServerFsLogDirectory="<log directory>" \
 ```
+This will deploy a Pod and Service for the `Spark History Server` with the `Spark Event Log` directory configured via the `historyServerFsLogDirectory` parameter. Spark Operator also supports Persistent Volume Claim (PVC) based storage. There is a parameter `historyServerPVCName` to pass the name of the PVC. Make sure that provided PVC should have `ReadWriteMany` [access mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) supported.
 
-This will deploy a Pod and Service for the `Spark History Server` with the `Spark Event Log` directory configured via the `historyServerFsLogDirectory` parameter. This is an S3 backed storage for event logs. Spark Operator also supports Persistent Volume Claim (PVC) based storage. There is a parameter `historyServerPVCName` to pass the name of the PVC. Make sure that provided PVC should have `ReadWriteMany` [access mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) supported.
+If you want to write and read event logs to/from an S3 bucket, you can do the following:
+1) Create a `Secret` with AWS credentials as described [here](configuration.md#integration-with-aws-s3).
+2) Install Spark Operator with the following parameters:
+```bash
+kubectl kudo install spark --instance=spark-operator \
+    -p enableHistoryServer=true \
+    -p historyServerFsLogDirectory="s3a://<BUCKET_NAME>/<FOLDER>" \
+    -p historyServerOpts="-Dspark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem"
+    -p awsCredentialsSecretName=aws-credentials
+```
 
 ## Creating Spark Application
 
-Make sure [`specs/spark-application.yaml`](../../../../../specs/spark-application.yaml) has these properties specified under `spec.sparkConf`:
+When submitting Spark Applications to the Operator with Spark History server enabled, you need to provide additional 
+configuration depending on storage type you are using for event logging. 
+For S3, an application configuration spec could be the following:
 
 ```yaml
-"spark.eventLog.enabled": "true"
-"spark.eventLog.dir": "s3a://<BUCKET_NAME>/<FOLDER>"
-"spark.hadoop.fs.s3a.access.key": "<AWS_ACCESS_KEY_ID>"
-"spark.hadoop.fs.s3a.secret.key": "<AWS_SECRET_ACCESS_KEY>"
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-app
+spec:
+  ...
+  sparkConf:
+    "spark.eventLog.enabled": "true"
+    "spark.eventLog.dir": "s3a://<BUCKET_NAME>/<FOLDER>"
+    "spark.hadoop.fs.s3a.impl": "org.apache.hadoop.fs.s3a.S3AFileSystem"
+  ...
+  driver:
+    env:
+      - name: AWS_ACCESS_KEY_ID
+        valueFrom:
+          secretKeyRef:
+            name: <Name of a Secret with AWS credentials >
+            key: AWS_ACCESS_KEY_ID
+      - name: AWS_SECRET_ACCESS_KEY
+        valueFrom:
+          secretKeyRef:
+            name: <Name of a Secret with AWS credentials>
+            key: AWS_SECRET_ACCESS_KEY
+      # in case when Temporary Security Credentials are used
+      - name: AWS_SESSION_TOKEN
+        valueFrom:
+          secretKeyRef:
+            name: <Name of a Secret with AWS credentials>
+            key: AWS_SESSION_TOKEN
+            optional: true
 ```
 
 If PVC is passed while installing the Spark Operator, make sure these two fields are also added with following values:
