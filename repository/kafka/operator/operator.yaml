@@ -67,7 +67,7 @@ tasks:
       - health-check.yaml
       - enable-tls.yaml
   - name: not-allowed
-    kind: Apply
+    kind: Dummy
     spec:
       resources:
 plans:
