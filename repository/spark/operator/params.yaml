@@ -114,8 +114,8 @@ parameters:
     default: ""
     displayName: "Spark History Server Persistent Volume Claim Name"
 
-  - name: awsCredentialsSecretName
-    description: "Name of a Secret with AWS credentials. The secret should be in the same namespace as an Operator."
+  - name: historyServerSparkConfSecret
+    description: "Name of a Secret with Spark config file. The secret should be in the same namespace as an Operator."
     default: ""
     displayName: "Name of a Secret with AWS credentials"
 

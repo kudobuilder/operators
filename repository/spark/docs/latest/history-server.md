@@ -17,14 +17,22 @@ kubectl kudo install spark --instance=spark-operator \
 This will deploy a Pod and Service for the `Spark History Server` with the `Spark Event Log` directory configured via the `historyServerFsLogDirectory` parameter. Spark Operator also supports Persistent Volume Claim (PVC) based storage. There is a parameter `historyServerPVCName` to pass the name of the PVC. Make sure that provided PVC should have `ReadWriteMany` [access mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) supported.
 
 If you want to write and read event logs to/from an S3 bucket, you can do the following:
-1) Create a `Secret` with AWS credentials as described [here](configuration.md#integration-with-aws-s3).
+1) Create a `Secret` which will contain Spark configuration (file name is important):
+```bash
+$ cat << 'EOF' >> spark-defaults.conf
+spark.hadoop.fs.s3a.access.key <AWS_ACCESS_KEY_ID>
+spark.hadoop.fs.s3a.secret.key <AWS_SECRET_ACCESS_KEY>
+spark.hadoop.fs.s3a.impl org.apache.hadoop.fs.s3a.S3AFileSystem
+EOF
+$ kubectl create secret generic spark-conf --from-file spark-defaults.conf --namespace spark
+```
+
 2) Install Spark Operator with the following parameters:
 ```bash
 kubectl kudo install spark --instance=spark-operator \
     -p enableHistoryServer=true \
     -p historyServerFsLogDirectory="s3a://<BUCKET_NAME>/<FOLDER>" \
-    -p historyServerOpts="-Dspark.hadoop.fs.s3a.impl=org.apache.hadoop.fs.s3a.S3AFileSystem"
-    -p awsCredentialsSecretName=aws-credentials
+    -p historyServerSparkConfSecret=spark-conf
 ```
 
 ## Creating Spark Application
@@ -33,6 +41,8 @@ When submitting Spark Applications to the Operator with Spark History server ena
 configuration depending on storage type you are using for event logging. 
 For S3, an application configuration spec could be the following:
 
+1) Create a `Secret` with AWS credentials as described [here](configuration.md#integration-with-aws-s3).
+2) SparkApplication configuration could be as the following:
 ```yaml
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
