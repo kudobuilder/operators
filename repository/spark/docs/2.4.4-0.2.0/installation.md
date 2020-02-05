@@ -23,7 +23,7 @@ kubectl kudo plan status --instance=spark
 
 Plan(s) for "spark" in namespace "default":
 .
-└── spark (Operator-Version: "spark-beta1" Active-Plan: "deploy")
+└── spark-instance (Operator-Version: "spark-beta1" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [COMPLETE]
         ├── Phase preconditions (serial strategy) [COMPLETE]
         │   ├── Step crds [COMPLETE]
@@ -62,7 +62,6 @@ metadata:
     name: spark-operator-2
 EOF
 ```
-
 
 ```
 kubectl kudo install spark --instance=spark-1 --namespace spark-operator-1

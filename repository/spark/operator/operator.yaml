@@ -1,7 +1,7 @@
 apiVersion: kudo.dev/v1beta1
-appVersion: 2.4.3
+appVersion: 2.4.4
 kubernetesVersion: 1.15.0
-kudoVersion: 0.10.0
+kudoVersion: 0.10.1
 maintainers:
 - name: Anton Kirillov
   email: akirillov@d2iq.com
@@ -10,7 +10,7 @@ maintainers:
 - name: Ken Sipe
   email: ken@d2iq.com
 name: spark
-operatorVersion: beta1
+operatorVersion: 0.2.0
 plans:
   deploy:
     phases:
