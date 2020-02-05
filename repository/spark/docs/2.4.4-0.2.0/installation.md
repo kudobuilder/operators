@@ -63,7 +63,6 @@ metadata:
 EOF
 ```
 
-
 ```
 kubectl kudo install spark --instance=spark-1 --namespace spark-operator-1
 kubectl kudo install spark --instance=spark-2 --namespace spark-operator-2
