@@ -5,7 +5,7 @@ Security
 
 Spark supports authentication for RPC channels (protocol between Spark processes), which allows secure 
 communication between driver and executors and also adds a possibility to enable network encryption between Spark processes.
-For more information refer to the official Spark documentation: [official Spark documentation](https://spark.apache.org/docs/latest/security.html#encryption)
+For more information refer to the [official Spark documentation](https://spark.apache.org/docs/latest/security.html#encryption).
 
 #### Authentication and encryption
 To enable authentication for RPC, the following configuration is required:
@@ -13,15 +13,15 @@ To enable authentication for RPC, the following configuration is required:
 # enable authentication for internal connections
 spark.authenticate  true  
 
-# the secred key, used for authentication. Must be configured on each of the nodes.          
+# the secret key, used for authentication. Must be configured on each of the nodes.          
 spark.authenticate.secret  spark-secret
 ```
-If you want to setup the encryption for RPC connections, you can enable it by setting `spark.network.crypto.enabled` to `true`.
+If you want to set up the encryption for RPC connections, you can enable it by setting `spark.network.crypto.enabled` to `true`.
 Spark authentication must be enabled for encryption to work.
 Additional configuration properties can be found in Spark documentation.
 
-The example below describes how to setup authentication and encryption for `SparkApplication` on Kubernetes.
-Also, it shows how to provide a custom `log4j.properties` to change logging strategy.
+The example below describes how to set up authentication and encryption for `SparkApplication` on Kubernetes.
+Also, it shows how to provide a custom `log4j.properties` to change the logging strategy.
  
 1) Create a authentication secret, which will be securely mounted to a driver and executor pods.
 ```bash
@@ -29,7 +29,7 @@ $ kubectl create secret generic spark-secret --from-literal secret=my-secret
 ```
 2) Create a `ConfigMap` with `log4j.properties`:
 ```bash
-$ cat <<'EOF'>> log4j.properties2
+$ cat <<'EOF'>> log4j.properties
 log4j.rootCategory=DEBUG, console
 log4j.appender.console=org.apache.log4j.ConsoleAppender
 log4j.appender.console.target=System.err
@@ -40,9 +40,9 @@ EOF
 ```bash
 $ kubectl create configmap spark-conf-map --from-file log4j.properties
 ```
-The following file will be mounted to `/etc/spark/conf` and `SPARK_CONF_DIR` will be set to this directory.
+The following file will be mounted to `/etc/spark/conf` and environment variable `SPARK_CONF_DIR` will be set to this directory.
 
-3) Submit the following `SparkApplication` specification to Spark Operator with `kubectl apply -f <application_spec.yaml>`
+3) Apply the following `SparkApplication` specification with `kubectl apply -f <application_spec.yaml>` command.
 
 Note: If you are using the block transfer service, you might want to enable "spark.authenticate.enableSaslEncryption" 
 property to enable SASL encryption for Spark RPCs.
@@ -52,7 +52,7 @@ apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
 metadata:
   name: spark-rpc-auth-enctryption-app
-  namespace: < Namespace >
+  namespace: <namespace>
 spec:
   type: Scala
   mode: cluster
@@ -102,11 +102,11 @@ spec:
     javaOptions: "-Dlog4j.configuration=file:/etc/spark/conf/log4j.properties"
 ```
 
-This will create a test job which emulates a long-running task. 
-Secrets are injected to Spark pods via specific environment variables, `SPARK_AUTHENTICATE_SECRET` and `_SPARK_AUTH_SECRET` 
+This will create a test job, which emulates a long-running task. 
+Secrets are injected into Spark pods via specific environment variables: `SPARK_AUTHENTICATE_SECRET` and `_SPARK_AUTH_SECRET` 
 for driver and executor, respectively.
 
-4) Observe the logs for a driver and an executor pods:
+4) Check out the logs of the running pods:
 ```bash
 $ kubectl logs spark-rpc-auth-enctryption-app-driver -f
 ``` 
@@ -145,7 +145,7 @@ $ kubectl logs spark-rpc-auth-enctryption-app-driver -f
 ```bash
 $ kubectl exec -it spark-rpc-auth-enctryption-app-driver bash
 ```
-- Observe the traffic running on 7078 port is encrypted using `ngrep` tool:
+- Using `ngrep` tool, you can monitor the traffic on `7078` port: 
 ```bash
 $ ngrep port 7078
 ```
