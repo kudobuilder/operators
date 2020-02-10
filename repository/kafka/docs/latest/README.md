@@ -1,3 +1,5 @@
+![kudo-kafka](./resources/images/kudo-kafka.png)
+
 ## KUDO Kafka latest
 
 - [Installation](./install.md)

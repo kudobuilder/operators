@@ -1,5 +1,3 @@
-
-
 # Update the Kafka cluster
 
 #### Tuning the configuration 

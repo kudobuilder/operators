@@ -1,5 +1,3 @@
-![kudo-kafka](./resources/images/kudo-kafka.png)
-
 # KUDO Kafka Concepts
 
 KUDO Kafka is a Kubernetes operator built on top of [KUDO](kudo.dev) and requires KUDO

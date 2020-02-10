@@ -1,5 +1,3 @@
-
-
 # Limitations
 
 Below is a list of parameters that can only be configured during bootstrap time.
