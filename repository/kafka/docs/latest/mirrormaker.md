@@ -109,7 +109,7 @@ kubectl kudo update --instance=$this_instance_name --namespace=$this_namespace_n
 |--|--|--|
 | MIRROR_MAKER_TOPIC_WHITELIST | Whitelist of topics to mirror |<ul> <li> ".*" for all topics (default) <li>"topic1"</li> <li> "topic5,topic6"</li></ul> |
 |MIRROR_MAKER_NUM_STREAMS|Number of consumer streams|<ul><li>"1" (default)</li></ul>|
-|MIRROR_MAKER_OFFSET_COMMIT_INTERVAL|Offset commit interval in ms|<ul><li>"60000" for 1 min (default)</li></ui>|
+|MIRROR_MAKER_OFFSET_COMMIT_INTERVAL|Offset commit interval in ms|<ul><li>"60000" for 1 min (default)</li></ul>|
 |MIRROR_MAKER_ABORT_ON_SEND_FAILURE| Stop the entire mirror maker when a send failure occurs |<ul><li>"true" (default)</li><li>"false"</li></ul>|
 
 ### Limitations
