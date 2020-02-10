@@ -1,5 +1,4 @@
-KUDO Spark Operator Configuration
----
+# KUDO Spark Operator Configuration
 
 ## Default configuration
 The default KUDO Spark configuration enables installation of the following resources:

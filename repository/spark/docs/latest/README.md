@@ -1,5 +1,4 @@
-KUDO Spark latest
----
+# KUDO Spark latest
 
 * [Installation](installation.md)
 * [Configuration](configuration.md)
