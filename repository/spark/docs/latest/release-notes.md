@@ -1,5 +1,4 @@
-Release Notes
----
+# Release Notes
 
 ## 2.4.4-0.2.0 (latest)
 * Spark Operator Docker image based on [apache/spark](https://github.com/apache/spark/) 2.4.4 with Hadoop 2.9.2 support

@@ -1,5 +1,4 @@
-KUDO Spark Operator Monitoring
----
+# KUDO Spark Operator Monitoring
 
 KUDO Spark Operator has metrics reporting support, which can be enabled during the installation of the operator.  
 By default, it supports integration with the [Prometheus operator](https://github.com/coreos/prometheus-operator).

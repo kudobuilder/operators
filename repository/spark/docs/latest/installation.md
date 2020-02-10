@@ -1,5 +1,4 @@
-KUDO Spark Operator Installation 
----
+# KUDO Spark Operator Installation 
 
 ## Installing the KUDO Spark Operator
 

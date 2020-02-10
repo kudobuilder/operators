@@ -1,5 +1,4 @@
-Versions
----
+# Versions
 
 ## Component Versions
 * Apache Spark 2.4.4 built with Hadoop 2.9.2 and Scala 2.11
