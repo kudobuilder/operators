@@ -1,7 +1,5 @@
 # Upgrading the KUDO Kafka Operator
 
-
-
 KUDO Kafka upgrades work by linking the Kafka cluster `Instance` object to the correct `operatorVersion` object.
 
 We can have multiple operator versions in the same Kubernetes cluster. 

@@ -1,8 +1,4 @@
-![kudo-kafka](./resources/images/kudo-kafka.png)
-
 # Running KUDO Kafka in production
-
-
 
 ## Checklist
 
