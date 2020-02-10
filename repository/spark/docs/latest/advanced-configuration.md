@@ -1,5 +1,4 @@
-Advanced configuration options
----
+# Advanced configuration options
 
 ## Spark Operator high-availability (HA) mode
 

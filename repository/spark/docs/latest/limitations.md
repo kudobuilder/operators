@@ -1,5 +1,4 @@
-Limitations
----
+# Limitations
 
 ## Multi-instance installation
 * Currently, multi-instance (multi-tenant) operator installation supports only a single instance per namespace to

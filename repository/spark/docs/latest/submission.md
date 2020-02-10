@@ -1,5 +1,4 @@
-Submitting Spark Applications
----
+# Submitting Spark Applications
 
 #### Prerequisites
 

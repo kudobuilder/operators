@@ -1,5 +1,4 @@
-Spark History Server Configuration
----
+# Spark History Server Configuration
 
 ## Prerequisites
 
