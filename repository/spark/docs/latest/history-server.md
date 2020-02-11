@@ -16,7 +16,7 @@ kubectl kudo install spark --instance=spark-operator \
 ```
 This will deploy a Pod and Service for the `Spark History Server` with the `Spark Event Log` directory configured via the `historyServerFsLogDirectory` parameter. Spark Operator also supports Persistent Volume Claim (PVC) based storage. There is a parameter `historyServerPVCName` to pass the name of the PVC. Make sure that provided PVC should have `ReadWriteMany` [access mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) supported.
 
-If you want to write and read event logs to/from an S3 bucket, you can do the following:
+To configure S3 for event log storage it is recommended to store AWS security credentials in a `Secret` in the following way:
 1) Create a `Secret` which will contain Spark configuration (file name is important):
 ```bash
 $ cat << 'EOF' >> spark-defaults.conf
@@ -39,10 +39,10 @@ kubectl kudo install spark --instance=spark-operator \
 
 When submitting Spark Applications to the Operator with Spark History server enabled, you need to provide additional 
 configuration depending on storage type you are using for event logging. 
-For S3, an application configuration spec could be the following:
+The following steps are required for configuring Spark Application event log storage in S3:
 
-1) Create a `Secret` with AWS credentials as described [here](configuration.md#integration-with-aws-s3).
-2) SparkApplication configuration could be as the following:
+1) Create a `Secret` with AWS credentials as described in [Integration with AWS S3](configuration.md#integration-with-aws-s3) Operator documentation.
+2) Create a `SparkApplication` configuration with AWS credentials environment variables populated from a `Secret` created at the previous step. Here's an example:
 ```yaml
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication

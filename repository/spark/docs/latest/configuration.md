@@ -81,7 +81,7 @@ This section describes the steps required to provide an access to S3 when using 
 or accessing S3 buckets from Spark workloads. 
 With this method all sensitive data is stored as Kubernetes Secret and mounted to pods via environment variables.
 
-First, you need to convert AWS credentials to base64 as follows:
+In order to store AWS credentials in a `Secret`, the credentials should be converted to base64 first:
 ```bash
 $ echo "<AWS_ACCESS_KEY_ID>" | base64                    
   QVdTX0FDQ0VTU19LRVlfSUQK
@@ -104,7 +104,7 @@ Note: a Secret must be in the same namespace as an Spark Operator.
 
 To read more about Secrets, refer to the [official K8s documentation](https://kubernetes.io/docs/concepts/configuration/secret/).
 
-Here is the example using a Secret to pass AWS credentials as environment variables to `SparkApplication`: 
+Here is an example configuration which uses a `Secret` to pass AWS credentials as environment variables to `SparkApplication`: 
 ```yaml
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
