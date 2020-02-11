@@ -77,8 +77,7 @@ created or exist prior to submission of Spark Applications. `Role` configuration
 available in [spark-rbac.yaml](../../operator/templates/spark-rbac.yaml) template file.
 
 ### Integration with AWS S3
-This section describes the steps required to provide an access to S3 when using Spark History server 
-or accessing S3 buckets from Spark workloads. 
+This section describes the steps required for configuring secure access to S3 buckets for Spark workloads and Spark History server.
 With this method all sensitive data is stored as Kubernetes Secret and mounted to pods via environment variables.
 
 In order to store AWS credentials in a `Secret`, the credentials should be converted to base64 first:

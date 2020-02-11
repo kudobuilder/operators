@@ -37,8 +37,8 @@ kubectl kudo install spark --instance=spark-operator \
 
 ## Creating Spark Application
 
-When submitting Spark Applications to the Operator with Spark History server enabled, you need to provide additional 
-configuration depending on storage type you are using for event logging. 
+When Spark History server is enabled, an additional configuration such as security credentials can be required for 
+accessing the storage backend being used for event logging. 
 The following steps are required for configuring Spark Application event log storage in S3:
 
 1) Create a `Secret` with AWS credentials as described in [Integration with AWS S3](configuration.md#integration-with-aws-s3) Operator documentation.
