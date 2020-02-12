@@ -96,6 +96,40 @@ $ kubectl logs --tail=20 spark-pi-driver -n spark | grep 'Pi is'
 Pi is roughly 3.141644502283289
 ```
 
+#### Configuring Logging
+Logging can be configured by placing a custom `log4j.properties` file to `SPARK_CONF_DIR` directory.
+Spark Operator provides a mechanism for mounting Spark configuration files via K8s `ConfigMap` objects.
+
+1) Create a `ConfigMap` using the following `log4j.properties` as an example:
+```bash
+$ cat <<'EOF'>> log4j.properties
+log4j.rootCategory=DEBUG, console
+log4j.appender.console=org.apache.log4j.ConsoleAppender
+log4j.appender.console.target=System.err
+log4j.appender.console.layout=org.apache.log4j.PatternLayout
+log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n    
+EOF
+```
+```bash
+$ kubectl create configmap spark-conf-map --from-file log4j.properties
+```
+2) Then, add the following lines to `SparkApplication` spec:
+```yaml
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: spark-pi
+  namespace: spark
+spec:
+...
+    sparkConfigMap: spark-conf-map
+    ...
+    executor:
+      javaOptions: "-Dlog4j.configuration=file:/etc/spark/conf/log4j.properties"
+```
+The contents of `spark-conf-map` will be placed under `/etc/spark/conf` directory for driver and executor pods, 
+and `SPARK_CONF_DIR` environment variable will be set to this directory.
+
 #### Updating the application
 
 Let's say you want to update the application and increase the number of executors from 2 to 4. 

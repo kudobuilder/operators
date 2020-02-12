@@ -21,27 +21,12 @@ Spark authentication must be enabled for encryption to work.
 Additional configuration properties can be found in Spark documentation.
 
 The example below describes how to set up authentication and encryption for `SparkApplication` on Kubernetes.
-Also, it shows how to provide a custom `log4j.properties` to change the logging strategy.
  
 1) Create a authentication secret, which will be securely mounted to a driver and executor pods.
 ```bash
 $ kubectl create secret generic spark-secret --from-literal secret=my-secret
 ```
-2) Create a `ConfigMap` with `log4j.properties`:
-```bash
-$ cat <<'EOF'>> log4j.properties
-log4j.rootCategory=DEBUG, console
-log4j.appender.console=org.apache.log4j.ConsoleAppender
-log4j.appender.console.target=System.err
-log4j.appender.console.layout=org.apache.log4j.PatternLayout
-log4j.appender.console.layout.ConversionPattern=%d{yy/MM/dd HH:mm:ss} %p %c{1}: %m%n    
-EOF
-```
-```bash
-$ kubectl create configmap spark-conf-map --from-file log4j.properties
-```
-The following file will be mounted to `/etc/spark/conf` and environment variable `SPARK_CONF_DIR` will be set to this directory.
-
+2) Set log level to `DEBUG` as described in [Configuring Logging](submission.md#configuring-logging) section of the documentation.
 3) Apply the following `SparkApplication` specification with `kubectl apply -f <application_spec.yaml>` command.
 
 Note: If you are using the block transfer service, you might want to enable "spark.authenticate.enableSaslEncryption" 
