@@ -11,3 +11,5 @@ spec:
   parameters:
     BROKER_MEM: "400Mi"
     BROKER_CPUS: "300m"
+    NE_MEM: "10Mi"
+    NE_CPUS: "50m"

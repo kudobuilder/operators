@@ -17,8 +17,8 @@ spec:
       - name: kafka-node-exporter
         resources:
           requests:
-            memory: "20Mi"
-            cpu: "100m"
+            memory: "10Mi"
+            cpu: "50m"
       - name: k8skafka
         resources:
           requests:

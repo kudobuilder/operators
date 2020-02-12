@@ -30,11 +30,11 @@ spec:
           image: quay.io/prometheus/node-exporter:v0.18.1
           resources:
             requests:
-              memory: 20Mi
-              cpu: 0.1
+              memory: {{ .Params.NE_MEM }}
+              cpu: {{ .Params.NE_CPUS }}
             limits:
-              memory: 50Mi
-              cpu: 0.2
+              memory: {{ .Params.NE_MEM_LIMIT }}
+              cpu: {{ .Params.NE_CPUS_LIMIT }}
           ports:
             - containerPort: {{ .Params.KAFKA_NODE_EXPORTER_PORT }}
               name: ne-metrics

@@ -12,3 +12,5 @@ spec:
     NODE_COUNT: "1"
     MEMORY: "256Mi"
     CPUS: "0.3"
+    NE_MEM: "10Mi"
+    NE_CPUS: "50m"
