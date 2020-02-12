@@ -6,6 +6,11 @@ metadata:
 spec:
   ports:
   - port: {{ .Params.REST_PROXY_PORT }}
+    name: http
+  {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+  - port: {{ .Params.REST_PROXY_PORT_TLS }}
+    name: https
+  {{ end }}
   selector:
     app: confluent-rest-proxy
   clusterIP: None
