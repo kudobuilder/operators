@@ -157,3 +157,68 @@ T 10.244.0.103:7078 -> 10.244.0.104:46480 [AP] #3
   ..<-.I2.p...I.B?e..`>.1..?5...&j.<......q...2o..r}.9.h.3.....V.G@TUI...Oty....b.'......e:...O.L.YK....                                                                                                        
 ##
 ```
+
+### TLS configuration
+
+Spark allows to configure TLS for Spark web endpoints, such as Spark UI and Spark History Server UI.
+To get more information about SSL configuration in Spark , refer to the [Spark documentation](https://spark.apache.org/docs/latest/security.html#ssl-configuration).
+
+Here are the steps required to configure TLS for `SparkApplication`:
+
+1) Create a `Secret` containing all the sensitive data (passwords and key-stores):
+```bash
+$ kubectl create secret generic ssl-secrets \
+--from-file keystore.jks \
+--from-file truststore.jks \
+--from-literal key-password=<password for the private key > \
+--from-literal keystore-password=<password for the keystore> \
+--from-literal truststore-password=<password for the truststore>
+```
+
+2) In `SparkApplication`, specify `spark.ssl.*` configuration properties via `sparkConf` and mount the secret 
+created in the previous step using `secrets` and `env` sections. `keystore.jks` and `truststore.jks` will be placed 
+to `secrets.path` directory and the passwords will be passed to the driver pod via predefined environment variables.   
+
+```yaml
+apiVersion: "sparkoperator.k8s.io/v1beta2"
+kind: SparkApplication
+metadata:
+  name: <app-name>
+  namespace: <namespace>
+spec:
+  ...
+  image: "mesosphere/spark:2.4.4-hadoop-2.9-k8s"
+  sparkConf:
+    "spark.ssl.enabled":    "true",
+    "spark.ssl.keyStore":   "/tmp/spark/ssl/keystore.jks",
+    "spark.ssl.protocol":   "TLSv1.2",
+    "spark.ssl.trustStore": "/tmp/spark/ssl/truststore.jks",
+  driver:
+    ...
+    secrets:
+      - name: ssl-secrets
+        path: "/tmp/spark/ssl"
+        secretType: Generic
+    env:
+      - name: SPARK_SSL_KEYPASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: key-password
+            name: ssl-secrets
+      - name: SPARK_SSL_KEYSTOREPASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: keystore-password
+            name: ssl-secrets
+      - name: SPARK_SSL_TRUSTSTOREPASSWORD
+        valueFrom:
+          secretKeyRef:
+            key: truststore-password
+            name: ssl-secrets
+```
+
+3) Forward a local port to a Spark UI (driver) port (default port for SSL connections is 4440):
+```bash
+$ kubectl port-forward  <driver-pod-name> 4440
+```
+4) Spark UI should now be available via [https://localhost:4440](https://localhost:4440/).
