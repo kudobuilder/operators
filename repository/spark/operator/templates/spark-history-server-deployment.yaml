@@ -42,13 +42,22 @@ spec:
         ports:
         - containerPort: 18080
           name: "history-server"
-      {{- if .Params.historyServerPVCName }}
         volumeMounts:
-        - mountPath: "{{ .Params.historyServerFsLogDirectory }}"
-          name: history-server-storage
+          - name: spark-conf
+            mountPath: "/opt/spark/conf"
+            readOnly: true
+          {{- if .Params.historyServerPVCName }}
+          - mountPath: "{{ .Params.historyServerFsLogDirectory }}"
+            name: history-server-storage
+          {{- end }}
       volumes:
-      - name: history-server-storage
-        persistentVolumeClaim:
-          claimName: {{ .Params.historyServerPVCName }}
-      {{- end }}
+        - name: spark-conf
+          secret:
+            secretName: {{ .Params.historyServerSparkConfSecret }}
+            optional: true
+        {{- if .Params.historyServerPVCName }}
+        - name: history-server-storage
+          persistentVolumeClaim:
+            claimName: {{ .Params.historyServerPVCName }}
+        {{- end }}
 {{- end }}
