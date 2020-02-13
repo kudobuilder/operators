@@ -53,9 +53,6 @@ spec:
     "spark.scheduler.minRegisteredResourcesRatio": "1.0"
     "spark.authenticate": "true"
     "spark.network.crypto.enabled": "true"
-    "spark.executorEnv.JAVA_TOOL_OPTIONS": >-
-      -Dspark.authenticate=true
-      -Dspark.network.crypto.enabled=true
   sparkVersion: 2.4.4
   sparkConfigMap: spark-conf-map
   restartPolicy:
@@ -113,12 +110,7 @@ $ kubectl logs spark-rpc-auth-enctryption-app-driver -f
 20/02/07 16:13:07 DEBUG TransportClientFactory: Creating new connection to spark-rpc-auth-enctryption-app-1581091973687-driver-svc.default.svc/10.244.0.103:7078
 20/02/07 16:13:07 DEBUG TransportClientFactory: Connection to spark-rpc-auth-enctryption-app-1581091973687-driver-svc.default.svc/10.244.0.103:7078 successful, running bootstraps...
 20/02/07 16:13:07 DEBUG AuthEngine: Generated key with 1024 iterations in 4715 us.
-20/02/07 16:13:08 DEBUG AuthEngine: Generated key with 1024 iterations in 2144 us.
 20/02/07 16:13:08 INFO TransportClientFactory: Successfully created connection to spark-rpc-auth-enctryption-app-1581091973687-driver-svc.default.svc/10.244.0.103:7078 after 115 ms (110 ms spent in bootstraps)
-20/02/07 16:13:08 INFO DiskBlockManager: Created local directory at /var/data/spark-bf7a16fc-7b43-41e2-a76f-bf9ea101afc1/blockmgr-20a055fa-ac87-4eaa-a101-e1174f642e69
-20/02/07 16:13:08 DEBUG DiskBlockManager: Adding shutdown hook
-20/02/07 16:13:08 DEBUG ShutdownHookManager: Adding shutdown hook
-20/02/07 16:13:08 INFO MemoryStore: MemoryStore started with capacity 117.0 MB
 20/02/07 16:13:08 INFO CoarseGrainedExecutorBackend: Connecting to driver: spark://CoarseGrainedScheduler@spark-rpc-auth-enctryption-app-1581091973687-driver-svc.default.svc:7078
 20/02/07 16:13:08 INFO CoarseGrainedExecutorBackend: Successfully registered with driver
 ...
