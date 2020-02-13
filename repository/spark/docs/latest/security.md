@@ -16,7 +16,7 @@ spark.authenticate  true
 # the secret key, used for authentication. Must be configured on each of the nodes.          
 spark.authenticate.secret  spark-secret
 ```
-If you want to set up the encryption for RPC connections, you can enable it by setting `spark.network.crypto.enabled` to `true`.
+To enable encryption for RPC connections, `spark.network.crypto.enabled` configuration property should be set to `true`.
 Spark authentication must be enabled for encryption to work.
 Additional configuration properties can be found in Spark documentation.
 
@@ -91,11 +91,11 @@ This will create a test job, which emulates a long-running task.
 Secrets are injected into Spark pods via specific environment variables: `SPARK_AUTHENTICATE_SECRET` and `_SPARK_AUTH_SECRET` 
 for driver and executor, respectively.
 
-4) Check out the logs of the running pods:
+4) Check logs of the running pods:
 ```bash
 $ kubectl logs spark-rpc-auth-enctryption-app-driver -f
 ``` 
-5) You should see the records similar to the snippets below:
+5) The logs should contain auth-related messages similar to the ones in snippets below:
 ```
 (driver logs):
 ...
@@ -125,12 +125,12 @@ $ kubectl logs spark-rpc-auth-enctryption-app-driver -f
 ```
 6) Verify the network encryption:
 
-- Connect to the driver pod:
+- Attach to the driver pod:
 
 ```bash
 $ kubectl exec -it spark-rpc-auth-enctryption-app-driver bash
 ```
-- Using `ngrep` tool, you can monitor the traffic on `7078` port: 
+- Use `ngrep` tool to monitor the traffic on `7078` port: 
 ```bash
 $ ngrep port 7078
 ```
