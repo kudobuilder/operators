@@ -8,15 +8,12 @@ communication between driver and executors and also adds a possibility to enable
 For more information refer to the [official Spark documentation](https://spark.apache.org/docs/latest/security.html#encryption).
 
 #### Authentication and encryption
-To enable authentication for RPC, the following configuration is required:
-```
-# enable authentication for internal connections
-spark.authenticate  true  
 
-# the secret key, used for authentication. Must be configured on each of the nodes.          
-spark.authenticate.secret  spark-secret
-```
-To enable encryption for RPC connections, `spark.network.crypto.enabled` configuration property should be set to `true`.
+In order to enable RPC authentication:
+* set `spark.authenticate` configuration property to `true` 
+* mount `SPARK_AUTHENTICATE_SECRET` environment variable from a secret for both the Driver and Executors
+
+To enable encryption for RPC connections, set `spark.network.crypto.enabled` configuration property to `true`.
 Spark authentication must be enabled for encryption to work.
 Additional configuration properties can be found in Spark documentation.
 
@@ -53,6 +50,8 @@ spec:
     "spark.scheduler.minRegisteredResourcesRatio": "1.0"
     "spark.authenticate": "true"
     "spark.network.crypto.enabled": "true"
+    "spark.kubernetes.driver.secretKeyRef.SPARK_AUTHENTICATE_SECRET": "spark-secret:secret"
+    "spark.kubernetes.executor.secretKeyRef.SPARK_AUTHENTICATE_SECRET": "spark-secret:secret"
   sparkVersion: 2.4.4
   sparkConfigMap: spark-conf-map
   restartPolicy:
@@ -63,30 +62,17 @@ spec:
     labels:
       version: 2.4.4
     serviceAccount: <service-account>
-    env:
-      - name: SPARK_AUTHENTICATE_SECRET
-        valueFrom:
-          secretKeyRef:
-            key: secret
-            name: spark-secret
   executor:
     cores: 1
     instances: 1
     memory: "512m"
     labels:
       version: 2.4.4
-    env:
-      - name: _SPARK_AUTH_SECRET
-        valueFrom:
-          secretKeyRef:
-            key: secret
-            name: spark-secret
     javaOptions: "-Dlog4j.configuration=file:/etc/spark/conf/log4j.properties"
 ```
 
 This will create a test job, which emulates a long-running task. 
-Secrets are injected into Spark pods via specific environment variables: `SPARK_AUTHENTICATE_SECRET` and `_SPARK_AUTH_SECRET` 
-for driver and executor, respectively.
+Authentication secrets will be injected into Spark pods via `SPARK_AUTHENTICATE_SECRET` environment variable.
 
 4) Check logs of the running pods:
 ```bash
@@ -154,13 +140,13 @@ $ kubectl create secret generic ssl-secrets \
 ```
 
 2) In `SparkApplication`, specify `spark.ssl.*` configuration properties via `sparkConf` and mount the secret 
-created in the previous step using `secrets` and `env` sections. `keystore.jks` and `truststore.jks` will be placed 
-to `secrets.path` directory and the passwords will be passed to the driver pod via predefined environment variables.   
+created in the previous step using `spark.kubernetes.*` properties. `keystore.jks` and `truststore.jks` will be mounted 
+to `/tmp/spark/ssl` directory and the passwords will be passed to the driver pod via predefined environment variables.   
 
 ```yaml
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
-metadata:
+metadata: 
   name: <app-name>
   namespace: <namespace>
 spec:
@@ -171,28 +157,11 @@ spec:
     "spark.ssl.keyStore":   "/tmp/spark/ssl/keystore.jks",
     "spark.ssl.protocol":   "TLSv1.2",
     "spark.ssl.trustStore": "/tmp/spark/ssl/truststore.jks",
-  driver:
-    ...
-    secrets:
-      - name: ssl-secrets
-        path: "/tmp/spark/ssl"
-        secretType: Generic
-    env:
-      - name: SPARK_SSL_KEYPASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: key-password
-            name: ssl-secrets
-      - name: SPARK_SSL_KEYSTOREPASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: keystore-password
-            name: ssl-secrets
-      - name: SPARK_SSL_TRUSTSTOREPASSWORD
-        valueFrom:
-          secretKeyRef:
-            key: truststore-password
-            name: ssl-secrets
+    "spark.kubernetes.driver.secretKeyRef.SPARK_SSL_KEYPASSWORD":        "ssl-secrets:key-password",
+    "spark.kubernetes.driver.secretKeyRef.SPARK_SSL_KEYSTOREPASSWORD":   "ssl-secrets:keystore-password",
+    "spark.kubernetes.driver.secretKeyRef.SPARK_SSL_TRUSTSTOREPASSWORD": "ssl-secrets:truststore-password"
+    "spark.kubernetes.driver.secrets.ssl-secrets": "/tmp/spark/ssl"
+  ...
 ```
 
 3) Forward a local port to a Spark UI (driver) port (default port for SSL connections is 4440):
