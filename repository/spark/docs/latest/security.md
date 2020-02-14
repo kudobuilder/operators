@@ -125,16 +125,19 @@ T 10.244.0.104:46480 -> 10.244.0.103:7078 [AP] #1
 ### TLS configuration
 
 Spark allows to configure TLS for Spark web endpoints, such as Spark UI and Spark History Server UI.
-To get more information about SSL configuration in Spark , refer to the [Spark documentation](https://spark.apache.org/docs/latest/security.html#ssl-configuration).
+To get more information about SSL configuration in Spark, refer to the [Spark documentation](https://spark.apache.org/docs/latest/security.html#ssl-configuration).
 
 Here are the steps required to configure TLS for `SparkApplication`:
 
-1) Create a `Secret` containing all the sensitive data (passwords and key-stores):
+**Note:** keystores must be provided in order to proceed with TLS setup. Keystores can be generated
+using [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) program.
+
+1) Create a `Secret` containing all the sensitive data (passwords and key-stores): 
 ```bash
 $ kubectl create secret generic ssl-secrets \
 --from-file keystore.jks \
 --from-file truststore.jks \
---from-literal key-password=<password for the private key > \
+--from-literal key-password=<password for the private key> \
 --from-literal keystore-password=<password for the keystore> \
 --from-literal truststore-password=<password for the truststore>
 ```
