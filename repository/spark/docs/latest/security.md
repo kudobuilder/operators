@@ -129,8 +129,7 @@ To get more information about SSL configuration in Spark, refer to the [Spark do
 
 Here are the steps required to configure TLS for `SparkApplication`:
 
-**Note:** keystores must be provided in order to proceed with TLS setup. Keystores can be generated
-using [keytool](https://docs.oracle.com/javase/10/tools/keytool.htm) program.
+**Note:** TLS setup requires a Keystore (a database of cryptographic keys, X.509 certificate chains, and trusted certificates) to be provided. To generate a Keystore, follow the [official documentation](https://docs.oracle.com/javase/10/tools/keytool.htm) for `keytool` which is a key and certificate management utility shipped with JDK.
 
 1) Create a `Secret` containing all the sensitive data (passwords and key-stores): 
 ```bash
