@@ -45,24 +45,8 @@ You can view all configuration options [here](configuration.md)
 
 Optionally, create dedicated namespaces for installing KUDO Spark instances(e.g. `spark-operator-1` and `spark-operator-2` in this example):
 ```bash
-cat <<EOF | kubectl apply -f -
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: spark-operator-1
-  labels:
-    name: spark-operator-1
----
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: spark-operator-2
-  labels:
-    name: spark-operator-2
-EOF
+kubectl create ns spark-operator-1 && kubectl create ns spark-operator-2
 ```
-
-
 ```
 kubectl kudo install spark --instance=spark-1 --namespace spark-operator-1
 kubectl kudo install spark --instance=spark-2 --namespace spark-operator-2
