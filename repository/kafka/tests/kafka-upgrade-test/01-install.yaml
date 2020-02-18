@@ -13,3 +13,5 @@ spec:
     BROKER_MEM: "300Mi"
     BROKER_CPUS: "300m"
     ZOOKEEPER_URI: "zk-zookeeper-0.zk-hs:2181"
+    NE_MEM: "10Mi"
+    NE_CPUS: "50m"

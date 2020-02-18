@@ -17,17 +17,29 @@ parameters:
     default: "3"
     displayName: "Broker Count"
   - name: BROKER_CPUS
-    description: "CPUs (request) for the Kafka Broker pods. spec.containers[].resources.requests.cpu"
+    description: "CPUs (request) for the Kafka Broker container"
     default: "500m"
   - name: BROKER_CPUS_LIMIT
-    description: "CPUs (limit) for the Kafka Broker pods. spec.containers[].resources.limits.cpu"
+    description: "CPUs (limit) for the Kafka Broker container"
     default: "2000m"
   - name: BROKER_MEM
-    description: "Memory (request) for the Kafka Broker pods. spec.containers[].resources.requests.memory"
+    description: "Memory (request) for the Kafka Broker container"
     default: "2048Mi"
   - name: BROKER_MEM_LIMIT
-    description: "Memory (limit) for the Kafka Broker pods. spec.containers[].resources.limits.memory"
+    description: "Memory (limit) for the Kafka Broker container"
     default: "4096Mi"
+  - name: NE_MEM
+    default: "20Mi"
+    description: "Memory (request) for the Kafka node exporter sidecar"
+  - name: NE_CPUS
+    default: "100m"
+    description: "CPUs (request) for the Kafka node exporter sidecar"
+  - name: NE_MEM_LIMIT
+    default: "512Mi"
+    description: "Memory (limit) for the Kafka node exporter sidecar"
+  - name: NE_CPUS_LIMIT
+    default: "1500m"
+    description: "CPUs (limit) for the Kafka node exporter sidecar"
   - name: BROKER_PORT
     description: "Port brokers run on"
     default: "9093"
