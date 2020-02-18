@@ -858,3 +858,42 @@ parameters:
     description: "Memory (limit) for the Mirror Maker pods. spec.containers[].resources.limits.memory"
     default: "512Mi"
     trigger: "mirrormaker"
+  - name: KAFKA_CONNECT_ENABLED
+    default: "false"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_REPLICA_COUNT
+    default: "1"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_CPUS
+    description: "CPUs (request) for the Kafka Connect pods. spec.containers[].resources.requests.cpu"
+    default: "500m"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_CPUS_LIMIT
+    description: "CPUs (limit) for the Kafka Connect pods. spec.containers[].resources.limits.cpu"
+    default: "500m"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_MEM
+    description: "Memory (request) for the Kafka Connect pods. spec.containers[].resources.requests.memory"
+    default: "2048Mi"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_MEM_LIMIT
+    description: "Memory (limit) for the Kafka Connect pods. spec.containers[].resources.limits.memory"
+    default: "2048Mi"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_CONNECTORS_CM
+    displayName: "Connectors configuration Config Map"
+    description: "The configuration used by the Connect to bootstrap itself with the specified connectors."
+    required: false
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_REST_PORT
+    default: 8083
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE
+    default: "true"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
+    default: "true"
+    trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS
+    default: 10000
+    trigger: "kafka-connect"

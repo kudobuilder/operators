@@ -37,6 +37,18 @@ tasks:
     spec:
       resources:
         - service.yaml
+  - name: kafka-connect
+    kind: Apply
+    spec:
+      resources:
+        - kafka-connect-config.yaml
+        - kafka-connect-service.yaml
+        - kafka-connect.yaml
+  - name: kafka-connect-setup
+    kind: Apply
+    spec:
+      resources:
+        - kafka-connect-setup.yaml
   - name: generate-tls-certificates
     kind: Pipe
     spec:
@@ -141,6 +153,18 @@ plans:
           - name: deploy
             tasks:
               - mirrormaker
+  kafka-connect:
+    strategy: serial
+    phases:
+      - name: deploy-kafka-connect
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - kafka-connect
+          - name: setup
+            tasks:
+              - kafka-connect-setup
   external-access:
     strategy: serial
     phases:
