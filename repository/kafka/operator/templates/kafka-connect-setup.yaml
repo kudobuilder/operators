@@ -39,7 +39,7 @@ spec:
               ${KAFKA_HOME}/kafka-connectors-setup register http://{{ .Name }}-connect-svc:{{ .Params.KAFKA_CONNECT_REST_PORT }} --config=/connectors-configuration/config.yaml;
             fi
             {{ else }}
-            echo "No conenctors configuration Config Map provided to KUDO Kafka. Set parameter KAFKA_CONNECT_CONNECTORS_CM to bootstrap kafka connect with providers needed."
+            echo "No connectors configuration ConfigMap provided to KUDO Kafka. Set parameter KAFKA_CONNECT_CONNECTORS_CM to bootstrap kafka connect with providers needed."
             {{ end }}
         {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
         volumeMounts:

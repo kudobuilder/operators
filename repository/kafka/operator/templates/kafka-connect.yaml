@@ -39,20 +39,28 @@ spec:
             pushd /opt/kafka/connectors;
             {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
             if [ -e "/connectors-configuration/config.json" ]; then
-              ${KAFKA_HOME}/kafka-connectors-setup download --config==/connectors-configuration/config.json;
+              ${KAFKA_HOME}/kafka-connectors-setup download --config=/connectors-configuration/config.json;
             elif [ -e "/connectors-configuration/config.yaml" ]; then 
-              ${KAFKA_HOME}/kafka-connectors-setup download --config==/connectors-configuration/config.yaml;
+              ${KAFKA_HOME}/kafka-connectors-setup download --config=/connectors-configuration/config.yaml;
             fi
             {{ end }}
             popd;
-            exec ${KAFKA_HOME}/bin/connect-distributed.sh /kafka-connect-config/connect-distributed.properties
+            cp /kafka-connect-config/connect-distributed.properties ${KAFKA_HOME}/connect-distributed.properties
+            {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
+            cat /custom-configuration/custom.properties >> ${KAFKA_HOME}/connect-distributed.properties
+            {{ end }}
+            exec ${KAFKA_HOME}/bin/connect-distributed.sh ${KAFKA_HOME}/connect-distributed.properties
         volumeMounts:
+          - name: kafka-connect-config
+            mountPath: /kafka-connect-config
+          {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
+          - name: custom-configuration
+            mountPath: /custom-configuration
+          {{ end }}
           {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
           - name: connectors-configuration
             mountPath: /connectors-configuration
           {{ end }}
-          - name: kafka-connect-config
-            mountPath: /kafka-connect-config
         readinessProbe:
           tcpSocket:
             port: {{ .Params.KAFKA_CONNECT_REST_PORT }}
@@ -68,6 +76,11 @@ spec:
         - name: kafka-connect-config
           configMap:
             name: {{ .Name }}-kafka-connect-config
+        {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
+        - name: custom-configuration
+          configMap:
+            name: {{ .Params.KAFKA_CONNECT_CUSTOM_CM }}
+        {{ end }}
         {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
         - name: connectors-configuration
           configMap:

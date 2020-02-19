@@ -880,20 +880,33 @@ parameters:
     description: "Memory (limit) for the Kafka Connect pods. spec.containers[].resources.limits.memory"
     default: "2048Mi"
     trigger: "kafka-connect"
+  - name: KAFKA_CONNECT_CUSTOM_CM
+    displayName: "Kafka Connect custom configuration Config Map"
+    description: "Kafka Connect custom configuration Config Map"
+    required: false
+    trigger: "kafka-connect"
   - name: KAFKA_CONNECT_CONNECTORS_CM
     displayName: "Connectors configuration Config Map"
     description: "The configuration used by the Connect to bootstrap itself with the specified connectors."
     required: false
     trigger: "kafka-connect"
   - name: KAFKA_CONNECT_REST_PORT
+    displayName: "Kafka Connect port"
+    description: "Port for the REST API server to listen to."
     default: 8083
     trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE
-    default: "true"
+  - name: KAFKA_CONNECT_KEY_CONVERTER
+    displayName: "Kafka Connect key converter"
+    description: "The key converters specify the format of data in Kafka message key and how to translate it into Connect data"
+    default: "org.apache.kafka.connect.json.JsonConverter"
     trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE
-    default: "true"
+  - name: KAFKA_CONNECT_VALUE_CONVERTER
+    displayName: "Kafka Connect value converter"
+    description: "The value converter specify the format of data in Kafka message value and how to translate it into Connect data"
+    default: "org.apache.kafka.connect.json.JsonConverter"
     trigger: "kafka-connect"
   - name: KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS
+    displayName: "Kafka Connect offset flush interval in milliseconds"
+    description: "Kafka Connect topic offset flush interval in milliseconds"
     default: 10000
     trigger: "kafka-connect"

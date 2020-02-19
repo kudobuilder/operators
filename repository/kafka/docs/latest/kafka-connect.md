@@ -8,19 +8,136 @@ Kafka Connect is a tool for scalably and reliably streaming data between Apache 
 
 Kafka Connect integration is disabled by default.
 
+## Setup Kafka Connect
+
+### Connectors Configuration
+
+KUDO Kafka accepts a Config Map `KAFKA_CONNECT_CONNECTORS_CM` with an entry of `config.json` (`config.yaml` for configuration in YAML). This configuration file should contain the bootstrap connectors list describing their respective external asset list with and their configuration.
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: connectors-configuration
+data:
+  config.json: |
+    {
+      "<connector#1-name>": {
+        "resources": [
+          "<link to asset#1>",
+          "<link to asset#2>",
+          ...
+        ],
+        "config": {
+          <configuration of connector#1>
+        }
+      },
+      ...
+    }
+```
+
+:information_source: The operator also accepts configuration in YAML format.
+
+:information_source: The operator uses `p7zip` utility to extract archive assets. For the list of supported archive formats check its [documentation](https://packages.debian.org/buster/p7zip-full).
+
+Create the ConfigMap in the namespace we will have the KUDO Kafka cluster
+
+```bash
+$ kubectl create -f connectors-configuration.yaml -n kudo-kafka
+configmap/connectors-configuration created
+```
+
+```bash
+$ kubectl kudo update --instance=kafka \
+  -p KAFKA_CONNECT_ENABLED=true \
+  -p KAFKA_CONNECT_CONNECTORS_CM=connectors-configuration
+```
+
+### Start Kafka Connect
+
+Update the instance with `KAFKA_CONNECT_ENABLED` set to start Kafka Connect alongside the KUDO Kafka instance.
+
+```bash
+$ kubectl kudo update --instance=kafka \
+  -p KAFKA_CONNECT_ENABLED=true
+```
+## Advanced Options
+
+|Parameter|Description|Example|
+|--|--|--|
+| KAFKA_CONNECT_REST_PORT | Port for the REST API server to listen to | <ul><li> 8083 (default) </li></ul> |
+| KAFKA_CONNECT_KEY_CONVERTER | The key converter specify the format of data in Kafka message key and how to translate it into Connect data | <ul><li>"org.apache.kafka.connect.json.JsonConverter" (default)</li></ul> |
+| KAFKA_CONNECT_VALUE_CONVERTER | The value converter specify the format of data in Kafka message value and how to translate it into Connect data | <ul><li>"org.apache.kafka.connect.json.JsonConverter" (default)</li></ul> |
+| KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS | Topic offset flush interval in milliseconds | <ul><li>"10000" for 10 seconds (default)</li></ul> |
+
+## Custom Configuration
+
+Custom configurations empower the advanced Kafka Connect user so they aren't restricted by the parameters currently exposed in the KUDO Kafka configuration. 
+KUDO Kafka accepts a Config Map `KAFKA_CONNECT_CUSTOM_CM` with an entry of `custom.properties`.
+
+To use the custom Kafka Connect configuration, we need to create a configmap with the properties we want to override.
+
+Example custom configuration:
+
+```yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-configuration
+data:
+  custom.properties: |
+    key.converter.schemas.enable=true
+    value.converter.schemas.enable=true
+```
+
+Create the ConfigMap in the namespace we will have the KUDO Kafka cluster
+
+```bash
+$ kubectl create -f custom-configuration.yaml -n kudo-kafka
+configmap/custom-configuration created
+```
+
+Now we are ready to start Kafka Connect with custom configuration to be used with default tuned configuration. 
+
+```bash
+$ kubectl kudo update --instance=kafka \
+  --namespace=kudo-kafka \
+  -p KAFKA_CONNECT_ENABLED=true \
+  -p KAFKA_CONNECT_CUSTOM_CM=custom-configuration \
+```
+
+## Disable Kafka Connect
+
+To disable Kafka Connect, scale the
+pod count to 0, using the following command:
+
+```bash
+$ kubectl kudo update --instance=$kafka_instance_name \
+  --namespace=$kafka_namespace_name \
+  -p KAFKA_CONNECT_REPLICA_COUNT=0
+``` 
+
+## Limitations
+
+Currently Kafka Connect works with Kafka protocol `PLAINTEXT` only. It will not work if Kerberos and or TLS is
+enabled in the Kafka instance. Future releases of KUDO Kafka will
+address this limitation through a Kafka Connect operator.
+
+## Runbook
+
 This guide shows how to stream data from a Cassandra instance to a MySQL instance using the integration provided by the operator.
 
-## Pre-conditions
+### Pre-conditions
 
 The following are necessary for this runbook:
 - One running Cassandra cluster.
 - One running MySQL server.
 
-## Steps
+### Steps
 
-### Preparation
+#### Preparation
 
-### 1. Set the shell variables
+#### 1. Set the shell variables
 
 The examples below assume the following shell variables. With this assumptions met, you should be able to copy-paste the commands easily.
 
@@ -33,12 +150,16 @@ You also need the following:
 
 :arrow_right: **Cassandra instance node list**
 
+Please refer to its documentation about how to retrieve a list of cassandra nodes.
+These need to be reachable from the KUDO Kafka instance.
+
+```bash
+cassandra_nodes_list=cassandra-node-1.example.com,cassandra-node-2.example.com
+```
+
 :warning: This runbook assumes that the Cassandra instance has transport encryption (TLS) and authorization disabled.
 
-**If the Cassandra instance is a [KUDO Cassandra](https://github.com/kudobuilder/operators/tree/master/repository/cassandra/3.11) instance running in the same kubernetes
-cluster:**
-
-You can generate the node list using the following commands:
+If the Cassandra instance is a [KUDO Cassandra](https://github.com/kudobuilder/operators/tree/master/repository/cassandra/3.11) instance running in the same kubernetes cluster, you can generate the node list using the following commands:
 ```bash
 cassandra_instance_name=cassandra
 cassandra_namespace_name=cassandra-demo
@@ -47,59 +168,16 @@ cassandra_port=$(kubectl get svc ${cassandra_instance_name}-svc -n $cassandra_na
 cassandra_node_list=$(kubectl get pods -l app=cassandra,cassandra=cassandra,kudo.dev/instance=$cassandra_instance_name -n $cassandra_namespace_name \
   --template="{{ range .items }}{{ .spec.hostname }}.{{ .spec.subdomain }}.{{ .metadata.namespace }}.svc.cluster.local{{ \"\\n\" }}{{end}}" \
   | head -n 3 | paste -d, -s)
-echo $cassandra_node_list 
+echo $cassandra_node_list
+echo $cassandra_port
 ```
 
 Example output:
 ```
 cassandra-node-0.cassandra-svc.cassandra-demo.svc.cluster.local,cassandra-node-1.cassandra-svc.cassandra-demo.svc.cluster.local,cassandra-node-2.cassandra-svc.cassandra-demo.svc.cluster.local
+9042
 ```
-
-**Otherwise:**
-
-Please refer to its documentation about how to retrieve a list of cassandra nodes.
-These need to be reachable from the KUDO Kafka instance.
-
-```bash
-cassandra_nodes_list=cassandra-node-1.example.com,cassandra-node-2.example.com
-```
-
 :arrow_right: **MySQL instance hostname, port, user credentinals and database name**
-
-**If the MySQL instance is a [KUDO MySQL](https://github.com/kudobuilder/operators/tree/master/repository/mysql) instance running in the same kubernetes
-cluster:**
-
-You can generate the required MySQL variables using the following commands:
-```bash
-mysql_instance_name=mysql
-mysql_namespace_name=mysql-demo
-mysql_port=$(kubectl get svc ${mysql_instance_name} -n $mysql_namespace_name \
-  --template='{{ range .spec.ports }}{{ .port }}{{ end }}')
-mysql_hostname=$mysql_instance_name.$mysql_namespace_name.svc.cluster.local
-mysql_user=demo
-mysql_password=demo
-mysql_database=demo
-mysql_root_password=$(kubectl get pods -l app=mysql,kudo.dev/instance=$mysql_instance_name -n $mysql_namespace_name \
-  --template='{{ range .items }}{{ range .spec.containers }}{{ if eq .name "mysql" }}{{ range .env }}{{ if eq .name "MYSQL_ROOT_PASSWORD" }}{{ .value }}{{ "\n" }}{{ end }}{{ end }}{{ end }}{{ end }}{{ end }}' \
-  | head -n 1 )
-mysql_pod=$(kubectl get pods -l app=mysql,kudo.dev/instance=$mysql_instance_name -n $mysql_namespace_name \
-  --template='{{ range .items }}{{ .metadata.name }}{{ "\n" }}{{ end }}' \
-  | head -n 1 )
-kubectl exec -n $mysql_namespace_name -it $mysql_pod -- mysql -p$mysql_root_password --execute="CREATE DATABASE demo; GRANT ALL PRIVILEGES ON demo.* TO 'demo'@'%' IDENTIFIED BY 'demo'; FLUSH PRIVILEGES;"
-echo $mysql_hostname $mysql_port
-echo $mysql_user $mysql_password
-echo $mysql_database
-```
-:warning: The commands also create a user `demo` with full access to a new database `demo`.
-
-Example output:
-```
-mysql.mysql-demo.svc.cluster.local 3306
-demo demo
-demo
-```
-
-**Otherwise:**
 
 Please refer to its documentation about how to retrieve the hostname and port.
 The hostname and port need to be reachable from the KUDO Kafka instance. Also the user credintials provided must be able to create tables, read and write data in the database.
@@ -112,7 +190,7 @@ mysql_password=demo
 mysql_database=demo
 ```
 
-### 2. Create a new schema with table in the Cassandra instance
+#### 2. Create a new schema with table in the Cassandra instance
 
 Create a schema `demo` and a table `users`. Run the following CQL query in `cqlsh`:
 
@@ -133,34 +211,9 @@ cassandra_pod=$(kubectl get pods -l app=cassandra,cassandra=cassandra,kudo.dev/i
 kubectl exec -n $cassandra_namespace_name -it -c cassandra $cassandra_pod -- bash -c "CQLSH_PORT=$cassandra_port CQLSH_HOST=\$(hostname -f) cqlsh"
 ```
 
-## Setup Kafka Connect
+#### 3. Configuring Cassandra Source and MySQL Sink connectors
 
-### Connectors Configuration
-
-KUDO Kafka Connect accepts a Config Map with an entry of `config.json`. This configuration file contains the bootstrap connectors list describing their respective external asset list with and their configuration.
-
-```json
-{
-  "<connector#1-name>": {
-    "resources": [
-      "<link to asset#1>",
-      "<link to asset#2>",
-      ...
-    ],
-    "config": <configuration of connector#1>
-  },
-  ...
-}
-```
-
-:information_source: The operator also accepts configuration in YAML format.
-
-:information_source: The operator uses `p7zip` utility to extract archive assets. For the list of supported archive formats check its [documentation](https://packages.debian.org/buster/p7zip-full).
-
-
-#### Configuring Cassandra Source and MySQL Sink connectors
-
-
+Create a Config Map which contains the Cassnadra and MySQL connectors configuration.
 ```bash
 cat <<EOT > config.yaml
 apiVersion: v1
@@ -212,19 +265,37 @@ EOT
 kubectl apply -f config.yaml
 ```
 
+#### 4. Update instance to start Kafka Connect
 
-### Update instance to start Kafka Connect
+Create a Config Map which contains custom configuration parameters for Kafka Connect required for this runbook.
+```bash
+cat <<EOT > custom.yaml
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kccustom
+  namespace: ${kafka_namespace_name}
+data:
+  custom.properties: |
+    # Converter-specific settings can be passed in by prefixing the Converter's setting with the converter we want to apply
+    # it to
+    key.converter.schemas.enable=true
+    value.converter.schemas.enable=true
+EOT
+kubectl apply -f custom.yaml
+```
 
 Run the following command to start Kafka Connect alongside the KUDO Kafka instance:
 
-```sh
+```bash
 kubectl kudo update --instance=$kafka_instance_name \
   --namespace=$kafka_namespace_name \
   -p KAFKA_CONNECT_ENABLED=true \
-  -p KAFKA_CONNECT_CONNECTORS_CM=connectorsconfig
+  -p KAFKA_CONNECT_CONNECTORS_CM=connectorsconfig \
+  -p KAFKA_CONNECT_CUSTOM_CM=kccustom
 ```
 
-### Insert dummy data in the Cassandra table
+#### 5. Insert dummy data in the Cassandra table
 
 Execute CQL insert statements in `cqlsh` to add data to the `users` table.
 
@@ -232,8 +303,7 @@ Execute CQL insert statements in `cqlsh` to add data to the `users` table.
 
 ```bash
 ID="${ID:-1}";query=""
-for ((i = $ID ; i <= $ID+5 ; i++))
-do
+for ((i = $ID ; i <= $ID+5 ; i++)); do
   user=$(http https://randomuser.me/api/)
   first=$(echo $user | jq -r '.results[].name.first')
   last=$(echo $user | jq -r '.results[].name.last')
@@ -265,8 +335,7 @@ Example output:
       3 | 2020-02-17 23:58:30.638000+0000 |      enzo.novaes@example.com |      Enzo |   Novaes
 ```
 
-
-### Check MySQL database for new data
+#### 6. Check MySQL database for new data
 
 Kafka Connect will sync data from the Cassandra `users` table into MySQL. A new table `demo_topic` will be created by Kafka Conenct which be used to insert data from the `users` table of Cassandra. To check for new data run the following SQL statements:
 
@@ -303,21 +372,3 @@ mysql> select * from demo_topic;
 +-----------+-------------------------+--------+------------------------------+----------+
 6 rows in set (0.00 sec)
 ```
-
-## Disable Kafka Connect
-
-To disable Kafka Connect, scale the
-pod count to 0, using the following command:
-
-```sh
-kubectl kudo update --instance=$kafka_instance_name \
-  --namespace=$kafka_namespace_name \
-  -p KAFKA_CONNECT_REPLICA_COUNT=0
-``` 
-
-
-## Limitations
-
-Currently Kafka Connect works with Kafka protocol `PLAINTEXT` only. It will not work if Kerberos and or TLS is
-enabled in the Kafka instance. Future releases of KUDO Kafka will
-address this limitation through a Kafka Connect operator.

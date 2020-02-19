@@ -18,12 +18,8 @@ data:
     
     # The converters specify the format of data in Kafka and how to translate it into Connect data. Every Connect user will
     # need to configure these based on the format they want their data in when loaded from or stored into Kafka
-    key.converter=org.apache.kafka.connect.json.JsonConverter
-    value.converter=org.apache.kafka.connect.json.JsonConverter
-    # Converter-specific settings can be passed in by prefixing the Converter's setting with the converter we want to apply
-    # it to
-    key.converter.schemas.enable={{ .Params.KAFKA_CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE }}
-    value.converter.schemas.enable={{ .Params.KAFKA_CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE }}
+    key.converter={{ .Params.KAFKA_CONNECT_KEY_CONVERTER }}
+    value.converter={{ .Params.KAFKA_CONNECT_VALUE_CONVERTER }}
     
     # Topic to use for storing offsets. This topic should have many partitions and be replicated and compacted.
     # Kafka Connect will attempt to create the topic automatically when needed, but you can always manually create
@@ -52,7 +48,7 @@ data:
     # to run this example on a single-broker cluster and so here we instead set the replication factor to 1.
     status.storage.topic={{ .Name }}-connect-status
     status.storage.replication.factor={{ if lt (int .Params.BROKER_COUNT) 3 }}{{ .Params.BROKER_COUNT }}{{ else }}3{{ end }}
-    #status.storage.partitions=25
+    #status.storage.partitions=1
     
     # Flush much faster than normal, which is useful for testing/debugging
     offset.flush.interval.ms={{ .Params.KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS }}
@@ -60,7 +56,7 @@ data:
     # These are provided to inform the user about the presence of the REST host and port configs 
     # Hostname & Port for the REST API to listen on. If this is set, it will bind to the interface used to listen to requests.
     #rest.host.name=
-    #rest.port=8083
+    rest.port={{ .Params.KAFKA_CONNECT_REST_PORT }}
     
     # The Hostname & Port that will be given out to other workers to connect to i.e. URLs that are routable from other servers.
     #rest.advertised.host.name=
@@ -75,4 +71,5 @@ data:
     # Examples: 
     plugin.path=/usr/local/share/java,/usr/local/share/kafka/plugins,/opt/kafka/connectors,
     #plugin.path=
+    
 {{ end }}
