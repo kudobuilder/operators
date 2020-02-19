@@ -119,6 +119,11 @@ parameters:
     default: ""
     displayName: "Name of a Secret with Spark History Server configuration file"
 
+  - name: delegationTokenSecret
+    description: "Name of a Secret with Hadoop Delegation Token. The secret should be in the same namespace as the Operator."
+    default: ""
+    displayName: "Name of a Secret with Hadoop Delegation Token"
+
   ## Miscellaneous
   - name: sparkJobNamespace
     description: "Namespace for Spark Applications. Defaults to Operator namespace"
