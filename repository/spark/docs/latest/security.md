@@ -1,5 +1,4 @@
 # Security
----
 
 ### Securing Spark RPC communication
 

@@ -11,7 +11,7 @@ Required software:
 ```bash
 kubectl kudo install spark --instance=spark-operator \
     -p enableHistoryServer=true \
-    -p historyServerFsLogDirectory="<log directory>" \
+    -p historyServerFsLogDirectory="<log directory>"
 ```
 This will deploy a Pod and Service for the `Spark History Server` with the `Spark Event Log` directory configured via the `historyServerFsLogDirectory` parameter. Spark Operator also supports Persistent Volume Claim (PVC) based storage. There is a parameter `historyServerPVCName` to pass the name of the PVC. Make sure that provided PVC should have `ReadWriteMany` [access mode](https://kubernetes.io/docs/concepts/storage/persistent-volumes/#access-modes) supported.
 
