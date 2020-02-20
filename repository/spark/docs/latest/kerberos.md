@@ -67,7 +67,6 @@ check "Retrieving delegation tokens" section of this document.
 1) To install Spark History Server with Kerberos enabled, install the Operator with the following parameters:
 ```bash
 kubectl kudo install spark --namespace=<namespace> \
-  -p operatorImageName=meosphere/kudo-spark-operator \
   -p enableHistoryServer=true \
   -p historyServerFsLogDirectory=hdfs://namenode.hdfs-kerberos.svc.cluster.local:9000/history \
   -p delegationTokenSecret=hadoop-token
