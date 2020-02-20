@@ -43,6 +43,7 @@ metadata:
   namespace: <namespace>
 spec:
 ...
+  hadoopConfigMap: hadoop-config
   driver:
     serviceAccount: spark-instance-spark-service-account
     secrets:
@@ -57,6 +58,10 @@ spec:
 ```
 
 Once specified, the delegation token from `hadoop-token` secret will be used to authenticate with Kerberos-enabled HDFS cluster.
+
+**Note** To provide Hadoop configuration files such as `core-site.xml` and `hdfs-site.xml` use `hadoopConfigMap` field in
+`SparkApplication` spec to specify the name of the ConfigMap containing them. The operator will mount the ConfigMap onto
+path `/etc/hadoop/conf` and ets the environment variable `HADOOP_CONF_DIR` to point to it in both the Driver and Executors.
 
 ### Configuring Spark History Server to use a Kerberos-enabled HDFS cluster for storage
 
