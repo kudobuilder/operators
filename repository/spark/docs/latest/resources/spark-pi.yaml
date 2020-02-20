@@ -6,10 +6,10 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: "mesosphere/spark:spark-2.4.4-hadoop-2.9-k8s"
+  image: "mesosphere/spark:spark-2.4.5-hadoop-2.9-k8s"
   imagePullPolicy: Always
   mainClass: org.apache.spark.examples.SparkPi
-  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.11-2.4.4.jar"
+  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.11-2.4.5.jar"
   arguments:
     - "150000"
   sparkConf:
@@ -21,11 +21,11 @@ spec:
     cores: 1
     memory: "512m"
     labels:
-      version: 2.4.4
+      version: 2.4.5
     serviceAccount: spark-driver
   executor:
     cores: 1
     instances: 4
     memory: "512m"
     labels:
-      version: 2.4.4
+      version: 2.4.5

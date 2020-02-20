@@ -1,5 +1,5 @@
 apiVersion: kudo.dev/v1beta1
-appVersion: 2.4.4
+appVersion: 2.4.5
 kubernetesVersion: 1.15.0
 kudoVersion: 0.10.1
 maintainers:
