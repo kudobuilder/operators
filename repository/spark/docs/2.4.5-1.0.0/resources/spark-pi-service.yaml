@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: spark-pi-loadbalancer
+  name: spark-pi-loadbalancer
+spec:
+  type: LoadBalancer
+  selector:
+    spark-role: driver
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 4041

@@ -10,7 +10,7 @@ maintainers:
 - name: Ken Sipe
   email: ken@d2iq.com
 name: spark
-operatorVersion: 0.2.0
+operatorVersion: 1.0.0
 plans:
   deploy:
     phases:

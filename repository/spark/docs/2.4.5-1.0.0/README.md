@@ -1,4 +1,4 @@
-# KUDO Spark latest
+# KUDO Spark 2.4.5-1.0.0 (GA)
 
 * [Installation](installation.md)
 * [Configuration](configuration.md)

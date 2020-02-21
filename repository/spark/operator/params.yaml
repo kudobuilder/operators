@@ -34,7 +34,7 @@ parameters:
 
   - name: operatorVersion
     description: "Operator Docker image version (tag)"
-    default: 2.4.5-0.2.0
+    default: 2.4.5-1.0.0
     displayName: "Operator Docker image version (tag)"
 
   - name: imagePullPolicy
