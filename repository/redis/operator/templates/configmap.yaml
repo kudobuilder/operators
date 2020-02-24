@@ -1,7 +1,12 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-redis
+  namespace: {{ .Namespace }}
+  name: {{ .Name }}-{{ .OperatorName }}
+  labels:
+    app: redis
+    redis: {{ .OperatorName }}
+    instance: {{ .Name }}
 data:
   update-node.sh: |
     #!/bin/sh
