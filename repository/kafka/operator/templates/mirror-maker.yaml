@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
       - name: kafka-mirror-maker
-        image: mesosphere/kafka:1.0.1-2.3.1
+        image: mesosphere/kafka:2.4.0-1.3.0
         imagePullPolicy: Always
         command:
           - bash

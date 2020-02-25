@@ -1,5 +1,5 @@
 {{ if eq .Params.KAFKA_CONNECT_ENABLED "true" }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-connect
@@ -8,9 +8,9 @@ metadata:
     app: kafka-connect
 spec:
   replicas: {{ .Params.KAFKA_CONNECT_REPLICA_COUNT }}
-  namespaceSelector:
-    matchNames:
-    - {{ .Namespace }}
+  selector:
+    matchLabels:
+      app: kafka-connect
   template:
     metadata:
       labels:
@@ -18,7 +18,7 @@ spec:
     spec:
       containers:
       - name: kafka-connect
-        image: shubhanilbag/kafka:2.4.0-1.2.1
+        image: shubhanilbag/kafka:2.4.0-1.3.0
         imagePullPolicy: Always
         resources:
           requests:
@@ -45,11 +45,11 @@ spec:
             fi
             {{ end }}
             popd;
-            cp /kafka-connect-config/connect-distributed.properties ${KAFKA_HOME}/connect-distributed.properties
+            cp /kafka-connect-config/connect-distributed.properties ${KAFKA_HOME}/connect-distributed.properties;
             {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
-            cat /custom-configuration/custom.properties >> ${KAFKA_HOME}/connect-distributed.properties
+            cat /custom-configuration/custom.properties >> ${KAFKA_HOME}/connect-distributed.properties;
             {{ end }}
-            exec ${KAFKA_HOME}/bin/connect-distributed.sh ${KAFKA_HOME}/connect-distributed.properties
+            exec ${KAFKA_HOME}/bin/connect-distributed.sh ${KAFKA_HOME}/connect-distributed.properties;
         volumeMounts:
           - name: kafka-connect-config
             mountPath: /kafka-connect-config

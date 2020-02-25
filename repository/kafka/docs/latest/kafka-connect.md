@@ -22,23 +22,47 @@ metadata:
 data:
   config.json: |
     {
-      "<connector#1-name>": {
-        "resources": [
-          "<link to asset#1>",
-          "<link to asset#2>",
-          ...
-        ],
-        "config": {
-          <configuration of connector#1>
+      "connectors": {
+        "<connector#1-name>": {
+          "resources": [
+            "<link to asset#1>",
+            "<link to asset#2>"
+            ...
+          ],
+          "config": {
+            <configuration of connector#1>
+          }
         }
+        ...
       },
-      ...
+      "resources": [
+        "<link to download only asset#1>",
+        "<link to download only asset#2>"
+        ...
+      ]
     }
 ```
 
 :information_source: The operator also accepts configuration in YAML format.
 
-:information_source: The operator uses `p7zip` utility to extract archive assets. For the list of supported archive formats check its [documentation](https://packages.debian.org/buster/p7zip-full).
+:information_source: The operator automatically extracts the resources. The list of supported archive formats are as follows:
+
+#### Supported compression formats
+
+- brotli (br)
+- bzip2 (bz2)
+- flate (zip)
+- gzip (gz)
+- lz4
+- snappy (sz)
+- xz
+- zstandard (zstd)
+
+#### Supported archive formats
+
+- .zip
+- .tar (including any compressed variants like .tar.gz)
+- .rar
 
 Create the ConfigMap in the namespace we will have the KUDO Kafka cluster
 
@@ -183,7 +207,7 @@ Please refer to its documentation about how to retrieve the hostname and port.
 The hostname and port need to be reachable from the KUDO Kafka instance. Also the user credintials provided must be able to create tables, read and write data in the database.
 
 ```bash
-mysql_hostname=mysql.example.com
+mysql_hostname=mysql.default.svc.cluster.local
 mysql_port=3306
 mysql_user=demo
 mysql_password=demo
@@ -224,42 +248,45 @@ metadata:
 data:
   config.json: |
     {
-      "mysql-sink-connector": {
-        "resources": [
+      "connectors": {
+        "mysql-sink-connector": {
+          "resources": [
             "https://d1i4a15mxbxib1.cloudfront.net/api/plugins/confluentinc/kafka-connect-jdbc/versions/5.4.0/confluentinc-kafka-connect-jdbc-5.4.0.zip",
             "https://cdn.mysql.com//Downloads/Connector-J/mysql-connector-java-8.0.19.zip"
-        ],
-        "config": {
+          ],
+          "config": {
             "name": "jdbc_dest_mysql_users",
             "config": {
-                "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
-                "tasks.max": "1",
-                "topics": "demo_topic",
-                "connection.url": "jdbc:mysql://${mysql_hostname}:${mysql_port}/${mysql_database}?user=${mysql_user}&password=${mysql_password}",
-                "auto.create": "true",
-                "name": "jdbc_dest_mysql_users"
+              "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+              "tasks.max": "1",
+              "topics": "demo_topic",
+              "connection.url": "jdbc:mysql://${mysql_hostname}:${mysql_port}/${mysql_database}?user=${mysql_user}&password=${mysql_password}",
+              "auto.create": "true",
+              "name": "jdbc_dest_mysql_users"
             }
-        }
-      },
-      "cassandra-source-connector": {
-        "resources": [
+          }
+        },
+        "cassandra-source-connector": {
+          "resources": [
             "https://github.com/lensesio/stream-reactor/releases/download/1.2.3/kafka-connect-cassandra-1.2.3-2.1.0-all.tar.gz"
-        ],
-        "config": {
+          ],
+          "config": {
             "name": "cassandra_source_users",
             "config": {
-                "tasks.max": "1",
-                "connector.class": "com.datamountaineer.streamreactor.connect.cassandra.source.CassandraSourceConnector",
-                "connect.cassandra.contact.points": "${cassandra_node_list}",
-                "connect.cassandra.port": ${cassandra_port},
-                "connect.cassandra.consistency.level": "LOCAL_ONE",
-                "connect.cassandra.key.space": "demo",
-                "connect.cassandra.import.mode": "incremental",
-                "connect.cassandra.kcql": "INSERT INTO demo_topic SELECT * FROM users PK created_date INCREMENTALMODE=TIMESTAMP",
-                "connect.cassandra.import.poll.interval": 5000
+              "tasks.max": "1",
+              "connector.class": "com.datamountaineer.streamreactor.connect.cassandra.source.CassandraSourceConnector",
+              "connect.cassandra.contact.points": "${cassandra_node_list}",
+              "connect.cassandra.port": ${cassandra_port},
+              "connect.cassandra.consistency.level": "LOCAL_ONE",
+              "connect.cassandra.key.space": "demo",
+              "connect.cassandra.import.mode": "incremental",
+              "connect.cassandra.kcql": "INSERT INTO demo_topic SELECT * FROM users PK created_date INCREMENTALMODE=TIMESTAMP",
+              "connect.cassandra.import.poll.interval": 5000
             }
+          }
         }
-      }
+      },
+      "resources": []
     }
 EOT
 kubectl apply -f config.yaml
