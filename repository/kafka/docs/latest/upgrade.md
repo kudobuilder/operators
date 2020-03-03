@@ -1,5 +1,7 @@
 # Upgrading the KUDO Kafka Operator
 
+This document explains the upgrade concepts for KUDO Kafka. To see the full upgrade runbook please check [upgrading KUDO Kafka runbook](./upgrade-kafka.md)
+
 KUDO Kafka upgrades work by linking the Kafka cluster `Instance` object to the correct `operatorVersion` object.
 
 We can have multiple operator versions in the same Kubernetes cluster. 
@@ -8,8 +10,6 @@ One instance object represents a Kafka Cluster and multiple instances can use th
 ![operator-upgrade-1](./resources/images/operator-upgrade-1.png)
 
 Upgrading can be done by patching the Kafka Instance that holds all the configuration of a specific Kafka cluster and pointing it to a new OperatorVersion object.
-
-
 
 ![operator-upgrade-1](./resources/images/operator-upgrade-2.png)
 
