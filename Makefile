@@ -1,5 +1,5 @@
 KUBERNETES_VERSION=1.16.4
-KUDO_VERSION=0.10.1
+KUDO_VERSION=0.11.0
 
 ARTIFACTS ?= artifacts/
 
@@ -12,7 +12,6 @@ ifeq "$(MACHINE)" "x86_64"
 endif
 
 export PATH := $(shell pwd)/bin/:$(PATH)
-export KUBECONFIG := $(shell pwd)/kubeconfig
 
 bin/:
 	mkdir -p bin/
