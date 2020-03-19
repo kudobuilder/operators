@@ -80,7 +80,7 @@ tasks:
   - name: not-allowed
     kind: Dummy
     spec:
-      resources:
+      done: true
 plans:
   deploy:
     strategy: serial
