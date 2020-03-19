@@ -1,5 +1,4 @@
-{{ if eq .Params.MIRROR_MAKER_ENABLED "true" }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-mirror-maker
@@ -52,4 +51,3 @@ spec:
             name: {{ .Name }}-mirror-maker-config
   strategy:
     type: Recreate
-{{ end }}

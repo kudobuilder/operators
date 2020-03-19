@@ -102,9 +102,8 @@ spec:
               name: ingress
             {{ end }}
             {{ if eq  .Params.EXTERNAL_ADVERTISED_LISTENER_TYPE "NodePort" }}
-            {{- $root := . -}}
             {{ range $i, $v := until (int .Params.BROKER_COUNT) }}
-            - containerPort: {{ add (int $root.Params.EXTERNAL_NODE_PORT) $v}}
+            - containerPort: {{ add (int $.Params.EXTERNAL_NODE_PORT) $v}}
               name: node-port-{{ $v }}
             {{ end }}
             {{ end }}
