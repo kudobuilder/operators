@@ -1,4 +1,6 @@
 {{ if eq .Params.ADD_SERVICE_MONITOR "true" }}
+# service-monitor cannot use toggle task
+# as KUDO Kafka cannot guarantee the third-party CRDs to be present
 apiVersion: monitoring.coreos.com/v1
 kind: ServiceMonitor
 metadata:

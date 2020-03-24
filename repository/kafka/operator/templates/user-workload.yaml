@@ -1,5 +1,4 @@
-{{ if eq .Params.RUN_USER_WORKLOAD "true" }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-user-workload-producer
@@ -45,7 +44,7 @@ spec:
   strategy:
     type: Recreate
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-user-workload-consumer
@@ -86,4 +85,3 @@ spec:
             memory: 512Mi
   strategy:
     type: Recreate
-{{ end }}

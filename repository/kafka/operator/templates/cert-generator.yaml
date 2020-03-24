@@ -6,10 +6,18 @@ spec:
     emptyDir: {}
   initContainers:
     - name: init
+      {{ if eq .Params.USE_AUTO_TLS_CERTIFICATE "true" }}
       image: mesosphere/kafka:1.1.0-2.4.0
+      {{ else }}
+      image: busybox:1.31.1
+      {{ end }}
       command: [ "/bin/sh", "-c" ]
       args:
+        {{ if eq .Params.USE_AUTO_TLS_CERTIFICATE "true" }}
         - openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=KudoKafkaCA" -days 365
+        {{ else }}
+        - touch /tmp/tls.key && touch /tmp/tls.crt
+        {{ end }}
       volumeMounts:
         - name: cert-out
           mountPath: /tmp
