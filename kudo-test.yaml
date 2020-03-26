@@ -4,6 +4,9 @@ manifestDirs:
 - ./test/manifests/
 commands:
   - command: ./bin/kubectl-kudo init --crd-only
+  - command: ./bin/manager
+    background: true
+  - command: sleep 10
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/cassandra/3.11/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-schema-registry/operator/
@@ -24,5 +27,4 @@ testDirs:
 - ./repository/zookeeper/tests
 - ./repository/kafka/tests
 startKIND: true
-startKUDO: true
 timeout: 300
