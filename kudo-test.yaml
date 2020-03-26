@@ -2,24 +2,24 @@ apiVersion: kudo.dev/v1alpha1
 kind: TestSuite
 manifestDirs:
 - ./test/manifests/
-kubectl:
-- kudo init --crd-only
-- kudo install --skip-instance ./repository/cassandra/3.11/operator/
-- kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
-- kudo install --skip-instance ./repository/confluent-schema-registry/operator/
-- kudo install --skip-instance ./repository/cowsay/operator/
-- kudo install --skip-instance ./repository/elastic/operator/
-- kudo install --skip-instance ./repository/first-operator/operator/
-- kudo install --skip-instance ./repository/flink/docs/demo/financial-fraud/demo-operator/
-- kudo install --skip-instance ./repository/flink/operator/
-- kudo install --skip-instance ./repository/kafka/operator/
-- kudo install --skip-instance ./repository/mysql/operator/
-- kudo install --skip-instance ./repository/rabbitmq/operator/
-- kudo install --skip-instance ./repository/redis/operator/
-- kudo install --skip-instance ./repository/spark/operator/
-- kudo install --skip-instance ./repository/zookeeper/operator/
-- kudo install --skip-instance ./templates/akka/operator-shoppingcart/
-- kudo install --skip-instance ./templates/akka/operator/
+commands:
+  - command: ./bin/kubectl-kudo init --crd-only
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/cassandra/3.11/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-schema-registry/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/cowsay/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/elastic/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/first-operator/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/flink/docs/demo/financial-fraud/demo-operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/flink/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/kafka/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/mysql/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/rabbitmq/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/redis/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/spark/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./repository/zookeeper/operator/
+  - command: ./bin/kubectl-kudo install --skip-instance ./templates/akka/operator-shoppingcart/
+  - command: ./bin/kubectl-kudo install --skip-instance ./templates/akka/operator/
 testDirs:
 - ./repository/zookeeper/tests
 - ./repository/kafka/tests
