@@ -21,10 +21,17 @@ bin/kubectl_$(KUBERNETES_VERSION): bin/
 	chmod +x bin/kubectl_$(KUBERNETES_VERSION)
 	ln -sf ./kubectl_$(KUBERNETES_VERSION) ./bin/kubectl
 
+bin/kubectl-kudo_$(KUDO_VERSION): bin/
+	curl -Lo bin/kubectl-kudo_$(KUDO_VERSION) https://github.com/kudobuilder/kudo/releases/download/v$(KUDO_VERSION)/kubectl-kudo_$(KUDO_VERSION)_$(OS)_$(KUDO_MACHINE)
+	chmod +x bin/kubectl-kudo_$(KUDO_VERSION)
+	ln -sf ./kubectl-kudo_$(KUDO_VERSION) ./bin/kubectl-kudo
+
 bin/manager_$(KUDO_VERSION): bin/
 	curl -Lo bin/manager_$(KUDO_VERSION) https://github.com/kudobuilder/kudo/releases/download/v$(KUDO_VERSION)/manager_$(KUDO_VERSION)_$(OS)_$(KUDO_MACHINE)
 	chmod +x bin/manager_$(KUDO_VERSION)
 	ln -sf ./manager_$(KUDO_VERSION) ./bin/manager
+
+install-kudo: bin/kubectl-kudo_$(KUDO_VERSION) bin/manager_$(KUDO_VERSION)
 
 .PHONY: create-cluster
 create-cluster:
@@ -32,7 +39,7 @@ create-cluster:
 
 .PHONY: test
 # Test runs the test harness using kubectl-kudo test.
-test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION) bin/manager_$(KUDO_VERSION)
+test:  install-kudo bin/kubectl_$(KUBERNETES_VERSION)
 	kubectl kudo test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
 
 .PHONY: clean
