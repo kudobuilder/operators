@@ -37,8 +37,10 @@ bin/kubectl-kuttl_$(KUTTL_VERSION): bin/
 	chmod +x bin/kubectl-kuttl_$(KUTTL_VERSION)
 	ln -sf ./kubectl-kuttl_$(KUTTL_VERSION) ./bin/kubectl-kuttl
 
+.PHONY: install-kudo
 install-kudo: bin/kubectl-kudo_$(KUDO_VERSION) bin/manager_$(KUDO_VERSION)
 
+.PHONY: install-kuttl
 install-kuttl: bin/kubectl-kuttl_$(KUTTL_VERSION)
 
 .PHONY: create-cluster

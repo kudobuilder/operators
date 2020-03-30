@@ -6,6 +6,7 @@
 *.so
 *.dylib
 build/*
+.kudo/
 
 # Test binary, build with `go test -c`
 *.test
