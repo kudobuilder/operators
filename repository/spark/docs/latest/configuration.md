@@ -9,7 +9,7 @@ The default KUDO Spark configuration enables installation of the following resou
 * Mutating Admission Webhook for customizing Spark driver and executor pods based on the specification
 * `MetricsService` for Spark Operator and Spark Applications to enable metrics scraping by Prometheus
 
-Full list of configuration parameters and defaults is available in KUDO Spark [params.yaml](../../operator/params.yaml).
+Full list of configuration parameters and defaults is available in KUDO Spark [params.yaml](https://github.com/kudobuilder/operators/blob/master/repository/spark/operator/params.yaml).
 ## Docker
 Docker images used by KUDO Spark and image pull policy can be specified by providing the following parameters:
 ```bash
@@ -65,15 +65,15 @@ kubectl kudo install spark --instance=spark-operator -p createRBAC=<true|false>
 ```
 
 KUDO Spark requires a `ClusterRole` to be configured in order for it to handle custom resources, listen to events, work
-with secrets, configmaps, and services. The full list of permissions is available in [spark-operator-rbac.yaml](../../operator/templates/spark-operator-rbac.yaml).
-If `createRBAC` parameter is set to `false`, a `ClusterRole` and `ClusterRoleBinding` should be created or exist before 
-the installation. `ClusterRoleBinding` should be linked to the Service Account used by the Operator. 
+with secrets, configmaps, and services. The full list of permissions is available in [spark-operator-rbac.yaml](https://github.com/kudobuilder/operators/blob/master/repository/spark/operator/templates/spark-operator-rbac.yaml).
+If `createRBAC` parameter is set to `false`, a `ClusterRole` and `ClusterRoleBinding` should be created or exist before
+the installation. `ClusterRoleBinding` should be linked to the Service Account used by the Operator.
 
 Spark Applications submitted to KUDO Spark also require permissions to launch Spark Executors and monitor their state. For this
 purpose KUDO Spark creates a `Role` for them and binds it to a service account provided via `-p sparkServiceAccountName=<service account name>`.
 If `createRBAC` flag is set to `false`, a `Role` (with a `RoleBinding` linked to Spark Service Account) should be
 created or exist prior to submission of Spark Applications. `Role` configuration and a list of required permissions are
-available in [spark-rbac.yaml](../../operator/templates/spark-rbac.yaml) template file.
+available in [spark-rbac.yaml](https://github.com/kudobuilder/operators/blob/master/repository/spark/operator/templates/spark-rbac.yaml) template file.
 
 ### Integration with AWS S3
 This section describes the steps required for configuring secure access to S3 buckets for Spark workloads and Spark History server.
@@ -102,7 +102,7 @@ Note: a Secret must be in the same namespace as an Spark Operator.
 
 To read more about Secrets, refer to the [official K8s documentation](https://kubernetes.io/docs/concepts/configuration/secret/).
 
-Here is an example configuration which uses a `Secret` to pass AWS credentials as environment variables to `SparkApplication`: 
+Here is an example configuration which uses a `Secret` to pass AWS credentials as environment variables to `SparkApplication`:
 ```yaml
 apiVersion: "sparkoperator.k8s.io/v1beta2"
 kind: SparkApplication
@@ -135,4 +135,4 @@ spec:
             name: aws-credentials
             key: AWS_SESSION_TOKEN
             optional: true
-``` 
+```
