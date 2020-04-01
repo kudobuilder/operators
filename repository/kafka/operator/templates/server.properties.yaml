@@ -221,6 +221,8 @@ data:
     max.connections.per.ip.overrides={{ .Params.MAX_CONNECTIONS_PER_IP_OVERRIDES }}
     max.connections.per.ip={{ .Params.MAX_CONNECTIONS_PER_IP }}
 
+    max.incremental.fetch.session.cache.slots={{ .Params.MAX_INCREMENTAL_FETCH_SESSION_CACHE_SLOTS }}
+
     message.max.bytes={{ .Params.MESSAGE_MAX_BYTES }}
 
     metric.reporters={{ .Params.METRIC_REPORTERS }}

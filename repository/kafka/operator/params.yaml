@@ -673,6 +673,11 @@ parameters:
     description: "Per-ip or hostname overrides to the default maximum number of connections"
     default: ""
     trigger: "update"
+  - name: MAX_INCREMENTAL_FETCH_SESSION_CACHE_SLOTS
+    displayName: "max.incremental.fetch.session.cache.slots"
+    description: "Per-ip or hostname overrides to the default maximum number of connections"
+    default: "1000"
+    trigger: "update"
   - name: PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS
     displayName: "producer.purgatory.purge.interval.requests"
     description: "The purge interval (in number of requests) of the producer request purgatory"
