@@ -38,15 +38,17 @@ tasks:
       resources:
         - service.yaml
   - name: kafka-connect
-    kind: Apply
+    kind: Toggle
     spec:
+      parameter: KAFKA_CONNECT_ENABLED
       resources:
         - kafka-connect-config.yaml
         - kafka-connect-service.yaml
         - kafka-connect.yaml
   - name: kafka-connect-setup
-    kind: Apply
+    kind: Toggle
     spec:
+      parameter: KAFKA_CONNECT_ENABLED
       resources:
         - kafka-connect-setup.yaml
   - name: generate-tls-certificates

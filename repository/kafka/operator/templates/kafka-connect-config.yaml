@@ -1,4 +1,3 @@
-{{ if eq .Params.KAFKA_CONNECT_ENABLED "true" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -71,5 +70,3 @@ data:
     # Examples: 
     plugin.path=/usr/local/share/java,/usr/local/share/kafka/plugins,/opt/kafka/connectors,
     #plugin.path=
-    
-{{ end }}

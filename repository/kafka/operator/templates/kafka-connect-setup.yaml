@@ -1,4 +1,3 @@
-{{ if eq .Params.KAFKA_CONNECT_ENABLED "true" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -55,4 +54,3 @@ spec:
           configMap:
             name: {{ .Params.KAFKA_CONNECT_CONNECTORS_CM }}
         {{ end }}
-{{ end }}
