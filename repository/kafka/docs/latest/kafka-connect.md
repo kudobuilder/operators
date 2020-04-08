@@ -132,13 +132,13 @@ $ kubectl kudo update --instance=kafka \
 
 ## Disable Kafka Connect
 
-To disable Kafka Connect, scale the
-pod count to 0, using the following command:
+To disable Kafka Connect, update the
+instance with `KAFKA_CONNECT_ENABLED` set to `false`, using the following command:
 
 ```bash
 $ kubectl kudo update --instance=$kafka_instance_name \
   --namespace=$kafka_namespace_name \
-  -p KAFKA_CONNECT_REPLICA_COUNT=0
+  -p KAFKA_CONNECT_ENABLED=false
 ``` 
 
 ## Limitations
