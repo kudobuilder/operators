@@ -1,6 +1,6 @@
 # KUDO Kafka Concepts
 
-KUDO Kafka is a Kubernetes operator built on top of [KUDO](kudo.dev) and requires KUDO
+KUDO Kafka is a Kubernetes operator built on top of [KUDO](http://kudo.dev) and requires KUDO
 
 #### KUDO Kafka CRDs
 
@@ -16,15 +16,14 @@ The KUDO controller continually watches the Operator, OperatorVersion and Instan
 
 ![kudo-kafka](./resources/images/kudo-controller-kafka.png)
 
-When a user installs KUDO Kafka using the `kudo-cli`, the controller creates the KUDO Kafka CRDs for Operator, OperatorVersion and Instance. More information can be read in [KUDO Architecture](https://kudo.dev/docs/architecture.html#architecture-diagram) 
+When a user installs KUDO Kafka using the `kudo-cli`, the controller creates the KUDO Kafka CRDs for Operator, OperatorVersion and Instance. More information can be read in [KUDO Architecture](https://kudo.dev/docs/architecture.html#architecture-diagram)
 
 ![kudo-kafka](./resources/images/kudo-installs-kafka.png)
 
-When the KUDO Controller detects a new `Instance`, it creates all the resources required to reach the desired state of the configuration. 
+When the KUDO Controller detects a new `Instance`, it creates all the resources required to reach the desired state of the configuration.
 
 ![kudo-kafka](./resources/images/kafka-cluster.png)
 
 The same process is followed for any updates or deletions. Everything is handled by the KUDO Controller.
 
 ![kudo-kafka](./resources/images/kudo-update-kafka.png)
-

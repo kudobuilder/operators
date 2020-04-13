@@ -151,11 +151,6 @@ Use HELP for help.
 cqlsh>
 ```
 
-Check out the [parameters reference](./parameters.md) for a complete list of all
-configurable settings.
+Check out the [parameters reference](./parameters.md) for a complete list of all configurable settings.
 
-Check out the
-["configuration" section in the "managing" page](./managing.md#configuration)
-for help with changing an existing operator instance's parameters and the
-[operating](./operating.md) page for help with managing Cassandra operators and
-their underlying Cassandra clusters.
+For help with changing an existing operator instance's parameters and the [managing](./managing.md#updating-parameters) page for help with managing Cassandra operators and their underlying Cassandra clusters.
