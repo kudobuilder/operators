@@ -1,0 +1,56 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Name }}-connect-setup
+  namespace: {{ .Namespace }}
+  labels:
+    app: kafka-connect-setup
+spec:
+  backoffLimit: 5
+  activeDeadlineSeconds: 300
+  template:
+    spec:
+      restartPolicy: OnFailure
+      containers:
+      - name: kafka-connect-setup
+        image: shubhanilbag/kafka:2.4.0-1.3.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: 100m
+            memory: 30Mi
+          limits:
+            cpu: 100m
+            memory: 50Mi
+        command:
+          - bash
+          - -c
+        args:
+          - while ! nc -z {{ .Name }}-connect-svc {{ .Params.KAFKA_CONNECT_REST_PORT }} </dev/null;
+            do
+              echo "Waiting 10 secs for {{ .Name }}-connect-svc:{{ .Params.KAFKA_CONNECT_REST_PORT }} to be available";
+              sleep 10;
+            done;
+            {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+            if [ -e "/connectors-configuration/config.json" ]; then
+              ${KAFKA_HOME}/kafka-connectors-setup register http://{{ .Name }}-connect-svc:{{ .Params.KAFKA_CONNECT_REST_PORT }} --config=/connectors-configuration/config.json;
+            elif [ -e "/connectors-configuration/config.yaml" ]; then 
+              ${KAFKA_HOME}/kafka-connectors-setup register http://{{ .Name }}-connect-svc:{{ .Params.KAFKA_CONNECT_REST_PORT }} --config=/connectors-configuration/config.yaml;
+            fi
+            {{ else }}
+            echo "No connectors configuration ConfigMap provided to KUDO Kafka. Set parameter KAFKA_CONNECT_CONNECTORS_CM to bootstrap kafka connect with providers needed."
+            {{ end }}
+        {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+        volumeMounts:
+          - name: connectors-configuration
+            mountPath: /connectors-configuration
+        {{ end }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      volumes:
+        {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+        - name: connectors-configuration
+          configMap:
+            name: {{ .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+        {{ end }}

@@ -1,0 +1,89 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-connect
+  namespace: {{ .Namespace }}
+  labels:
+    app: kafka-connect
+spec:
+  replicas: {{ .Params.KAFKA_CONNECT_REPLICA_COUNT }}
+  selector:
+    matchLabels:
+      app: kafka-connect
+  template:
+    metadata:
+      labels:
+        app: kafka-connect
+    spec:
+      containers:
+      - name: kafka-connect
+        image: mesosphere/kafka:2.4.0-1.3.0
+        imagePullPolicy: Always
+        resources:
+          requests:
+            cpu: {{ .Params.KAFKA_CONNECT_CPUS }}
+            memory: {{ .Params.KAFKA_CONNECT_MEM }}
+          limits:
+            cpu: {{ .Params.KAFKA_CONNECT_CPUS_LIMIT }}
+            memory: {{ .Params.KAFKA_CONNECT_MEM_LIMIT }}
+        ports:
+          - containerPort: {{ .Params.KAFKA_CONNECT_REST_PORT }}
+            name: server
+        command:
+          - bash
+          - -c
+          - -x
+        args:
+          - mkdir -p /opt/kafka/connectors;
+            pushd /opt/kafka/connectors;
+            {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+            if [ -e "/connectors-configuration/config.json" ]; then
+              ${KAFKA_HOME}/kafka-connectors-setup download --config=/connectors-configuration/config.json;
+            elif [ -e "/connectors-configuration/config.yaml" ]; then 
+              ${KAFKA_HOME}/kafka-connectors-setup download --config=/connectors-configuration/config.yaml;
+            fi
+            {{ end }}
+            popd;
+            cp /kafka-connect-config/connect-distributed.properties ${KAFKA_HOME}/connect-distributed.properties;
+            {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
+            cat /custom-configuration/custom.properties >> ${KAFKA_HOME}/connect-distributed.properties;
+            {{ end }}
+            exec ${KAFKA_HOME}/bin/connect-distributed.sh ${KAFKA_HOME}/connect-distributed.properties;
+        volumeMounts:
+          - name: kafka-connect-config
+            mountPath: /kafka-connect-config
+          {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
+          - name: custom-configuration
+            mountPath: /custom-configuration
+          {{ end }}
+          {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+          - name: connectors-configuration
+            mountPath: /connectors-configuration
+          {{ end }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Params.KAFKA_CONNECT_REST_PORT }}
+          initialDelaySeconds: {{ .Params.READINESS_INITIAL_DELAY_SECONDS }}
+          periodSeconds: {{ .Params.READINESS_PERIOD_SECONDS }}
+          timeoutSeconds: {{ .Params.READINESS_TIMEOUT_SECONDS }}
+          successThreshold: {{ .Params.READINESS_SUCCESS_THRESHOLD }}
+          failureThreshold: {{ .Params.READINESS_FAILURE_THRESHOLD }}
+      securityContext:
+        runAsUser: 1000
+        fsGroup: 1000
+      volumes:
+        - name: kafka-connect-config
+          configMap:
+            name: {{ .Name }}-kafka-connect-config
+        {{ if .Params.KAFKA_CONNECT_CUSTOM_CM }}
+        - name: custom-configuration
+          configMap:
+            name: {{ .Params.KAFKA_CONNECT_CUSTOM_CM }}
+        {{ end }}
+        {{ if .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+        - name: connectors-configuration
+          configMap:
+            name: {{ .Params.KAFKA_CONNECT_CONNECTORS_CM }}
+        {{ end }}
+  strategy:
+    type: Recreate
