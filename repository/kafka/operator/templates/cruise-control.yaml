@@ -1,9 +1,10 @@
-{{ if eq .Params.ENABLE_CRUISE_CONTROL "true" }}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-cruise-control
   namespace: {{ .Namespace }}
+  labels:
+    app: cruise-control
 spec:
   selector:
     matchLabels:
@@ -17,11 +18,11 @@ spec:
       terminationGracePeriodSeconds: 30
       containers:
       - name: cruise-control
-        image: zmalikshxil/cruise-control:latest
-        imagePullPolicy: IfNotPresent
+        image: mesosphere/cruise-control:2.0.77-1.3.0
+        imagePullPolicy: Always
         ports:
         - name: http
-          containerPort: 9090
+          containerPort: {{ .Params.CRUISE_CONTROL_PORT }}
         command:
           - bash
           - -c
@@ -36,11 +37,14 @@ spec:
             value: "{{ .Name }}"
         resources:
           requests:
-            cpu: 100m
-            memory: 512Mi
+            memory: {{ .Params.CRUISE_CONTROL_MEM }}
+            cpu: {{ .Params.CRUISE_CONTROL_CPUS }}
+          limits:
+            memory: {{ .Params.CRUISE_CONTROL_MEM_LIMIT }}
+            cpu: {{ .Params.CRUISE_CONTROL_CPUS_LIMIT }}
         readinessProbe:
           tcpSocket:
-            port: 9090
+            port: {{ .Params.CRUISE_CONTROL_PORT }}
           timeoutSeconds: 1
         volumeMounts:
         - name: cc-props
@@ -49,4 +53,3 @@ spec:
       - name: cc-props
         configMap:
           name: {{ .Name }}-cruisecontrol-props
-{{ end }}

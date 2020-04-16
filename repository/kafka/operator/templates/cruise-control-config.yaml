@@ -1,4 +1,3 @@
-{{ if eq .Params.ENABLE_CRUISE_CONTROL "true" }}
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -307,7 +306,7 @@ data:
     # ================================
 
     # HTTP listen port
-    webserver.http.port=9090
+    webserver.http.port={{ .Params.CRUISE_CONTROL_PORT }}
 
     # HTTP listen address
     webserver.http.address=0.0.0.0
@@ -316,7 +315,7 @@ data:
     webserver.http.cors.enabled=false
 
     # Value for Access-Control-Allow-Origin
-    webserver.http.cors.origin=http://localhost:9090/
+    webserver.http.cors.origin=http://localhost:{{ .Params.CRUISE_CONTROL_PORT }}/
 
     # Value for Access-Control-Request-Method
     webserver.http.cors.allowmethods=OPTIONS,GET,POST
@@ -330,14 +329,14 @@ data:
 
     # REST API default prefix
     # (dont forget the ending *)
-    webserver.api.urlprefix=/kafkacruisecontrol/*
+    webserver.api.urlprefix={{ .Params.CRUISE_CONTROL_WEBSERVER_API_URLPREFIX }}
 
     # Location where the Cruise Control frontend is deployed
     webserver.ui.diskpath=./cruise-control-ui/dist/
 
     # URL path prefix for UI
     # (dont forget the ending *)
-    webserver.ui.urlprefix=/*
+    webserver.ui.urlprefix={{ .Params.CRUISE_CONTROL_WEBSERVER_UI_URLPREFIX }}
 
     # Time After which request is converted to Async
     webserver.request.maxBlockTimeMs=10000
@@ -368,4 +367,3 @@ data:
 
     # The maximum number of requests in two-step (verification) purgatory.
     two.step.purgatory.max.requests=25
-{{ end }}

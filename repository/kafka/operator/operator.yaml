@@ -38,10 +38,12 @@ tasks:
       resources:
         - service.yaml
   - name: cruise-deployment
-    kind: Apply
+    kind: Toggle
     spec:
+      parameter: ENABLE_CRUISE_CONTROL
       resources:
         - cruise-control-config.yaml
+        - cruise-control-service.yaml
         - cruise-control.yaml
   - name: kafka-connect
     kind: Toggle
