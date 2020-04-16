@@ -37,6 +37,14 @@ tasks:
     spec:
       resources:
         - service.yaml
+  - name: cruise-deployment
+    kind: Toggle
+    spec:
+      parameter: ENABLE_CRUISE_CONTROL
+      resources:
+        - cruise-control-config.yaml
+        - cruise-control-service.yaml
+        - cruise-control.yaml
   - name: kafka-connect
     kind: Toggle
     spec:
@@ -197,6 +205,15 @@ plans:
           - name: toggle-workload
             tasks:
               - user-workload
+  cruise-control:
+    strategy: serial
+    phases:
+    - name: cruise-addon
+      strategy: serial
+      steps:
+      - name: deploy-cruise-control
+        tasks:
+          - cruise-deployment
   # this plan is triggered when some parameter present in limitations is updated
   # https://github.com/kudobuilder/operators/blob/master/repository/kafka/docs/latest/limitations.md
   not-allowed:

@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}-cruise-control
+  namespace: {{ .Namespace }}
+  labels:
+    app: cruise-control
+spec:
+  selector:
+    matchLabels:
+      app: cruise-control
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: cruise-control
+    spec:
+      terminationGracePeriodSeconds: 30
+      containers:
+      - name: cruise-control
+        image: mesosphere/cruise-control:2.0.77-1.3.0
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: {{ .Params.CRUISE_CONTROL_PORT }}
+        command:
+          - bash
+          - -c
+        args:
+          - /opt/cruise-control/start.sh
+        env:
+          - name: CRUISE_CONTROL_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
+          - name: CRUISE_CONTROL_INSTANCE_NAME
+            value: "{{ .Name }}"
+        resources:
+          requests:
+            memory: {{ .Params.CRUISE_CONTROL_MEM }}
+            cpu: {{ .Params.CRUISE_CONTROL_CPUS }}
+          limits:
+            memory: {{ .Params.CRUISE_CONTROL_MEM_LIMIT }}
+            cpu: {{ .Params.CRUISE_CONTROL_CPUS_LIMIT }}
+        readinessProbe:
+          tcpSocket:
+            port: {{ .Params.CRUISE_CONTROL_PORT }}
+          timeoutSeconds: 1
+        volumeMounts:
+        - name: cc-props
+          mountPath: /etc/cruise-control/config
+      volumes:
+      - name: cc-props
+        configMap:
+          name: {{ .Name }}-cruisecontrol-props

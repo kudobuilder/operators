@@ -910,3 +910,35 @@ parameters:
     description: "Kafka Connect topic offset flush interval in milliseconds"
     default: 10000
     trigger: "kafka-connect"
+  - name: ENABLE_CRUISE_CONTROL
+    description: "Enable cruise control for the current KUDO Kafka cluster"
+    default: "false"
+    trigger: "cruise-control"
+  - name: CRUISE_CONTROL_CPUS
+    description: "CPUs (request) for the Cruise Control container"
+    default: "100m"
+    trigger: "cruise-control"
+  - name: CRUISE_CONTROL_CPUS_LIMIT
+    description: "CPUs (limit) for the Cruise Control container"
+    default: "100m"
+    trigger: "cruise-control"
+  - name: CRUISE_CONTROL_MEM
+    description: "Memory (request) for the Cruise Control container"
+    default: "512Mi"
+    trigger: "update"
+  - name: CRUISE_CONTROL_MEM_LIMIT
+    description: "Memory (limit) for the Cruise Control container"
+    default: "512Mi"
+    trigger: "cruise-control"
+  - name: CRUISE_CONTROL_PORT
+    description: "Cruise Control Web UI port"
+    default: "9090"
+    trigger: "cruise-control"
+  - name: CRUISE_CONTROL_WEBSERVER_API_URLPREFIX
+    description: "Cruise Control REST API default prefix"
+    default: "/kafkacruisecontrol/*"
+    trigger: "cruise-control"
+  - name: CRUISE_CONTROL_WEBSERVER_UI_URLPREFIX
+    description: "Cruise Control REST Web UI default path prefix"
+    default: "/*"
+    trigger: "cruise-control"
