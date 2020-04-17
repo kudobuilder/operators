@@ -3,7 +3,7 @@ kind: Instance
 metadata:
   name: kafka
 status:
-  aggregatedStatus:
+  planStatus:
     status: COMPLETE
 ---
 apiVersion: apps/v1
