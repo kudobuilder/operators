@@ -4,7 +4,8 @@ metadata:
   name: kafka
 status:
   planStatus:
-    status: COMPLETE
+    deploy:
+      status: COMPLETE
 ---
 apiVersion: apps/v1
 kind: StatefulSet

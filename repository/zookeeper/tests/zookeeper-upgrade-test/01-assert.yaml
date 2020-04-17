@@ -4,7 +4,8 @@ metadata:
   name: zk
 status:
   planStatus:
-    status: COMPLETE
+    deploy:
+      status: COMPLETE
 ---
 apiVersion: apps/v1
 kind: StatefulSet
