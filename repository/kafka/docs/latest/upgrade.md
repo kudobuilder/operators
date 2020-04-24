@@ -26,61 +26,82 @@ kafka-instance   29h
 We can check the plan status of our Kafka cluster `kafka-instance` with:
 ```
 $ kubectl kudo plan status --instance=kafka-instance
-Plan(s) for "kafka-instance" in namespace "default":
+Plan(s) for "kafka-instance" in namespace "kudo-kafka":
 .
-└── kafka-instance (Operator-Version: "kafka-1.1.0" Active-Plan: "deploy")
-    ├── Plan deploy (serial strategy) [COMPLETE]
-    │  └── Phase deploy-kafka [COMPLETE]
-    │    └── Step deploy (COMPLETE)
+└── kafka-instance (Operator-Version: "kafka-1.2.0" Active-Plan: "deploy")
+    ├── Plan deploy (serial strategy) [COMPLETE], last updated 2020-04-23 13:13:30
+    │   └── Phase deploy-kafka (serial strategy) [COMPLETE]
+    │       └── Step deploy [COMPLETE]
+    ├── Plan mirrormaker (serial strategy) [NOT ACTIVE]
+    │   └── Phase deploy-mirror-maker (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
     └── Plan not-allowed (serial strategy) [NOT ACTIVE]
         └── Phase not-allowed (serial strategy) [NOT ACTIVE]
-            └── Step not-allowed (serial strategy) [NOT ACTIVE]
-                └── not-allowed [NOT ACTIVE]
+            └── Step not-allowed [NOT ACTIVE]
 ```
-**Note:** the operator version is `kafka-1.1.0`
+**Note:** the operator version is `kafka-1.2.0`
 
-To update the Kafka cluster from version `0.1.2` to `0.2.0`:
+To update the Kafka cluster from version `1.2.0` to `1.2.1`:
 
 ```
 $ kubectl kudo upgrade kafka --operator-version=1.2.1 --instance kafka-instance
 
-operator.kudo.dev/kafka unchanged
 operatorversion.kudo.dev/v1beta1/kafka-1.2.1 created
 ```
 Now there are two operator versions installed:
 ```
-kubectl  get operatorversions.kudo.k8s.io
+kubectl get operatorversions
 
 NAME              AGE
-kafka-1.1.0       2d2h
-kafka-1.2.1       2m6s
+kafka-1.2.0       31m
+kafka-1.2.1       19m
 ```
 
 Check the plan status again:
 
 ```
 $ kubectl kudo plan status --instance=kafka-instance
-Plan(s) for "kafka-instance" in namespace "default":
+Plan(s) for "kafka-instance" in namespace "kudo-kafka":
 .
 └── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")
-    ├── Plan deploy (serial strategy) [IN_PROGRESS]
-    │   └── Phase deploy-kafka (serial strategy) [COMPLETE]
-    │       ├── Step configuration [COMPLETE]
-    │       ├── Step service [COMPLETE]
-    │       ├── Step app [COMPLETE]
-    │       └── Step addons [COMPLETE]
+    ├── Plan cruise-control (serial strategy) [NOT ACTIVE]
+    │   └── Phase cruise-addon (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy-cruise-control [NOT ACTIVE]
+    ├── Plan deploy (serial strategy) [COMPLETE], last updated 2020-04-23 13:28:12
+    │   ├── Phase deploy-kafka (serial strategy) [COMPLETE]
+    │   │   ├── Step generate-tls-certificates [COMPLETE]
+    │   │   ├── Step configuration [COMPLETE]
+    │   │   ├── Step service [COMPLETE]
+    │   │   └── Step app [COMPLETE]
+    │   └── Phase addons (parallel strategy) [COMPLETE]
+    │       ├── Step monitoring [COMPLETE]
+    │       ├── Step access [COMPLETE]
+    │       ├── Step mirror [COMPLETE]
+    │       └── Step load [COMPLETE]
     ├── Plan external-access (serial strategy) [NOT ACTIVE]
-    │   └── Phase external-access-resources (serial strategy) [NOT ACTIVE]
-    │       └── Step external [NOT ACTIVE]
+    │   └── Phase resources (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
+    ├── Plan kafka-connect (serial strategy) [NOT ACTIVE]
+    │   └── Phase deploy-kafka-connect (serial strategy) [NOT ACTIVE]
+    │       ├── Step deploy [NOT ACTIVE]
+    │       └── Step setup [NOT ACTIVE]
     ├── Plan mirrormaker (serial strategy) [NOT ACTIVE]
-    │   └── Phase deploy-mirror-maker (serial strategy) [NOT ACTIVE]
+    │   └── Phase app (serial strategy) [NOT ACTIVE]
     │       └── Step deploy [NOT ACTIVE]
     ├── Plan not-allowed (serial strategy) [NOT ACTIVE]
     │   └── Phase not-allowed (serial strategy) [NOT ACTIVE]
     │       └── Step not-allowed [NOT ACTIVE]
-    └── Plan service-monitor (serial strategy) [NOT ACTIVE]
-        └── Phase enable-service-monitor (serial strategy) [NOT ACTIVE]
-            └── Step add-service-monitor [NOT ACTIVE]
+    ├── Plan service-monitor (serial strategy) [NOT ACTIVE]
+    │   └── Phase enable-service-monitor (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
+    ├── Plan update-instance (serial strategy) [NOT ACTIVE]
+    │   └── Phase app (serial strategy) [NOT ACTIVE]
+    │       ├── Step conf [NOT ACTIVE]
+    │       ├── Step svc [NOT ACTIVE]
+    │       └── Step sts [NOT ACTIVE]
+    └── Plan user-workload (serial strategy) [NOT ACTIVE]
+        └── Phase workload (serial strategy) [NOT ACTIVE]
+            └── Step toggle-workload [NOT ACTIVE]
 ```
 
 **Note:** the operator-version is now `kafka-1.2.1` meaning the Kafka Operator has been successfully upgraded.

@@ -6,6 +6,9 @@
 
 - Remove unused collectors from node exporter sidecar
 - Introduce new plans to fix the errors when re-running a plan
+- Add built-in [Cruise Control integration](./cruise-control.md)
+- Add built-in [Kafka Connect integration](./kafka-connect.md)
+- Apache Kafka upgraded to 2.4.1
 
 ## v1.2.0
 

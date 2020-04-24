@@ -8,6 +8,7 @@
 - [Custom Configuration](./custom.md)
 - [Monitoring](./monitoring.md)
 - [Mirror Maker](./mirrormaker.md)
+- [Kafka Connect](./kafka-connect.md)
 - [Cruise Control](./cruise-control.md)
 - [Upgrading the Kafka operator](./upgrade.md)
 - [Scaling & Updating Cluster](./update.md)
