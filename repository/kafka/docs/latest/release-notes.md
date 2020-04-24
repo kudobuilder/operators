@@ -2,6 +2,10 @@
 
 ## latest
 
+## v1.3.0
+
+- Apache Kafka upgraded to 2.5.0
+
 ## v1.2.1
 
 - Remove unused collectors from node exporter sidecar

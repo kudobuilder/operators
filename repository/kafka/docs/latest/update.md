@@ -45,7 +45,7 @@ Check the plan status:
 $ kubectl kudo plan status --instance=kafka-instance
 Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "update-instance")
+└── kafka-instance (Operator-Version: "kafka-1.3.0" Active-Plan: "update-instance")
     ├── Plan cruise-control (serial strategy) [NOT ACTIVE]
     │   └── Phase cruise-addon (serial strategy) [NOT ACTIVE]
     │       └── Step deploy-cruise-control [NOT ACTIVE]
@@ -92,7 +92,7 @@ Once the plan status is complete
 $ kubectl kudo plan status --instance=kafka-instance
 Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "update-instance")
+└── kafka-instance (Operator-Version: "kafka-1.3.0" Active-Plan: "update-instance")
     ├── Plan cruise-control (serial strategy) [NOT ACTIVE]
     │   └── Phase cruise-addon (serial strategy) [NOT ACTIVE]
     │       └── Step deploy-cruise-control [NOT ACTIVE]

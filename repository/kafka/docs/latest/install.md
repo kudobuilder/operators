@@ -28,7 +28,7 @@ Verify the if the deploy plan for `--instance=kafka-instance` is complete.
 $ kubectl kudo plan status --instance=kafka-instance
 Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-instance (Operator-Version: "kafka-1.2.1" Active-Plan: "deploy")
+└── kafka-instance (Operator-Version: "kafka-1.3.0" Active-Plan: "deploy")
     ├── Plan cruise-control (serial strategy) [NOT ACTIVE]
     │   └── Phase cruise-addon (serial strategy) [NOT ACTIVE]
     │       └── Step deploy-cruise-control [NOT ACTIVE]
