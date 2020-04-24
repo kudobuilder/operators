@@ -5,7 +5,7 @@
 Spark Operator supports high-availability (HA) deployment mode when more than one replica of operator pod is deployed and [leader election](https://en.wikipedia.org/wiki/Leader_election) is enabled. 
 
 In this mode, only one replica (leader) of operator deployment is actively operating 
-(handling updates of resources with kind `SparkApplpication` which represent Spark jobs submitted to a cluster), while other replicas are idle.
+(handling updates of resources with kind `SparkApplication` which represent Spark jobs submitted to a cluster), while other replicas are idle.
 
 ![](resources/img/ha.png)
 
