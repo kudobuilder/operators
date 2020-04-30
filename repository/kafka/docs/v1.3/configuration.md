@@ -9,7 +9,7 @@ But users can and should tune the configurations based on the workload requireme
 
 ```
 $ kubectl kudo install kafka --instance=my-kafka-name \
-            -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
+            -p ZOOKEEPER_URI=zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181 \
             -p ZOOKEEPER_PATH=/custom-path \
             -p BROKER_CPUS=3000m \
             -p BROKER_COUNT=5 \
@@ -68,7 +68,7 @@ By default, the Kafka cluster will have the JMX Exporter enabled. You can check 
 ##### Zookeeper Configuration
 
 KUDO Kafka requires a running ZooKeeper cluster to perform its own internal accounting and persist cluster topology. And connectivity to the Zookeeper.
-You can install the KUDO Zookeeper or you can use any other Zookeeper cluster you're running inside or outside kubernetes to use with KUDO Kafka. 
+You can install the KUDO Zookeeper or you can use any other Zookeeper cluster you're running inside or outside Kubernetes to use with KUDO Kafka. 
 
 ###### Configuring the Zookeeper connection:
 
@@ -76,34 +76,34 @@ You can configure KUDO Kafka to use Zookeeper using the parameter `ZOOKEEPER_URI
 Let's see this with an example:
 ```
 $ kubectl kudo install kafka --instance=my-kafka-name \
-  -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
+  -p ZOOKEEPER_URI=zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181 \
 ```
-In the above example KUDO Kafka cluster will connect to the Zookeeper cluster available via following DNS names `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181`
+In the above example KUDO Kafka cluster will connect to the Zookeeper cluster available via following DNS names `zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181`
 
 The Kafka cluster topology is persisted in a Zookeeper node. Every node in Zookeeper's namespace is identified by a path.   
 
 Two Kafka clusters can share the same Zookeeper but sharing the same path can lead to a corrupt state for both Kafka clusters. 
-To avoid this to happen, KUDO Kafka persists its cluster topology in zk node with same name as KUDO Kafka instance.
+To avoid this, KUDO Kafka persists its cluster topology in the ZooKeeper node with same name as KUDO Kafka instance.
 
-Let's for example see what will the zk path look like in the above example where we just configured `ZOOKEEPER_URI`:
+For example, let's see what the ZooKeeper path would look like in the above example, where we configured `ZOOKEEPER_URI`:
 ```
 $ kubectl kudo install kafka --instance=my-kafka-name \
-  -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
+  -p ZOOKEEPER_URI=zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181 \
 ```
 
-In the above example KUDO Kafka will connect the Zookeeper present in `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181` and 
-will create a Zookeeper node in path `/my-kafka-cluster`.  
+In the above example, KUDO Kafka will connect to the Zookeeper present at `ZOOKEEPER_URI=zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181` and 
+will create a Zookeeper node in path `/my-kafka-name`.  
 
 ###### Using a custom Zookeeper node path:
 
-You can also decide to chose a custom Zookeeper node path, using the KUDO Kafka parameter `ZOOKEEPER_PATH`
+You can also use a custom Zookeeper node path, using the KUDO Kafka parameter `ZOOKEEPER_PATH`
 Let's see this with an example:
 ```
 $ kubectl kudo install kafka --instance=my-kafka-name \
-  -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
+  -p ZOOKEEPER_URI=zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181 \
   -p ZOOKEEPER_PATH=/custom-path
 ```
-In the above example KUDO Kafka will connect the Zookeeper present in `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181` and 
+In the above example, KUDO Kafka will connect to the Zookeeper present at `ZOOKEEPER_URI=zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181` and 
 will create a Zookeeper node in path `/custom-path`. 
 
 ##### Docker image
