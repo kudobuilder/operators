@@ -1,7 +1,7 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: coordinator
+  name: {{ .Name }}-coordinator
   namespace: {{ .Namespace }}
 spec:
   selector:

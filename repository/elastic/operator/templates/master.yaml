@@ -1,7 +1,7 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: master
+  name: {{ .Name }}-master
   namespace: {{ .Namespace }}
 spec:
   selector:

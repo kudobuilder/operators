@@ -1,6 +1,6 @@
 apiVersion: kudo.dev/v1beta1
 name: "elastic"
-operatorVersion: "0.2.0"
+operatorVersion: "0.2.1"
 kudoVersion: 0.10.0
 kubernetesVersion: 1.15.0
 appVersion: 7.0.0
