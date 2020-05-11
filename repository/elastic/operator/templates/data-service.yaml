@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: data-hs
+  name: {{ .Name }}-data-hs
   namespace: {{ .Namespace }}
 spec:
   selector:

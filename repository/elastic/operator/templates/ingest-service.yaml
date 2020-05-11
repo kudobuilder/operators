@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: ingest-hs
+  name: {{ .Name }}-ingest-hs
   namespace: {{ .Namespace }}
 spec:
   selector:
