@@ -45,7 +45,7 @@ create-cluster:
 .PHONY: test
 # Test runs the test harness using kubectl-kudo test.
 test:  install-kudo bin/kubectl_$(KUBERNETES_VERSION) install-kuttl
-	sed -i.bak "s/%version%/$(KUDO_VERSION)/" kuttl-test.yaml.tmpl > kuttl-test.yaml
+	sed "s/%version%/$(KUDO_VERSION)/" kuttl-test.yaml.tmpl > kuttl-test.yaml
 	kubectl kuttl test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
 
 .PHONY: clean
