@@ -3,9 +3,7 @@ kind: TestSuite
 manifestDirs:
 - ./test/manifests/
 commands:
-  - command: ./bin/kubectl-kudo init --crd-only
-  - command: ./bin/manager
-    background: true
+  - command: ./bin/kubectl-kudo init --webhook InstanceValidation --unsafe-self-signed-webhook-ca --kudo-image kudobuilder/controller:$VERSION --kudo-image-pull-policy Never
   - command: sleep 10
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/cassandra/3.11/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
@@ -28,3 +26,5 @@ testDirs:
 - ./repository/kafka/tests
 startKIND: true
 timeout: 300
+kindContainers:
+  - kudobuilder/controller:%version%
