@@ -1,6 +1,6 @@
 KUBERNETES_VERSION=1.16.4
-KUDO_VERSION=0.13.0-rc1
-KUTTL_VERSION=0.2.0
+KUDO_VERSION=0.13.0
+KUTTL_VERSION=0.2.1
 
 ARTIFACTS ?= artifacts/
 
@@ -45,7 +45,7 @@ create-cluster:
 .PHONY: test
 # Test runs the test harness using kubectl-kudo test.
 test:  install-kudo bin/kubectl_$(KUBERNETES_VERSION) install-kuttl
-	sed "s/%version%/$(KUDO_VERSION)/" kuttl-test.yaml.tmpl > kuttl-test.yaml
+	sed "s/%version%/v$(KUDO_VERSION)/" kuttl-test.yaml.tmpl > kuttl-test.yaml
 	kubectl kuttl test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
 
 .PHONY: clean
