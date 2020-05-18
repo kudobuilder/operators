@@ -4,7 +4,7 @@ manifestDirs:
 - ./test/manifests/
 commands:
   - command: ./bin/kubectl-kudo init --webhook InstanceValidation --unsafe-self-signed-webhook-ca
-  - command: ./hack/wait-for-kudo.sh
+  - command: sleep 60
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/cassandra/3.11/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-schema-registry/operator/
