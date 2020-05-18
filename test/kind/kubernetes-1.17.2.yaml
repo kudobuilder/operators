@@ -3,3 +3,6 @@ apiVersion: kind.sigs.k8s.io/v1alpha3
 nodes:
 - role: control-plane
   image: kindest/node:v1.17.2
+  extraPortMappings:
+    - containerPort: 443
+      hostPort: 443
