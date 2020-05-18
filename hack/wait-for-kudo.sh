@@ -1,4 +1,7 @@
-#!/bin/sh
+#!/usr/bin/env bash
+set -o errexit
+set -o nounset
+set -o pipefail
 
 attempt_counter=0
 max_attempts=120
