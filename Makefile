@@ -27,18 +27,13 @@ bin/kubectl-kudo_$(KUDO_VERSION): bin/
 	chmod +x bin/kubectl-kudo_$(KUDO_VERSION)
 	ln -sf ./kubectl-kudo_$(KUDO_VERSION) ./bin/kubectl-kudo
 
-bin/manager_$(KUDO_VERSION): bin/
-	curl -Lo bin/manager_$(KUDO_VERSION) https://github.com/kudobuilder/kudo/releases/download/v$(KUDO_VERSION)/manager_$(KUDO_VERSION)_$(OS)_$(KUDO_MACHINE)
-	chmod +x bin/manager_$(KUDO_VERSION)
-	ln -sf ./manager_$(KUDO_VERSION) ./bin/manager
-
 bin/kubectl-kuttl_$(KUTTL_VERSION): bin/
 	curl -Lo bin/kubectl-kuttl_$(KUTTL_VERSION) https://github.com/kudobuilder/kuttl/releases/download/v$(KUTTL_VERSION)/kubectl-kuttl_$(KUTTL_VERSION)_$(OS)_$(KUDO_MACHINE)
 	chmod +x bin/kubectl-kuttl_$(KUTTL_VERSION)
 	ln -sf ./kubectl-kuttl_$(KUTTL_VERSION) ./bin/kubectl-kuttl
 
 .PHONY: install-kudo
-install-kudo: bin/kubectl-kudo_$(KUDO_VERSION) bin/manager_$(KUDO_VERSION)
+install-kudo: bin/kubectl-kudo_$(KUDO_VERSION)
 
 .PHONY: install-kuttl
 install-kuttl: bin/kubectl-kuttl_$(KUTTL_VERSION)
