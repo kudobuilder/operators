@@ -6,7 +6,7 @@ set -o pipefail
 attempt_counter=0
 max_attempts=120
 
-while [ "$(kubectl get pod -n kudo-system kudo-controller-manager-0 -o jsonpath='{.status.phase}' || true)" != "Running" ]; do
+while [ "$(kubectl get sts -n kudo-system kudo-controller-manager -o jsonpath='{.status.readyReplicas}')" != "1" ]; do
     if [ ${attempt_counter} -eq ${max_attempts} ];then
       printf "\nFailed to reach KUDO manager webhook"
       exit 1
