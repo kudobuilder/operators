@@ -1,7 +1,5 @@
 apiVersion: kudo.dev/v1alpha1
 kind: TestSuite
-manifestDirs:
-- ./test/manifests/
 commands:
   - command: ./bin/kubectl-kudo init --unsafe-self-signed-webhook-ca --kudo-image kudobuilder/controller:%version% --kudo-image-pull-policy Never
   - command: ./hack/wait-for-kudo.sh
