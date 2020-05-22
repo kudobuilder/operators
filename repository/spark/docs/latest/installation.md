@@ -48,9 +48,10 @@ Optionally, create dedicated namespaces for installing KUDO Spark instances(e.g.
 kubectl create ns spark-operator-1 && kubectl create ns spark-operator-2
 ```
 ```
-kubectl kudo install spark --instance=spark-1 --namespace spark-operator-1
-kubectl kudo install spark --instance=spark-2 --namespace spark-operator-2
+kubectl kudo install spark --instance=spark-1 --namespace spark-operator-1 -p sparkJobNamespace=spark-operator-1
+kubectl kudo install spark --instance=spark-2 --namespace spark-operator-2 -p sparkJobNamespace=spark-operator-2
 ```
 
 The above commands will install two Spark Operators in two different namespaces. Spark Applications submitted to a specific
-namespace will be handled by the Operator installed in the same namespace.
+namespace will be handled by the Operator installed in the same namespace. This is achieved by explicitly setting 
+the `sparkJobNamespace` parameter to corresponding operator namespace.
