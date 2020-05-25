@@ -14,7 +14,7 @@ spec:
           image: "zookeeper:3.4.14"
           env:
             - name: CONN
-              value: {{ if gt (int .Params.NODE_COUNT) 0 }} {{ .Name }}-zookeeper-0.{{ .Name }}-hs:{{ .Params.CLIENT_PORT }}{{- $root := . -}}{{ range $i, $v := untilStep 1 (int .Params.NODE_COUNT) 1 }},{{ $root.Name }}-zookeeper-{{ $v }}.{{ $root.Name }}-hs:{{ $root.Params.CLIENT_PORT }}{{ end }}{{ end }}
+              value: {{ if gt (int .Params.NODE_COUNT) 0 }} {{ .Name }}-zookeeper-0.{{ .Name }}-hs.{{ .Namespace }}.svc.cluster.local:{{ .Params.CLIENT_PORT }}{{- $root := . -}}{{ range $i, $v := untilStep 1 (int .Params.NODE_COUNT) 1 }},{{ $root.Name }}-zookeeper-{{ $v }}.{{ $root.Name }}-hs.{{ $root.Namespace }}.svc.cluster.local:{{ $root.Params.CLIENT_PORT }}{{ end }}{{ end }}
           resources:
             requests:
               memory: "64Mi"
