@@ -67,11 +67,7 @@ spec:
         {{ end }}
         args:
         - -v={{ .Params.logLevel }}
-        {{- if (ne .Params.sparkJobNamespace "") }}
         - -namespace={{ .Params.sparkJobNamespace }}
-        {{- else }}
-        - -namespace={{ .Namespace }}
-        {{- end }}
         - -ingress-url-format={{ .Params.ingressUrlFormat }}
         - -controller-threads={{ .Params.controllerThreads }}
         - -resync-interval={{ .Params.resyncIntervalSeconds }}

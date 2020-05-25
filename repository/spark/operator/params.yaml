@@ -126,7 +126,7 @@ parameters:
 
   ## Miscellaneous
   - name: sparkJobNamespace
-    description: "Namespace for Spark Applications. Defaults to Operator namespace"
+    description: "Namespace for Spark Applications. By default, Spark Operator will monitor Spark Application across all the namespaces."
     default: ""
     displayName: "Namespace for Spark Applications"
 
