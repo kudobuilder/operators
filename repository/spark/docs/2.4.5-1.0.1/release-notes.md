@@ -1,7 +1,7 @@
 # Release Notes
 
 ## 2.4.5-1.0.1 (latest)
-* Changed `sparkJobNamespace` parameter propagation logic, making the operator manage Spark jobs across all namespaces by default
+* Fix for `sparkJobNamespace` parameter, which allows the operator to manage Spark jobs only from selected namespace
 * Spark Operator based on version `v1beta2-1.1.1`
 * KUDO version updated to `0.13.0`
 
