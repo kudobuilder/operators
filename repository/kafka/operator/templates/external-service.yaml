@@ -1,4 +1,3 @@
-{{ if eq .Params.EXTERNAL_ADVERTISED_LISTENER "true" }}
 {{ range $i, $v := until (int .Params.BROKER_COUNT) }}
 ---
 apiVersion: v1
@@ -22,5 +21,4 @@ spec:
     targetPort: {{ add (int $.Params.EXTERNAL_NODE_PORT) $v }}
     nodePort: {{ add (int $.Params.EXTERNAL_NODE_PORT) $v }}
     {{ end }}
-{{ end }}
 {{ end }}

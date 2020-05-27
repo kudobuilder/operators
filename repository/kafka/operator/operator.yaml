@@ -119,6 +119,7 @@ plans:
           - name: service
             tasks:
               - service
+              - external-access
           - name: app
             tasks:
               - sts
@@ -128,9 +129,6 @@ plans:
           - name: monitoring
             tasks:
               - service-monitor
-          - name: access
-            tasks:
-              - external-access
           - name: mirror
             tasks:
               - mirrormaker
