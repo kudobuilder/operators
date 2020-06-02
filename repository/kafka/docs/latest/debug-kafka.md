@@ -37,7 +37,7 @@ expected output is the current status of the KUDO Kafka instance plans:
 ```
 Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-instance (Operator-Version: "kafka-1.3.0" Active-Plan: "deploy")
+└── kafka-instance (Operator-Version: "kafka-1.3.1" Active-Plan: "deploy")
     ├── Plan cruise-control (serial strategy) [NOT ACTIVE]
     │   └── Phase cruise-addon (serial strategy) [NOT ACTIVE]
     │       └── Step deploy-cruise-control [NOT ACTIVE]

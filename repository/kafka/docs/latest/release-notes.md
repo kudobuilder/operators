@@ -2,6 +2,10 @@
 
 ## latest
 
+## v1.3.1
+
+- Fixed external service plan [pull/268](https://github.com/kudobuilder/operators/pull/268)
+
 ## v1.3.0
 
 - Apache Kafka upgraded to 2.5.0

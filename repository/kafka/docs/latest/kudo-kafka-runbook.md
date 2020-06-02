@@ -78,7 +78,7 @@ $ kubectl kudo install kafka --instance=kafka --namespace=kudo-kafka \
 Sample output of this command:
 ```
 operator.kudo.dev/v1beta1/kafka created
-operatorversion.kudo.dev/v1beta1/kafka-1.3.0 created
+operatorversion.kudo.dev/v1beta1/kafka-1.3.1 created
 instance.kudo.dev/v1beta1/kafka created
 ```
 
