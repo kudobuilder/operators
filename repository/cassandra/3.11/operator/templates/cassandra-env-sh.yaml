@@ -242,42 +242,43 @@ data:
     # https://blogs.oracle.com/jmxetc/entry/troubleshooting_connection_problems_in_jconsole
     # for more on configuring JMX through firewalls, etc. (Short version:
     # get it working with no firewall first.)
-    #
-    # Cassandra ships with JMX accessible *only* from localhost.
-    # To enable remote JMX connections, uncomment lines below
-    # with authentication and/or ssl enabled. See https://wiki.apache.org/cassandra/JmxSecurity
-    #
-    if [ "x$LOCAL_JMX" = "x" ]; then
-        LOCAL_JMX=yes
-    fi
 
     # Specifies the default port over which Cassandra will be available for
     # JMX connections.
     # For security reasons, you should not expose this port to the internet.  Firewall it if needed.
-    JMX_PORT="7199"
+    JMX_PORT="{{ .Params.JMX_PORT }}"
+    RMI_PORT="{{ .Params.RMI_PORT }}"
 
-    if [ "$LOCAL_JMX" = "yes" ]; then
-      JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.local.port=$JMX_PORT"
-      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
-    else
+    {{ if ne $.Params.JMX_LOCAL_ONLY "true" }}
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.local.only=false"
+      #JVM_OPTS="$JVM_OPTS -Djava.rmi.server.hostname=$POD_NAME.{{ .Name }}-svc.$POD_NAMESPACE.svc.cluster.local"
+      JVM_OPTS="$JVM_OPTS -Djava.rmi.server.hostname=$POD_IP"
+
       JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.remote.port=$JMX_PORT"
       # if ssl is enabled the same port cannot be used for both jmx and rmi so either
       # pick another value for this property or comment out to use a random port (though see CASSANDRA-7087 for origins)
-      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.rmi.port=$JMX_PORT"
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.rmi.port=$RMI_PORT"
 
       # turn on JMX authentication. See below for further options
-      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=true"
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+
+      set +x
+      readonly truststore_password=$(cat /etc/cassandra/truststore/truststore_password)
+      readonly keystore_password=$(cat /etc/cassandra/truststore/keystore_password)
 
       # jmx ssl options
-      #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl=true"
-      #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.need.client.auth=true"
-      #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.protocols=<enabled-protocols>"
-      #JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.cipher.suites=<enabled-cipher-suites>"
-      #JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStore=/path/to/keystore"
-      #JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStorePassword=<keystore-password>"
-      #JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStore=/path/to/truststore"
-      #JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStorePassword=<truststore-password>"
-    fi
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl=true"
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.need.client.auth=true"
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.protocols=TLSv1.2"
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.ssl.enabled.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}"
+      JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStore=/etc/cassandra/tls/cassandra.server.keystore.jks"
+      JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.keyStorePassword=${keystore_password}"
+      JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStore=/etc/cassandra/tls/cassandra.server.truststore.jks"
+      JVM_OPTS="$JVM_OPTS -Djavax.net.ssl.trustStorePassword=${truststore_password}"
+    {{ else }}
+      JVM_OPTS="$JVM_OPTS -Dcassandra.jmx.local.port=$JMX_PORT"
+      JVM_OPTS="$JVM_OPTS -Dcom.sun.management.jmxremote.authenticate=false"
+    {{ end }}
 
     # jmx authentication and authorization options. By default, auth is only
     # activated for remote connections but they can also be enabled for local only JMX
@@ -312,3 +313,15 @@ data:
     JVM_OPTS="$JVM_OPTS $MX4J_ADDRESS"
     JVM_OPTS="$JVM_OPTS $MX4J_PORT"
     JVM_OPTS="$JVM_OPTS $JVM_EXTRA_OPTS"
+
+    # This is used in case of a restore. The restore init container saves the token map in this location
+    if [ -f /var/lib/cassandra/token_map ]; then
+        INITIAL_TOKENS=`cat /var/lib/cassandra/token_map`
+        JVM_OPTS="$JVM_OPTS -Dcassandra.initial_token=$INITIAL_TOKENS"
+    fi
+
+    if [ -s /var/lib/cassandra/replace.ip ]; then
+        replace_ip=$(cat /var/lib/cassandra/replace.ip);
+        echo "File replace.ip found with IP:${replace_ip}";
+        JVM_OPTS="$JVM_OPTS -Dcassandra.replace_address=${replace_ip}"
+    fi;
