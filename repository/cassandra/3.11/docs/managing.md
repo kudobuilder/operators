@@ -11,7 +11,7 @@
   - [Pod container logs](#pod-container-logs)
   - [Describe pod](#describe-pod)
   - [Cassandra nodetool status](#cassandra-nodetool-status)
-  - [KUDO controller/manager logs](#kudo-controller-manager-logs)
+  - [KUDO controller/manager logs](#kudo-controllermanager-logs)
   - [Get endpoints](#get-endpoints)
   - [Kubernetes events in the instance namespace](#kubernetes-events-in-the-instance-namespace)
 - [Uninstall an operator instance](#uninstall-an-operator-instance)
