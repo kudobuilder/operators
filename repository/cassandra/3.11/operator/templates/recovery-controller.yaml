@@ -1,0 +1,33 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ $.Name }}-recovery-controller
+  namespace: {{ $.Namespace }}
+  labels:
+    app: {{ $.Name }}-recovery-controller
+spec:
+  selector:
+    matchLabels:
+      app: {{ $.Name }}-recovery-controller
+  serviceName: {{ $.Name }}-svc
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: {{ $.Name }}-recovery-controller
+        kudo.dev/instance: {{ $.Name }}
+    spec:
+      serviceAccount: {{ $.Name }}-recovery-controller
+      containers:
+        - name: recovery-controller
+          image: {{ $.Params.RECOVERY_CONTROLLER_DOCKER_IMAGE }}
+          imagePullPolicy: {{ $.Params.RECOVERY_CONTROLLER_DOCKER_IMAGE_PULL_POLICY }}
+          env:
+            - name: NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: INSTANCE_NAME
+              value: {{ $.Name }}
+            - name: EVICTION_LABEL
+              value: "kudo-cassandra/evict"

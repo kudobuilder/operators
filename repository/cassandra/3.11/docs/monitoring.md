@@ -91,3 +91,49 @@ to check the `Prometheus` resource. The `serviceMonitorNamespaceSelector` and
 match the
 [labels on the `ServiceMonitor` resource](../operator/templates/service-monitor.yaml#L7)
 created by the KUDO Cassandra operator.
+
+## Custom Configuration
+
+To use the custom
+[prometheus exporter configuration](https://github.com/criteo/cassandra_exporter#config-file-example),
+we need to create a configmap with the properties we want to override.
+
+Example custom configuration:
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: custom-exporter-configuration
+data:
+  config.yml: |
+    maxScrapFrequencyInSec:
+      2000:
+        - .*:totaldiskspaceused:.*
+```
+
+Create the ConfigMap in the namespace we will have the KUDO Cassandra cluster
+
+```
+$ kubectl create -f custom-exporter-configuration.yaml -n $namespace_name
+configmap/custom-exporter-configuration created
+```
+
+Enable the exporter
+
+```bash
+kubectl kudo update \
+  -p PROMETHEUS_EXPORTER_ENABLED=true \
+  -p PROMETHEUS_EXPORTER_CUSTOM_CONFIG_CM_NAME=custom-exporter-configuration \
+  --instance $instance_name -n $namespace_name
+```
+
+:warning: The following properties are configured internally by the operator and
+cannot be overridden using custom configuration:
+
+- host
+- listenAddress
+- listenPort
+- user
+- password
+- ssl
