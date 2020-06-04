@@ -1,10 +1,69 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Name }}-cassandra-yaml
+  name: {{ .Name }}-generate-cassandra-yaml
   namespace: {{ .Namespace }}
 data:
-  cassandra.yaml: |
+  generate-cassandra-yaml.sh: |
+    #!/usr/bin/env bash
+
+    set -euxo pipefail
+
+    set +x
+    readonly truststore_password=$(cat /etc/cassandra/truststore/truststore_password)
+    readonly keystore_password=$(cat /etc/cassandra/truststore/keystore_password)
+    set -x
+
+    {{- if .Params.NODE_TOPOLOGY }}
+      {{- $lastTopo := 0 }}
+    SEEDS="{{- range $dc := $.Params.NODE_TOPOLOGY -}}
+      {{- range $i, $node := until (int (min 3 $dc.nodes)) -}}
+        {{- if or $i $lastTopo -}}, {{- end -}}
+          {{ $.Name }}-{{ $dc.datacenter }}-node-{{ $node }}.{{ $.Name }}-svc.{{ $.Namespace }}.svc.cluster.local
+        {{- end -}}
+        {{- $lastTopo = 1 }}
+      {{- end -}}
+      {{- range $external := $.Params.EXTERNAL_SEED_NODES -}}
+        , {{ . }}
+      {{- end -}}"
+    {{- else }}
+    # We have a simple setup and use the first 3 nodes as seed
+    SEEDS="{{- range $i, $node := until (int (min 3 .Params.NODE_COUNT)) -}}
+      {{- if $i -}}, {{- end -}}
+        {{ $.Name }}-node-{{ $node }}.{{ $.Name }}-svc.{{ $.Namespace }}.svc.cluster.local
+      {{- end -}}
+      {{- range $external := $.Params.EXTERNAL_SEED_NODES -}}
+        , {{ . }}
+      {{- end -}}"
+    {{- end }}
+
+    {{- if .Params.NODE_TOPOLOGY }}
+    NODE_ZERO={{ $.Name }}-{{ (index $.Params.NODE_TOPOLOGY 0).datacenter }}-node-0
+    {{- else }}
+    NODE_ZERO={{ $.Name }}-node-0
+    {{- end }}
+
+    HOSTNAME=${POD_NAME}.{{ .Name }}-svc.{{ .Namespace }}.svc.cluster.local
+
+    # Every node except the very first one shouldn't see themselves as a seed node on startup
+    if [ "${POD_NAME}" != "${NODE_ZERO}" ]; then
+        echo "No system data directory found, we need to bootstrap and can't be a seed node at the moment";
+        SEEDS=`echo $SEEDS | sed -E 's/'"$HOSTNAME"',?//'`
+    fi;
+
+    # When replacing a node, the new node should not be a seed node either. This applies to the very first node as well
+    if [ -s /var/lib/cassandra/replace.ip ]; then
+        echo "File replace.ip found, we are in replacement mode and have to remove our own host from seed list";
+        SEEDS=`echo $SEEDS | sed -E 's/'"$HOSTNAME"',?//'`
+    fi;
+    set +x
+
+    # Remove trailing comma if there is one
+    SEEDS=`echo $SEEDS | sed -E 's/,?$//'`
+
+    echo "Seedlist is now: $SEEDS"
+
+    cat <<EOF > /etc/cassandra/cassandra.yaml
     # Cassandra storage config YAML
 
     # NOTE:
@@ -92,7 +151,7 @@ data:
     max_hints_delivery_threads: {{ .Params.MAX_HINTS_DELIVERY_THREADS }}
 
     # Directory where Cassandra should store hints.
-    # If not set, the default directory is $CASSANDRA_HOME/data/hints.
+    # If not set, the default directory is \$CASSANDRA_HOME/data/hints.
     {{ if .Params.HINTS_DIRECTORY }}
     hints_directory: {{ .Params.HINTS_DIRECTORY }}
     {{ end }}
@@ -217,14 +276,20 @@ data:
     # Directories where Cassandra should store data on disk.  Cassandra
     # will spread data evenly across them, subject to the granularity of
     # the configured compaction strategy.
-    # If not set, the default directory is $CASSANDRA_HOME/data/data.
-    # data_file_directories:
-    #     - /var/lib/cassandra/data
+    # If not set, the default directory is \$CASSANDRA_HOME/data/data.
+    #
+    # This needs to be set to a valid value for medusa to work
+    data_file_directories:
+        - /var/lib/cassandra/data
 
     # commit log.  when running on magnetic HDD, this should be a
     # separate spindle than the data directories.
+    #
+    # This needs to be set to a valid value for medusa to work
     {{ if .Params.COMMITLOG_DIRECTORY }}
     commitlog_directory: {{ .Params.COMMITLOG_DIRECTORY }}
+    {{ else }}
+    commitlog_directory: /var/lib/cassandra/commitlog
     {{ end }}
 
     # Enable / disable CDC functionality on a per-node basis. This modifies the logic used
@@ -235,7 +300,7 @@ data:
     # CommitLogSegments are moved to this directory on flush if cdc_enabled: true and the
     # segment contains mutations for a CDC-enabled table. This should be placed on a
     # separate spindle than the data directories. If not set, the default directory is
-    # $CASSANDRA_HOME/data/cdc_raw.
+    # \$CASSANDRA_HOME/data/cdc_raw.
     {{ if .Params.CDC_RAW_DIRECTORY }}
     cdc_raw_directory: {{ .Params.CDC_RAW_DIRECTORY }}
     {{ end }}
@@ -406,10 +471,14 @@ data:
     {{ end }}
 
     # saved caches
-    # If not set, the default directory is $CASSANDRA_HOME/data/saved_caches.
+    # If not set, the default directory is \$CASSANDRA_HOME/data/saved_caches.
     # saved_caches_directory: /var/lib/cassandra/saved_caches
+    #
+    # This needs to be set to a valid value for medusa to work
     {{ if .Params.SAVED_CACHES_DIRECTORY }}
     saved_caches_directory: {{ .Params.SAVED_CACHES_DIRECTORY }}
+    {{ else }}
+    saved_caches_directory: /var/lib/cassandra/saved_caches
     {{ end }}
 
     # commitlog_sync may be either "periodic" or "batch."
@@ -467,10 +536,7 @@ data:
           # Here we follow the advice from DataStax and make the first 3
           # nodes in a DC the seed nodes.
           # https://docs.datastax.com/en/dse/6.0/dse-admin/datastax_enterprise/production/seedNodesForSingleDC.html
-          - seeds: "{{- range $i, $node := until (int (min 3 .Params.NODE_COUNT)) -}}
-                      {{- if $i -}}, {{- end -}}
-                      {{ $.Name }}-node-{{ $node }}.{{ $.Name }}-svc.{{ $.Namespace }}.svc.cluster.local
-                    {{- end -}}"
+          - seeds: ${SEEDS}
 
     # For workloads with more data than can fit in memory, Cassandra's
     # bottleneck will be reads that need to fetch data from
@@ -1147,40 +1213,42 @@ data:
     # The passwords used in these options must match the passwords used when generating
     # the keystore and truststore.  For instructions on generating these files, see:
     # http://download.oracle.com/javase/6/docs/technotes/guides/security/jsse/JSSERefGuide.html#CreateKeystore
-    #
-    # TODO(mpereira): we'll have to configure this when adding TLS support.
-    server_encryption_options:
-      internode_encryption: none
-      keystore: conf/.keystore
-      keystore_password: cassandra
-      truststore: conf/.truststore
-      truststore_password: cassandra
-      # More advanced defaults below:
-      # protocol: TLS
-      # algorithm: SunX509
-      # store_type: JKS
-      # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
-      # require_client_auth: false
-      # require_endpoint_verification: false
 
-    # enable or disable client/server encryption.
-    #
-    # TODO(mpereira): we'll have to configure this when adding TLS support.
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    server_encryption_options:
+      internode_encryption: all
+      keystore: /etc/cassandra/tls/cassandra.server.keystore.jks
+      keystore_password: ${keystore_password}
+      truststore: /etc/cassandra/tls/cassandra.server.truststore.jks
+      truststore_password: ${truststore_password}
+      protocol: TLSv1.2
+      cipher_suites: [{{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}]
+      algorithm: SunX509
+      store_type: JKS
+      require_client_auth: {{ .Params.TRANSPORT_ENCRYPTION_REQUIRE_CLIENT_AUTH }}
+      # require_endpoint_verification: false
+    {{ end }}
+
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
     client_encryption_options:
-      enabled: false
-      # If enabled and optional is set to true encrypted and unencrypted connections are handled.
+      # If both 'enabled' and 'optional' are set to 'true', both encrypted and
+      # unencrypted connections are allowed.
+      enabled: true
+      {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ALLOW_PLAINTEXT "true" }}
+      optional: true
+      {{ else }}
       optional: false
-      keystore: conf/.keystore
-      keystore_password: cassandra
-      # require_client_auth: false
-      # Set trustore and truststore_password if require_client_auth is true
-      # truststore: conf/.truststore
-      # truststore_password: cassandra
-      # More advanced defaults below:
-      # protocol: TLS
-      # algorithm: SunX509
-      # store_type: JKS
-      # cipher_suites: [TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA]
+      {{ end }}
+      keystore: /etc/cassandra/tls/cassandra.server.keystore.jks
+      keystore_password: ${keystore_password}
+      truststore: /etc/cassandra/tls/cassandra.server.truststore.jks
+      truststore_password: ${truststore_password}
+      protocol: TLSv1.2
+      require_client_auth: {{ .Params.TRANSPORT_ENCRYPTION_CLIENT_REQUIRE_CLIENT_AUTH }}
+      algorithm: SunX509
+      store_type: JKS
+      cipher_suites: [{{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}]
+    {{ end }}
 
     # internode_compression controls whether traffic between nodes is
     # compressed.
@@ -1377,3 +1445,5 @@ data:
     {{ if .Params.CUSTOM_CASSANDRA_YAML_BASE64 }}
     {{ .Params.CUSTOM_CASSANDRA_YAML_BASE64 | b64dec }}
     {{ end }}
+    EOF
+
