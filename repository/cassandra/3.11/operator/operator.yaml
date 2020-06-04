@@ -1,9 +1,9 @@
 apiVersion: kudo.dev/v1beta1
 name: "cassandra"
-operatorVersion: "0.1.2"
-kudoVersion: "0.10.0"
+operatorVersion: "0.2.0"
+kudoVersion: "0.13.0"
 kubernetesVersion: "1.15.0"
-appVersion: "3.11.5"
+appVersion: "3.11.6"
 maintainers:
   - name: Murilo Pereira
     email: murilo@murilopereira.com
@@ -15,21 +15,113 @@ tasks:
     spec:
       resources:
         - service.yaml
-        - cassandra-yaml.yaml
+        - tls-store-credentials.yaml
+        - generate-cassandra-yaml.yaml
+        - cassandra-topology.yaml
+        - cassandra-role-sa.yaml
         - cassandra-env-sh.yaml
         - jvm-options.yaml
-        - stateful-set.yaml
         - cassandra-exporter-config-yml.yaml
         - service-monitor.yaml
-        - node-readiness-probe-sh.yaml
-
+        - node-scripts.yaml
+        - generate-tls-artifacts-sh.yaml
+        - generate-cqlshrc-sh.yaml
+        - pdb.yaml
+        - generate-nodetool-ssl-properties.yaml
+        - stateful-set.yaml
+  - name: ext-service
+    kind: Toggle
+    spec:
+      parameter: EXTERNAL_SERVICE
+      resources:
+        - external-service.yaml
+  - name: backup-deploy
+    kind: Toggle
+    spec:
+      parameter: BACKUP_RESTORE_ENABLED
+      resources:
+        - medusa-config-ini.yaml
+  - name: backup-cleanup
+    kind: Delete
+    spec:
+      resources:
+        - backup-job.yaml
+  - name: backup-node
+    kind: Apply
+    spec:
+      resources:
+        - backup-job.yaml
+  - name: recovery-controller
+    kind: Toggle
+    spec:
+      parameter: RECOVERY_CONTROLLER
+      resources:
+        - recovery-controller-rbac.yaml
+        - recovery-controller.yaml
+  - name: node-resolver-rbac
+    kind: Toggle
+    spec:
+      parameter: SERVICE_ACCOUNT_INSTALL
+      resources:
+        - node-resolver-rbac.yaml
+  - name: node-rbac
+    kind: Apply
+    spec:
+      resources:
+        - node-rbac.yaml
+  - name: repair-cleanup
+    kind: Delete
+    spec:
+      resources:
+        - repair-job.yaml
+  - name: repair-node
+    kind: Apply
+    spec:
+      resources:
+        - repair-job.yaml
 plans:
   deploy:
     strategy: serial
     phases:
-      - name: nodes
+      - name: rbac
         strategy: parallel
         steps:
+          - name: rbac-deploy
+            tasks:
+              - node-rbac
+              - node-resolver-rbac
+      - name: nodes
+        strategy: serial
+        steps:
+          - name: pre-node
+            tasks:
+              - ext-service
+              - recovery-controller
+              - backup-deploy
           - name: node
             tasks:
               - node
+  repair:
+    strategy: serial
+    phases:
+      - name: repair
+        strategy: serial
+        steps:
+          - name: cleanup
+            tasks:
+              - repair-cleanup
+          - name: repair
+            tasks:
+              - repair-node
+  backup:
+    strategy: serial
+    phases:
+      - name: backup
+        strategy: serial
+        steps:
+          - name: cleanup
+            tasks:
+             - backup-cleanup
+          - name: backup
+            tasks:
+             - backup-node

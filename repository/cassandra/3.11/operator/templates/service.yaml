@@ -19,8 +19,12 @@ spec:
     - port: {{ .Params.RPC_PORT }}
       name: rpc
     {{ end }}
+    {{ if ne .Params.JMX_LOCAL_ONLY "true" }}
     - port: {{ .Params.JMX_PORT }}
       name: jmx
+    - port: {{ .Params.RMI_PORT }}
+      name: rmi
+    {{ end }}
     {{ if eq .Params.PROMETHEUS_EXPORTER_ENABLED "true" }}
     - port: {{ .Params.PROMETHEUS_EXPORTER_PORT }}
       name: prometheus-exporter-port
