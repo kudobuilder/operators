@@ -21,7 +21,7 @@ copy-paste the commands easily.
 ```bash
 instance_name=cassandra
 namespace_name=default
-destination_version=0.1.2
+destination_version=1.0.0
 ```
 
 #### 2. Verify that the variables are set correctly
@@ -37,7 +37,7 @@ Example output:
 ```bash
 NAME        AGE
 cassandra   16h
-About to upgrade to 0.1.2
+About to upgrade to 1.0.0
 ```
 
 #### 3. Verify the state of the KUDO Cassandra instance
@@ -56,7 +56,7 @@ Example output:
 ```
 Plan(s) for "cassandra" in namespace "default":
 .
-└── cassandra (Operator-Version: "cassandra-0.1.1" Active-Plan: "deploy")
+└── cassandra (Operator-Version: "cassandra-0.1.2" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase nodes (parallel strategy) [COMPLETE]
             └── Step node [COMPLETE]
@@ -72,7 +72,7 @@ kubectl kudo upgrade cassandra -n $namespace_name --instance=$instance_name --op
 Example output:
 
 ```
-operatorversion.kudo.dev/v1beta1/cassandra-0.1.2 created
+operatorversion.kudo.dev/v1beta1/cassandra-1.0.0 created
 instance.kudo.dev/v1beta1/cassandra updated
 ```
 
@@ -92,7 +92,7 @@ Expected output should show:
 ```
 Plan(s) for "cassandra" in namespace "default":
 .
-└── cassandra (Operator-Version: "cassandra-0.1.2" Active-Plan: "deploy")
+└── cassandra (Operator-Version: "cassandra-1.0.0" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [IN_PROGRESS]
         └── Phase nodes (parallel strategy) [IN_PROGRESS]
             └── Step node [IN_PROGRESS]

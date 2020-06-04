@@ -58,7 +58,7 @@ echo ${cassandra_image}
 Example output:
 
 ```
-mesosphere/cassandra:3.11.5-0.1.2
+mesosphere/cassandra:3.11.6-1.0.0
 ```
 
 #### 4. Run a command which accesses cassandra in a pod
@@ -108,3 +108,28 @@ Expected output:
 ```
 pod "cassandra-access-demo" deleted
 ```
+
+## Access from outside the Cluster
+
+The operator supports creation of a service that opens up ports to access
+Cassandra from outside the cluster. To enable this, you have to set the
+following variables:
+
+```
+kubectl kudo update $instance_name -n $namespace_name -p EXTERNAL_NATIVE_TRANSPORT=true
+```
+
+This will create a service with a LoadBalancer port that forwards to the
+Cassandra nodes. There are the following options:
+
+- EXTERNAL_NATIVE_TRANSPORT="true" Enable access to the cluster from the outside
+- EXTERNAL_RPC="true" Enable access to the legacy RPC port if it's enabled on
+  the cluster (Requires that START_RPC is "true")
+- EXTERNAL_NATIVE_TRANSPORT_PORT="9042" The external port that is forwarded to
+  the native transport port on the nodes
+- EXTERNAL_RPC_PORT="9160" The external port that is forwarded to the rpc port
+  on the nodes
+
+:warning: The external service definition will at the moment not be deleted if
+you set EXTERNAL_NATIVE_TRANSPORT and EXTERNAL_RPC to "false". If you need to
+remove external access, you have to remove the external service manually.
