@@ -1,8 +1,7 @@
 apiVersion: kudo.dev/v1alpha1
 kind: TestSuite
 commands:
-  - command: ./bin/kubectl-kudo init --unsafe-self-signed-webhook-ca --kudo-image kudobuilder/controller:%version% --kudo-image-pull-policy Never
-  - command: ./hack/wait-for-kudo.sh
+  - command: ./bin/kubectl-kudo init --unsafe-self-signed-webhook-ca --kudo-image kudobuilder/controller:%version% --kudo-image-pull-policy Never --wait
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/cassandra/3.11/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-rest-proxy/operator/
   - command: ./bin/kubectl-kudo install --skip-instance ./repository/confluent-schema-registry/operator/
