@@ -14,9 +14,14 @@ rack awareness.
 
 ## Kubernetes cluster prerequisites
 
-At this time, KUDO Cassandra needs a single Kubernetes cluster spanning all the
-datacenters. A Cassandra cluster running on two or more Kubernetes clusters is
-not supported at the moment
+### Naming
+
+In a multi-datacenter setup, a Cassandra cluster is formed by combining multiple
+Cassandra datacenters. Cassandra datacenters can either run in a single
+Kubernetes cluster that is spanning multiple physical datacenters, or in
+multiple Kubernetes clusters, each one in a different physical datacenter. All
+instances of Cassandra have to have the same name. This is achieved by using the
+same instance name or by setting the `OVERRIDE_CLUSTER_NAME` parameter.
 
 ### Node labels
 
@@ -28,7 +33,7 @@ not supported at the moment
 If the Kubernets cluster is running on AWS, these labels are usually set by
 default, on AWS they correspond to the different regions:
 
-```
+```yaml
 topology.kubernetes.io/region=us-east-1
 ```
 
@@ -36,7 +41,7 @@ As datacenter selection is configured on datacenter level for cassandra, it is
 possible to use different keys for each datacenter. This might be especially
 useful for hybrid clouds. For example, this would be an valid configuration:
 
-```
+```yaml
 Datacenter 1 (OnPrem):
 nodeLabels:
   custom.topology=onprem
@@ -55,7 +60,7 @@ Again, it is advised to use the
 [Kubernetes topology labels](https://kubernetes.io/docs/reference/kubernetes-api/labels-annotations-taints/#topologykubernetesioregion),
 for example on AWS a label would look like:
 
-```
+```yaml
 topology.kubernetes.io/zone=us-east-1c
 ```
 
@@ -69,7 +74,7 @@ KUDO Cassandra operator uses an initContainer to read the rack of the deployed
 pod. This requires a service account with valid RBAC permissions. KUDO Cassandra
 provides an easy way to automatically create this service account for you:
 
-```
+```text
 SERVICE_ACCOUNT_INSTALL=true
 ```
 
@@ -168,8 +173,13 @@ nodes. When starting a new Cassandra instance on a Kubernetes cluster in the
 `us-east-2` region, we set `EXTERNAL_SEED_NODES` to the seed nodes of the
 cluster in `us-west-2`
 
-```
-EXTERNAL_SEED_NODES: [ <DNS of first seed node>, <DNS of second seed node>, <DNS of third seed node> ]
+```yaml
+EXTERNAL_SEED_NODES:
+  [
+    <DNS of first seed node>,
+    <DNS of second seed node>,
+    <DNS of third seed node>,
+  ]
 ```
 
 Once the Cassandra instance in `us-east-2` has been deployed, the Cassandra
@@ -183,7 +193,7 @@ each other.
 
 To let cassandra know about the topology, a different Snitch needs to be set:
 
-```
+```text
 ENDPOINT_SNITCH=GossipingPropertyFileSnitch
 ```
 
@@ -196,7 +206,7 @@ information from a local file which the operator generates from the
 This prefents the cluster to schedule two cassandra nodes on to the same
 Kubernetes node.
 
-```
+```text
 NODE_ANTI_AFFINITY=true
 ```
 
@@ -205,8 +215,8 @@ in your cluster as you use in the NODE_TOPOLOGY definition.
 
 ### Full list of required parameters
 
-```
-    ENDPOINT_SNITCH=GossipingPropertyFileSnitch
-    NODE_ANTI_AFFINITY=true
-    NODE_TOPOLOGY=<the cluster topology>
+```text
+ENDPOINT_SNITCH=GossipingPropertyFileSnitch
+NODE_ANTI_AFFINITY=true
+NODE_TOPOLOGY=<the cluster topology>
 ```

@@ -2,19 +2,24 @@
 
 **Table of Contents**
 
-- [Updating parameters](#updating-parameters)
-- [Upgrading](#upgrading)
-- [Accessing Cassandra](#accessing)
-- [Debugging](#debugging)
-  - [Plan status](#plan-status)
-  - [Get pods](#get-pods)
-  - [Pod container logs](#pod-container-logs)
-  - [Describe pod](#describe-pod)
-  - [Cassandra nodetool status](#cassandra-nodetool-status)
-  - [KUDO controller/manager logs](#kudo-controllermanager-logs)
-  - [Get endpoints](#get-endpoints)
-  - [Kubernetes events in the instance namespace](#kubernetes-events-in-the-instance-namespace)
-- [Uninstall an operator instance](#uninstall-an-operator-instance)
+- [Managing KUDO Cassandra Operator instances](#managing-kudo-cassandra-operator-instances)
+  - [Updating parameters](#updating-parameters)
+  - [Upgrading](#upgrading)
+  - [Failure handling](#failure-handling)
+    - [Recovery controller](#recovery-controller)
+      - [Node eviction](#node-eviction)
+    - [Manual node replacement](#manual-node-replacement)
+  - [Accessing](#accessing)
+  - [Debugging](#debugging)
+    - [Plan status](#plan-status)
+    - [Get pods](#get-pods)
+    - [Pod container logs](#pod-container-logs)
+    - [Describe pod](#describe-pod)
+    - [Cassandra nodetool status](#cassandra-nodetool-status)
+    - [KUDO controller/manager logs](#kudo-controllermanager-logs)
+    - [Get endpoints](#get-endpoints)
+    - [Kubernetes events in the instance namespace](#kubernetes-events-in-the-instance-namespace)
+  - [Uninstall an operator instance](#uninstall-an-operator-instance)
 
 ## Updating parameters
 
@@ -28,7 +33,7 @@ you will need to change the instance's parameter to:
 To change an instance's parameters, the `kubectl kudo update` command can be
 used.
 
-```
+```bash
 kubectl kudo update cassandra \
         --instance analytics-cassandra \
         --namespace production \
@@ -39,7 +44,7 @@ For example, the following command starts a rolling configuration update setting
 `cassandra.yaml`'s `hinted_handoff_throttle_in_kb` to `2048` in all of the
 cluster nodes'.
 
-```
+```bash
 kubectl kudo update cassandra \
         --instance analytics-cassandra \
         --namespace production \
@@ -48,7 +53,7 @@ kubectl kudo update cassandra \
 
 Multiple parameters can be updated in parallel as well.
 
-```
+```bash
 kubectl kudo update cassandra \
         --instance analytics-cassandra \
         --namespace production \
@@ -77,6 +82,77 @@ configurable settings.
 ## Upgrading
 
 See the [document on upgrading](upgrading.md).
+
+## Failure handling
+
+When using local storage, a Cassandra pod is using a local persistent volume
+that is only available when the pod is scheduled in a specific node. Any
+rescheduling will land the pod to the very same node due to the volume node
+affinity.
+
+This is an issue in case of a total Kubernetes node loss: the pods running on an
+unreachable Node enter the states Terminating or Unknown. Kubernetes doesn’t
+allow the deletion of those pods to avoid any brain-split.
+
+KUDO Cassandra provides a way to automatically handle these failure modes and
+move a Cassandra node that is located on a failed Kubernetes node to a different
+node in the cluster.
+
+### Recovery controller
+
+To enable this feature, use the following parameter:
+
+```bash
+RECOVERY_CONTROLLER=true
+```
+
+When this parameter is set, KUDO Cassandra will deploy an additional controller
+that monitors the deployed Cassandra pods. If any pod reaches an unschedulable
+state and detects that the kubernetes node is gone, it will remove the local
+volume of that pod and allow Kubernetes to schedule the pod to a different node.
+Additionally, the rescheduling can be triggered by an eviction label.
+
+The recovery controller relies on the Kubernetes state of a node, not the actual
+running processes. This means that the failure of the hardware on which a
+Cassandra node runs does not trigger the recovery. The only way an automatic
+recovery is triggered is when the Kubernetes node is removed from the cluster by
+kubectl delete node <failed-node-name>. This allows a Kubernetes node to be shut
+down for a maintenance period without KUDO Cassandra triggering a recovery.
+
+:warning: This feature will remove persistent volume claims in the Kubernetes
+cluster. This may lead to data loss. Additionally, you must not use any
+keyspaces with a replication factor of ONE, or the data of the failed Cassandra
+node will be lost.
+
+#### Node eviction
+
+Evicting a Cassandra node is similar to Failure recovery described above. The
+recovery controller will automate certain steps. The main difference is that
+during node eviction the Kubernetes node should stay available, i.e. other pods
+on that node shouldn’t get evicted. To evict a Cassandra node, first cordon or
+taint the Kubernetes node the Cassandra node is running on. Alternatively, add
+the label `kudo-cassandra/cordon=true` to the pod to evict if the whole node
+shouldn't be cordoned. This ensures that the pod, once deleted, won’t be
+restarted on the same node. Next, mark the pod for eviction by adding the label
+`kudo-cassandra/evict=true`. This will trigger the recovery controller and it
+will run the same steps as in failure recovery. As a result, the old pod will be
+terminated and rescheduled on a different Kubernetes node.
+
+### Manual node replacement
+
+Cassandra nodes can be replaced manually. This is done by decommissioning a node
+and bootstrapping a new one. The KUDO Cassandra operator will take care of the
+bootstrapping using the same logic that is used in the failure recovery scenario
+mentioned above.
+
+To replace a Cassandra node cordon the Kubernetes node the respective pod is
+running on. Manually delete the pod. The pod will be recreated and Kubernetes
+will try to redeploy it on the same node because its PVC is still on that node.
+Because the node has been cordoned, nothing will be deployed. Delete the PVC
+belonging to that pod. Keep in mind that this deletion might also delete the
+persistent volume claimed by the PVC. Delete the pod again. The pod will now get
+redeployed on a new node and a new PVC will be created on the new node as well.
+The new pod will bootstrap a Cassandra node.
 
 ## Accessing
 

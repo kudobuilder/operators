@@ -2,8 +2,10 @@
 
 **Table of Contents**
 
-- [Requirements](#requirements)
-- [Installing the operator](#installing-the-operator)
+- [Installing the KUDO Cassandra Operator](#installing-the-kudo-cassandra-operator)
+  - [Requirements](#requirements)
+  - [Installing the operator](#installing-the-operator)
+  - [Required Permissions](#required-permissions)
 
 ## Requirements
 
@@ -46,7 +48,7 @@ parameter will cause the instance to be installed in the "default" namespace,
 and omitting the `--instance` parameter will cause the instance name to be
 "cassandra". If providing a namespace, make sure it exists.
 
-```
+```bash
 kubectl kudo install cassandra \
         --instance analytics-cassandra \
         --namespace production
