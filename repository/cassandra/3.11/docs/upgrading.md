@@ -53,10 +53,10 @@ In the output note if:
 
 Example output:
 
-```
+```text
 Plan(s) for "cassandra" in namespace "default":
 .
-└── cassandra (Operator-Version: "cassandra-0.1.2" Active-Plan: "deploy")
+└── cassandra (Operator-Version: "cassandra-1.0.0" Active-Plan: "deploy")
     └── Plan deploy (serial strategy) [COMPLETE]
         └── Phase nodes (parallel strategy) [COMPLETE]
             └── Step node [COMPLETE]
@@ -71,7 +71,7 @@ kubectl kudo upgrade cassandra -n $namespace_name --instance=$instance_name --op
 
 Example output:
 
-```
+```text
 operatorversion.kudo.dev/v1beta1/cassandra-1.0.0 created
 instance.kudo.dev/v1beta1/cassandra updated
 ```
@@ -80,7 +80,7 @@ instance.kudo.dev/v1beta1/cassandra updated
 
 Check the plan status:
 
-```
+```bash
 kubectl kudo plan status --instance=$instance_name -n $namespace_name
 ```
 
@@ -89,7 +89,7 @@ Expected output should show:
 - `deploy` plan either `IN_PROGRESS` or `COMPLETE`, and
 - the `Operator-Version` to match the destination version.
 
-```
+```text
 Plan(s) for "cassandra" in namespace "default":
 .
 └── cassandra (Operator-Version: "cassandra-1.0.0" Active-Plan: "deploy")

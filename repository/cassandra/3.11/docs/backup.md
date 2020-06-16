@@ -27,7 +27,7 @@ The examples below assume that the instance and namespace names are stored in
 the following shell variables. With this assumptions met, you should be able to
 copy-paste the commands easily and it prevents typos in reused values.
 
-```bash
+```text
 INSTANCE_NAME=cassandra
 NAMESPACE=backup-test
 SECRET_NAME=aws-credentials
@@ -99,7 +99,7 @@ configuration:
   backup, but allows us to access the cluster with `cqlsh` from the local
   machine
 
-```
+```bash
 kubectl kudo install cassandra \
         --instance $INSTANCE_NAME \
         --namespace $NAMESPACE \
@@ -123,7 +123,7 @@ In the output note if:
 
 Example output:
 
-```
+```text
 Plan(s) for "cassandra" in namespace "default":
 .
 └── cassandra (Operator-Version: "cassandra-1.0.0" Active-Plan: "deploy")
@@ -171,7 +171,7 @@ cqlsh $CASSANDRA_CLUSTER -e "USE schema1; SELECT * FROM users;"
 
 Expected output should show:
 
-```
+```text
  user_id | age | first | last
 ---------+-----+-------+-------
   jsmith |  42 |  John | Smith
@@ -200,7 +200,7 @@ kubectl get jobs --namespace=$NAMESPACE
 
 This should produce a list of the started backup jobs, one for each active node:
 
-```
+```text
 NAME            COMPLETIONS   DURATION   AGE
 backup-node-0   1/1           25s        33s
 backup-node-1   1/1           21s        33s
@@ -216,7 +216,7 @@ kubectl get pods --namespace=$NAMESPACE
 This shows us the cassandra nodes and the temporary backup-pods, created by the
 jobs:
 
-```
+```text
 NAME                  READY   STATUS      RESTARTS   AGE
 backup-node-0-bq228   0/1     Completed   0          83s
 backup-node-1-fm7dq   0/1     Completed   0          83s
@@ -239,7 +239,7 @@ kubectl logs $FIRST_BACKUP_POD_NAME --namespace=$NAMESPACE
 
 This should show the logs of the backup job:
 
-```
+```text
 Starting medusa: python3 /usr/local/bin/medusa backup --backup-name Backup1
 [2020-03-06 12:00:22,036] INFO: Monitoring provider is noop
 [2020-03-06 12:00:23,605] WARNING: is ccm : 0
@@ -270,7 +270,7 @@ These files should now show up in the S3 bucket as well:
 aws s3 ls $BACKUP_BUCKET_NAME/$BACKUP_PREFIX --recursive
 ```
 
-```bash
+```text
 2020-03-06 13:00:25         12 cluster1/cassandra-node-0.cassandra-svc.backup-test.svc.cluster.local/Backup1/meta/differential
 2020-03-06 13:00:41      65831 cluster1/cassandra-node-0.cassandra-svc.backup-test.svc.cluster.local/Backup1/meta/manifest.json
 2020-03-06 13:00:24      35214 cluster1/cassandra-node-0.cassandra-svc.backup-test.svc.cluster.local/Backup1/meta/schema.cql
@@ -304,7 +304,7 @@ persistent volume claims:
 kubectl get pvc --namespace $NAMESPACE
 ```
 
-```
+```text
 NAME                                 STATUS   VOLUME                                     CAPACITY   ACCESS MODES   STORAGECLASS           AGE
 var-lib-cassandra-cassandra-node-0   Bound    pvc-f4048fa7-23da-4410-b7b0-b7c82729fc7d   20Gi       RWO            awsebscsiprovisioner   64m
 var-lib-cassandra-cassandra-node-1   Bound    pvc-2c85752f-6438-4c8d-8e87-9f4c91df6452   20Gi       RWO            awsebscsiprovisioner   64m
@@ -319,7 +319,7 @@ make sure to delete them before reinstalling the cluster with the S3 backup:
 kubectl delete pvc --all --namespace $NAMESPACE
 ```
 
-```
+```text
 persistentvolumeclaim "var-lib-cassandra-cassandra-node-0" deleted
 persistentvolumeclaim "var-lib-cassandra-cassandra-node-1" deleted
 persistentvolumeclaim "var-lib-cassandra-cassandra-node-2" deleted
@@ -373,7 +373,7 @@ Again, we should check if the plan is executed correctly and no ERRORS show up:
 kubectl kudo plan status --instance=$INSTANCE_NAME -n $NAMESPACE
 ```
 
-```
+```text
 Plan(s) for "cassandra" in namespace "default":
 .
 └── cassandra (Operator-Version: "cassandra-1.0.0" Active-Plan: "deploy")
@@ -399,7 +399,7 @@ the actual pod starts:
 kubectl logs $INSTANCE_NAME-node-0 -c medusa-restore --namespace $NAMESPACE
 ```
 
-```
+```text
 Start Restore for node 'cassandra' from backup 'Backup1' in prefix 'cluster1'
 [2020-03-06 12:48:06,591] WARNING: is ccm : 0
 [2020-03-06 12:48:06,795] INFO: Downloading data from backup to /tmp/medusa-restore-5aa6b9e3-831d-4d80-9ed1-1ca88f169f5b
@@ -432,7 +432,7 @@ Now we can verify we get the same results as before the backup:
 cqlsh $CASSANDRA_CLUSTER -e "USE schema1; SELECT * FROM users;"
 ```
 
-```
+```text
  user_id | age | first | last
 ---------+-----+-------+-------
   jsmith |  42 |  John | Smith

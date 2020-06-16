@@ -20,13 +20,13 @@ communication between nodes and client.
 
 Create the TLS certificate to be used for Cassandra TLS encryptions
 
-```
+```bash
 openssl req -x509 -newkey rsa:4096 -sha256 -nodes -keyout tls.key -out tls.crt -subj "/CN=CassandraCA" -days 365
 ```
 
 Create a kubernetes TLS secret using the certificate created in previous step
 
-```
+```bash
 kubectl create secret tls cassandra-tls -n kudo-cassandra --cert=tls.crt --key=tls.key
 ```
 
@@ -35,7 +35,7 @@ KUDO Cassandra is being installed.
 
 #### Enabling only Node-to-node communication
 
-```
+```bash
 kubectl kudo install cassandra \
     --instance=cassandra \
     --namespace=kudo-cassandra \
@@ -45,7 +45,7 @@ kubectl kudo install cassandra \
 
 #### Enabling both Node-to-node and Client-to-node communication
 
-```
+```bash
 kubectl kudo install cassandra \
     --instance=cassandra \
     --namespace=kudo-cassandra \
@@ -57,7 +57,7 @@ kubectl kudo install cassandra \
 The operator also allows you to allow plaintext communication along with
 encrypted traffic in Client-to-node communication.
 
-```
+```bash
 kubectl kudo install cassandra \
     --instance=cassandra \
     --namespace=kudo-cassandra \
@@ -72,7 +72,7 @@ kubectl kudo install cassandra \
 By default, KUDO Cassandra nodes only allow JMX connections from localhost. To
 enable remote JMX with encryption set `JMX_LOCAL_ONLY` to `false`.
 
-```
+```bash
 kubectl kudo install cassandra \
     --instance=cassandra \
     --namespace=kudo-cassandra \
@@ -102,7 +102,7 @@ contains the credentials of the user the operator should use and set the
 Here's an example of a secret that uses the default cassandra/cassandra
 credentials:
 
-```
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
@@ -115,7 +115,7 @@ data:
 
 Reference this when installing the Cassandra operator with authentication.
 
-```
+```bash
 kubectl kudo install cassandra \
     --instance=cassandra \
     --namespace=kudo-cassandra \
