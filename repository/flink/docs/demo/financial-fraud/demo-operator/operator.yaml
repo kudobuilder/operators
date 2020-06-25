@@ -1,6 +1,6 @@
 name: "flink-demo"
-operatorVersion: "0.1.4"
-kudoVersion: 0.10.0
+operatorVersion: "0.1.5"
+kudoVersion: 0.10.0 # TODO: update to 0.15 once released
 kubernetesVersion: 1.15.0
 maintainers:
   - name: Fabian Baier
@@ -10,20 +10,26 @@ maintainers:
 url: https://zookeeper.apache.org/
 tasks:
   - name: kafka
-    kind: Apply
+    kind: KudoOperator
     spec:
-      resources:
-        - kafka.yaml
+      package: kafka
+      operatorVersion: 1.2.0
+      parameterFile: kafka-params.yaml
+      instanceName: kafka
   - name: zookeeper
-    kind: Apply
+    kind: KudoOperator
     spec:
-      resources:
-        - zookeeper.yaml
+      package: zookeeper
+      operatorVersion: 0.3.0
+      parameterFile: zookeeper-params.yaml
+      instanceName: zk
   - name: flink
-    kind: Apply
+    kind: KudoOperator
     spec:
-      resources:
-        - flink.yaml
+      package: flink
+      operatorVersion: 0.2.1
+      parameterFile: flink-params.yaml
+      instanceName: flink
   - name: generator
     kind: Apply
     spec:
