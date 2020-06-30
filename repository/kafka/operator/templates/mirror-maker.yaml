@@ -7,13 +7,13 @@ metadata:
     app: kafka-mirror-maker
 spec:
   replicas: {{ .Params.MIRROR_MAKER_REPLICA_COUNT }}
-  namespaceSelector:
-    matchNames:
-    - {{ .Namespace }}
+  selector:
+    matchLabels:
+      name: {{ .Name }}-mirror-maker
   template:
     metadata:
       labels:
-        name: kafka-mirror-maker
+        name: {{ .Name }}-mirror-maker
     spec:
       containers:
       - name: kafka-mirror-maker
