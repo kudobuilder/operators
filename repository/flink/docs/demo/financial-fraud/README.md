@@ -43,10 +43,10 @@ $ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
 ### Install KUDO and the KUDO CLI
 
 - Have current KUDO CLI `v0.15.x` [installed](https://kudo.dev/docs/cli.html#setup-the-kudo-kubectl-plugin)
-    - Run `kubectl kudo version`, the output should look like:
+    - Run `kubectl kudo version`, the output should look something like:
         ```bash
         $ kubectl kudo version
-        KUDO Version: version.Info{GitVersion:"0.10.0", GitCommit:"d2310b12", BuildDate:"2020-01-10T18:54:59Z", GoVersion:"go1.13.6", Compiler:"gc", Platform:"darwin/amd64"}
+        KUDO Version: version.Info{GitVersion:"0.15.0", GitCommit:"3a6cdfa6", BuildDate:"2020-06-26T12:20:36Z", GoVersion:"go1.13", Compiler:"gc", Platform:"darwin/amd64"}
         ```
     - If not, upgrade to the latest version via `brew upgrade kudo-cli` on macOS or follow the [installation instructions](https://kudo.dev/docs/cli.html#setup-the-kudo-kubectl-plugin) on other platforms.
     - Have current KUDO `v0.15.x` installed on your cluster:
@@ -54,7 +54,7 @@ $ minikube start --vm-driver=hyperkit --cpus=6 --memory=9216 --disk-size=10g
         - Make sure the output of `kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'` shows at least `v0.15.x` as Docker tag:
         ```bash
         $ kubectl get pod kudo-controller-manager-0 -n kudo-system -o jsonpath='{.spec.containers[0].image}'
-        kudobuilder/controller:v0.10.0
+        kudobuilder/controller:v0.15.0
         ```
     - If not, use the following commands to install KUDO `v0.15.x` to your cluster:
         ```bash
