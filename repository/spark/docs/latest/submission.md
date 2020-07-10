@@ -22,8 +22,6 @@ spec:
   imagePullPolicy: Always
   mainClass: org.apache.spark.examples.SparkPi
   mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.11-2.4.5.jar"
-  arguments:
-    - "150000"
   sparkConf:
     "spark.ui.port": "4041"
   sparkVersion: "2.4.5"
@@ -34,7 +32,7 @@ spec:
     memory: "512m"
     labels:
       version: 2.4.5
-    serviceAccount: spark-driver
+    serviceAccount: spark-instance-spark-service-account
   executor:
     cores: 1
     instances: 2
