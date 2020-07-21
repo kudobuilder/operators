@@ -1,6 +1,6 @@
 apiVersion: kudo.dev/v1beta1
 name: "rabbitmq"
-operatorVersion: "0.1.0"
+operatorVersion: "0.1.1"
 kudoVersion: 0.10.0
 kubernetesVersion: 1.13.0
 appVersion: 3.8.0
