@@ -1,0 +1,15 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+timeout: 600
+---
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: spark
+  namespace: spark
+status:
+  planStatus:
+    deploy:
+      status: COMPLETE
+
+# this can take time, 3+ mins locally is common
