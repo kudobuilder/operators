@@ -19,6 +19,10 @@ tasks:
         - configmap.yaml
         - service.yaml
         - statefulset.yaml
+  - name: not-allowed
+    kind: Dummy
+    spec:
+      resources:
 plans:
   deploy:
     strategy: serial
@@ -29,3 +33,12 @@ plans:
           - name: everything
             tasks:
               - node
+  not-allowed:
+    strategy: serial
+    phases:
+      - name: not-allowed
+        strategy: serial
+        steps:
+          - name: not-allowed
+            tasks:
+              - not-allowed

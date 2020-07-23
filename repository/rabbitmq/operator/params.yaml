@@ -25,3 +25,4 @@ parameters:
   - name: DISK_SIZE
     description: "Disk size for the RabbitMQ servers"
     default: "1Gi"
+    trigger: "not-allowed"

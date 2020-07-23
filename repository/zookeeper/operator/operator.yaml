@@ -34,6 +34,10 @@ tasks:
     spec:
       resources:
         - validation.yaml
+  - name: not-allowed
+    kind: Dummy
+    spec:
+      resources:
 plans:
   deploy:
     strategy: serial
@@ -66,3 +70,12 @@ plans:
           - name: cleanup
             tasks:
               - validation-cleanup
+  not-allowed:
+    strategy: serial
+    phases:
+      - name: not-allowed
+        strategy: serial
+        steps:
+          - name: not-allowed
+            tasks:
+              - not-allowed
