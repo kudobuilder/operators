@@ -1,0 +1,28 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+timeout: 600
+collectors:
+  - pod: spark-pi-driver
+    namespace: spark
+---
+apiVersion: sparkoperator.k8s.io/v1beta2
+kind: SparkApplication
+metadata:
+  name: spark-pi
+  namespace: spark
+status:
+  applicationState:
+    state: COMPLETED
+---
+apiVersion: v1
+kind: Event
+reason: SparkApplicationCompleted
+metadata:
+  namespace: spark
+source:
+  component: spark-operator
+involvedObject:
+  apiVersion: sparkoperator.k8s.io/v1beta2
+  kind: SparkApplication
+  name: spark-pi  
+  namespace: spark
