@@ -1,6 +1,6 @@
 apiVersion: kudo.dev/v1beta1
 name: "zookeeper"
-operatorVersion: "0.3.0"
+operatorVersion: "0.3.1"
 kudoVersion: 0.10.0
 appVersion: 3.4.14
 kubernetesVersion: 1.14.8
@@ -70,3 +70,12 @@ plans:
           - name: cleanup
             tasks:
               - validation-cleanup
+  not-allowed:
+    strategy: serial
+    phases:
+      - name: not-allowed
+        strategy: serial
+        steps:
+          - name: not-allowed
+            tasks:
+              - not-allowed
