@@ -1,0 +1,20 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  labels:
+    kudo.dev/operator: cowsay
+  name: cowsay-instance
+  namespace: default
+status:
+  planStatus:
+    deploy:
+      name: deploy
+      phases:
+      - name: main
+        status: COMPLETE
+        steps:
+        - name: genfiles
+          status: COMPLETE
+        - name: app
+          status: COMPLETE
+      status: COMPLETE
