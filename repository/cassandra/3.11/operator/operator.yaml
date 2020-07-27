@@ -1,8 +1,8 @@
 apiVersion: kudo.dev/v1beta1
 name: "cassandra"
-operatorVersion: "1.0.0"
-kudoVersion: "0.13.0"
-kubernetesVersion: "1.15.0"
+operatorVersion: "1.0.1"
+kudoVersion: "0.15.0-rc1"
+kubernetesVersion: "1.16.0"
 appVersion: "3.11.6"
 maintainers:
   - name: Zain Malik
@@ -29,8 +29,6 @@ tasks:
         - cassandra-role-sa.yaml
         - cassandra-env-sh.yaml
         - jvm-options.yaml
-        - cassandra-exporter-config-yml.yaml
-        - service-monitor.yaml
         - node-scripts.yaml
         - generate-tls-artifacts-sh.yaml
         - generate-cqlshrc-sh.yaml
@@ -43,6 +41,13 @@ tasks:
       parameter: EXTERNAL_SERVICE
       resources:
         - external-service.yaml
+  - name: monitor-deploy
+    kind: Toggle
+    spec:
+      parameter: PROMETHEUS_EXPORTER_ENABLED
+      resources:
+        - service-monitor.yaml
+        - cassandra-exporter-config-yml.yaml
   - name: backup-deploy
     kind: Toggle
     spec:
@@ -106,6 +111,7 @@ plans:
               - ext-service
               - recovery-controller
               - backup-deploy
+              - monitor-deploy
           - name: node
             tasks:
               - node

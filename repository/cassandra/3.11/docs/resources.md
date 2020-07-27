@@ -123,7 +123,7 @@ default      └─Pod/cassandra-instance-node-2                                
 ### Statefulset
 
 Statefulsets are designed to manage stateful workload in Kubernetes. KUDO
-Cassandra uses statefulsets. The operator by default uses `OrderedReady`pod
+Cassandra uses statefulsets. The operator by default uses `OrderedReady` pod
 management policy. This guarantees that pods are created sequentially, which
 means that when the Cassandra cluster is coming up, only one node starts at a
 time. Pod names are <instance-name>-node-<ordinal-index> starting from

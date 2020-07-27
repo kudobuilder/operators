@@ -31,3 +31,10 @@ spec:
               value: {{ $.Name }}
             - name: EVICTION_LABEL
               value: "kudo-cassandra/evict"
+          resources:
+            requests:
+              memory: "{{ $.Params.RECOVERY_CONTROLLER_MEM_MIB }}Mi"
+              cpu: "{{ $.Params.RECOVERY_CONTROLLER_CPU_MC }}m"
+            limits:
+              memory: "{{ $.Params.RECOVERY_CONTROLLER_MEM_LIMIT_MIB }}Mi"
+              cpu: "{{ $.Params.RECOVERY_CONTROLLER_CPU_LIMIT_MC }}m"

@@ -15,17 +15,14 @@ data:
     nodetool {{ $auth_params }} drain
     {{ end }}
   node-readiness-probe.sh: |
-    {{ if ne $.Params.JMX_LOCAL_ONLY "true" }}
-    nodetool {{ $auth_params }} -p {{ .Params.JMX_PORT }} --ssl status| grep -q "U[NJ]  ${POD_IP}"
-    {{ else }}
-    nodetool {{ $auth_params }} -p {{ .Params.JMX_PORT }} status | grep -q "U[NJ]  ${POD_IP}"
-    {{ end }}
+    IS_NATIVE_TRANSPORT_RUNNING=`curl -s localhost:{{ $.Params.JOLOKIA_PORT }}/jolokia/read/org.apache.cassandra.db:type=StorageService/NativeTransportRunning | jq .value`
+    IS_NODE_LIVE=`curl -s localhost:{{ $.Params.JOLOKIA_PORT }}/jolokia/read/org.apache.cassandra.db:type=StorageService/LiveNodes | jq .value | grep -E ${POD_IP}`
+    echo "Native Transport Running: $IS_NATIVE_TRANSPORT_RUNNING, Live Node: $IS_NODE_LIVE (Expecting ${POD_IP})"
+    [[ $IS_NATIVE_TRANSPORT_RUNNING == "true" ]] && [[ $IS_NODE_LIVE != "" ]]
   node-liveness-probe.sh: |
-    {{ if ne $.Params.JMX_LOCAL_ONLY "true" }}
-    nodetool {{ $auth_params }}  -p {{ .Params.JMX_PORT }} --ssl info
-    {{ else }}
-    nodetool {{ $auth_params }} -p {{ .Params.JMX_PORT }}  info
-    {{ end }}
+    DEADLOCKED_THREADS=`curl -s localhost:{{ $.Params.JOLOKIA_PORT }}/jolokia/exec/java.lang:type=Threading/findDeadlockedThreads | jq .value`
+    echo "Deadlocked Threads: $DEADLOCKED_THREADS"
+    [[ $DEADLOCKED_THREADS == "null" ]]
   generate-rackdc-properties.sh: |
     # Generate the rackdc-properties
     RACK=`kubectl get node -L$RACKLABEL | grep ${NODE_NAME} | awk '{print $6}'`

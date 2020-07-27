@@ -34,7 +34,7 @@ parameters:
 
   - name: NODE_DOCKER_IMAGE
     description: "Cassandra node Docker image."
-    default: "mesosphere/cassandra:3.11.6-1.0.0"
+    default: "mesosphere/cassandra:3.11.6-1.0.1"
 
   - name: NODE_DOCKER_IMAGE_PULL_POLICY
     description: "Cassandra node Docker image pull policy."
@@ -80,6 +80,10 @@ parameters:
     description: "When a pod starts and the liveness probe fails, `failure_threshold` attempts will be made before restarting the pod."
     default: "3"
 
+  - name: NODE_TOLERATIONS
+    description: A list of kubernetes tolerations to let pods get scheduled on tainted nodes
+    type: array
+
   - name: OVERRIDE_CLUSTER_NAME
     description: "Override the name of the Cassandra cluster set by the operator. This shouldn't be explicit set, unless you know what you're doing."
     default: ""
@@ -109,24 +113,6 @@ parameters:
     description: "The external port to use for Cassandra rpc protocol."
     default: "9160"
 
-  - name: RECOVERY_CONTROLLER
-    displayName: "Enables or disables the recovery controller"
-    description: "Needs to be true for automatic failure recovery and node eviction"
-    default: "false"
-
-  - name: RECOVERY_CONTROLLER_DOCKER_IMAGE
-    description: "Recovery controller Docker image."
-    default: "mesosphere/kudo-cassandra-recovery:0.0.2-1.0.0"
-
-  - name: RECOVERY_CONTROLLER_DOCKER_IMAGE_PULL_POLICY
-    description: "Recovery controller Docker image pull policy."
-    default: "Always"
-
-  - name: MAX_UNAVAILABLE_NODES
-    displayName: "Max number of nodes that can be unavailable"
-    description: "Maximum number of nodes that are allowed to be down, either for restarts or from unscheduled outage. See PodDisruptionBudget"
-    default: 1
-
   - name: BOOTSTRAP_TIMEOUT
     description: "Timeout for the bootstrap binary to join the cluster with the new IP. Valid time units are 'ns', 'us', 'ms', 's', 'm', 'h'."
     default: "12h30m"
@@ -134,6 +120,10 @@ parameters:
   - name: SHUTDOWN_OLD_REACHABLE_NODE
     description: "When a node replace is done, try to connect to the old node and shut it down before starting up the old node"
     default: false
+
+  - name: JOLOKIA_PORT
+    description: "The internal port for the Jolokia Agent. This port is not exposed, but can be changed if it conflicts with another port."
+    default: 7777
 
   ################################################################################
   ########################## Backup and Restore settings #########################
@@ -183,7 +173,7 @@ parameters:
 
   - name: BACKUP_MEDUSA_DOCKER_IMAGE
     description: "Medusa backup Docker image."
-    default: "mesosphere/kudo-cassandra-medusa:0.6.0-1.0.0"
+    default: "mesosphere/kudo-cassandra-medusa:0.6.0-1.0.1"
 
   - name: BACKUP_MEDUSA_DOCKER_IMAGE_PULL_POLICY
     description: "Medusa backup Docker image pull policy."
@@ -215,11 +205,11 @@ parameters:
     type: array
 
   - name: NODE_ANTI_AFFINITY
-    description: "Ensure that every Cassandra node is deployed on separate hosts"
+    description: "Ensure that every Cassandra node is deployed on separate hosts."
     default: "false"
 
   - name: SERVICE_ACCOUNT_INSTALL
-    description: "This flag can be set to true to automatic installation of a cluster role, service account and role binding"
+    description: "This flag can be set to true to automatic installation of a cluster role, service account and role binding."
     default: "false"
 
   - name: EXTERNAL_SEED_NODES
@@ -232,6 +222,7 @@ parameters:
   ################################################################################
 
   - name: PROMETHEUS_EXPORTER_ENABLED
+    description: "A toggle to enable the prometheus metrics exporter."
     default: "false"
 
   - name: PROMETHEUS_EXPORTER_PORT
@@ -256,7 +247,7 @@ parameters:
 
   - name: PROMETHEUS_EXPORTER_DOCKER_IMAGE
     description: "Prometheus exporter Docker image."
-    default: "mesosphere/cassandra-prometheus-exporter:2.3.4-1.0.0"
+    default: "mesosphere/cassandra-prometheus-exporter:2.3.4-1.0.1"
 
   - name: PROMETHEUS_EXPORTER_DOCKER_IMAGE_PULL_POLICY
     description: "Prometheus exporter Docker image pull policy."
@@ -881,7 +872,7 @@ parameters:
 
   - name: KUBECTL_VERSION
     description: "Version of 'bitnami/kubectl' image. This image is used for some functionality of the operator."
-    default: "1.18.2"
+    default: "1.18.4"
 
   ################################################################################
   ################################ JVM Options ###################################
@@ -1007,3 +998,36 @@ parameters:
     description: "Name of the pod on which 'nodetool repair' should be run."
     default: ""
     trigger: repair
+
+  ################################################################################
+  ################################ Repair options ################################
+  ################################################################################
+
+  - name: RECOVERY_CONTROLLER
+    displayName: "Enables or disables the recovery controller"
+    description: "Needs to be true for automatic failure recovery and node eviction"
+    default: "false"
+
+  - name: RECOVERY_CONTROLLER_DOCKER_IMAGE
+    description: "Recovery controller Docker image."
+    default: "mesosphere/kudo-cassandra-recovery:0.0.2-1.0.1"
+
+  - name: RECOVERY_CONTROLLER_DOCKER_IMAGE_PULL_POLICY
+    description: "Recovery controller Docker image pull policy."
+    default: "Always"
+
+  - name: RECOVERY_CONTROLLER_CPU_MC
+    description: "CPU request (in millicores) for the Recovery controller container."
+    default: "50"
+
+  - name: RECOVERY_CONTROLLER_CPU_LIMIT_MC
+    description: "CPU limit (in millicores) for the Recovery controller container."
+    default: "200"
+
+  - name: RECOVERY_CONTROLLER_MEM_MIB
+    description: "Memory request (in MiB) for the Recovery controller container."
+    default: "50"
+
+  - name: RECOVERY_CONTROLLER_MEM_LIMIT_MIB
+    description: "Memory limit (in MiB) for the Recovery controller container."
+    default: "256"
