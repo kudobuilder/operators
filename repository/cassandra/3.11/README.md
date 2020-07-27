@@ -10,7 +10,7 @@ The KUDO Cassandra Operator makes it easy to deploy and manage
 ## Getting started
 
 The KUDO Cassandra operator requires [KUDO](https://kudo.dev/) and Kubernetes
-versions as specified in [`operator.yaml`](operator/operator.yaml#L4-L5).
+versions as specified in [`operator.yaml`](./operator/operator.yaml#L4-L5).
 
 To install it run
 
@@ -28,6 +28,11 @@ kubectl kudo install cassandra
 - Readiness probe
 - Unpriviledged container execution
 - Node-to-Node and Node-to-Client communication encryption
+- Backup/restore
+- Rack-awareness
+- Node replace
+- Inter-pod anti-affinity
+- Multi-datacenter support
 
 ## Roadmap
 
@@ -36,17 +41,20 @@ kubectl kudo install cassandra
 
 ## Documentation
 
-- [Installing](/docs/installing.md)
-- [Production](/docs/production.md)
-- [Accessing](/docs/accessing.md)
-- [Managing](/docs/managing.md)
-- [Resources](/docs/resources.md)
-- [Upgrading](/docs/upgrading.md)
-- [Monitoring](/docs/monitoring.md)
-- [Backup & Restore](/docs/backup.md)
-- [Security](/docs/security.md)
-- [Multi Datacenter](/docs/multidatacenter.md)
-- [Parameters reference](/docs/parameters.md)
+- [Installing](./docs/installing.md)
+- [Production](./docs/production.md)
+- [Accessing](./docs/accessing.md)
+- [Architecture](./docs/architecture.md)
+- [Managing](./docs/managing.md)
+- [Resources](./docs/resources.md)
+- [Upgrading](./docs/upgrading.md)
+- [Monitoring](./docs/monitoring.md)
+- [Backup & Restore](./docs/backup.md)
+- [Repair](./docs/repair.md)
+- [Decommission](./docs/decommission.md)
+- [Security](./docs/security.md)
+- [Multi Datacenter](./docs/multidatacenter.md)
+- [Parameters reference](./docs/parameters.md)
 
 ## Version Chart
 

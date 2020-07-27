@@ -47,6 +47,10 @@ spec:
         {{ $k }}: {{ $v }}
       {{ end }}
       {{ end }}
+      {{ if $.Params.NODE_TOLERATIONS }}
+      tolerations:
+{{ toYaml $.Params.NODE_TOLERATIONS | trim | indent 6 }}
+      {{ end }}
       affinity:
         nodeAffinity:
           requiredDuringSchedulingIgnoredDuringExecution:

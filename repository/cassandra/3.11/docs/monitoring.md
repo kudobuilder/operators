@@ -50,7 +50,7 @@ like:
 kubectl get instance --template '{{.spec.parameters.PROMETHEUS_EXPORTER_ENABLED}}{{"\n"}} $instance_name -n $namespace_name'
 ```
 
-An output of `<no value>` or `true` means that the exporter is enabled.
+An output of `true` means that the exporter is enabled.
 
 _Any other output_ means that the exporter is _disabled_. In that case you need
 to enable it with a command such as the following. If you need customization,
