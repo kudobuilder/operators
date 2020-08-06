@@ -1,6 +1,6 @@
 KUBERNETES_VERSION=1.16.4
-KUDO_VERSION=0.14.0
-KUTTL_VERSION=0.4.0
+KUDO_VERSION=0.15.0
+KUTTL_VERSION=0.5.1
 
 ARTIFACTS ?= artifacts/
 
@@ -14,20 +14,20 @@ endif
 
 export PATH := $(shell pwd)/bin/:$(PATH)
 
-bin/:
+bin/kubectl_$(KUBERNETES_VERSION):
 	mkdir -p bin/
-
-bin/kubectl_$(KUBERNETES_VERSION): bin/
 	curl -Lo bin/kubectl_$(KUBERNETES_VERSION) https://storage.googleapis.com/kubernetes-release/release/v$(KUBERNETES_VERSION)/bin/$(OS)/$(MACHINE)/kubectl
 	chmod +x bin/kubectl_$(KUBERNETES_VERSION)
 	ln -sf ./kubectl_$(KUBERNETES_VERSION) ./bin/kubectl
 
-bin/kubectl-kudo_$(KUDO_VERSION): bin/
+bin/kubectl-kudo_$(KUDO_VERSION):
+	mkdir -p bin/
 	curl -Lo bin/kubectl-kudo_$(KUDO_VERSION) https://github.com/kudobuilder/kudo/releases/download/v$(KUDO_VERSION)/kubectl-kudo_$(KUDO_VERSION)_$(OS)_$(KUDO_MACHINE)
 	chmod +x bin/kubectl-kudo_$(KUDO_VERSION)
 	ln -sf ./kubectl-kudo_$(KUDO_VERSION) ./bin/kubectl-kudo
 
-bin/kubectl-kuttl_$(KUTTL_VERSION): bin/
+bin/kubectl-kuttl_$(KUTTL_VERSION):
+	mkdir -p bin/
 	curl -Lo bin/kubectl-kuttl_$(KUTTL_VERSION) https://github.com/kudobuilder/kuttl/releases/download/v$(KUTTL_VERSION)/kubectl-kuttl_$(KUTTL_VERSION)_$(OS)_$(KUDO_MACHINE)
 	chmod +x bin/kubectl-kuttl_$(KUTTL_VERSION)
 	ln -sf ./kubectl-kuttl_$(KUTTL_VERSION) ./bin/kubectl-kuttl

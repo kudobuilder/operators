@@ -1,7 +1,7 @@
 apiVersion: kudo.dev/v1beta1
 name: "kafka"
-operatorVersion: "1.3.2"
-kudoVersion: 0.14.0
+operatorVersion: "1.4.0"
+kudoVersion: 0.15.0
 kubernetesVersion: 1.16.0
 appVersion: 2.5.0
 maintainers:
@@ -98,6 +98,13 @@ tasks:
       parameter: RUN_USER_WORKLOAD
       resources:
         - user-workload.yaml
+  # zookeeper task
+  - name: deploy-zookeeper
+    kind: KudoOperator
+    spec:
+      package: zookeeper
+      operatorVersion: 0.3.0
+      parameterFile: zk-params.yaml
   # task used to restrict patching sts where it is not allowed
   - name: not-allowed
     kind: Dummy
@@ -110,6 +117,9 @@ plans:
       - name: deploy-kafka
         strategy: serial
         steps:
+          - name: zookeeper-instance
+            tasks:
+              - deploy-zookeeper
           - name: generate-tls-certificates
             tasks:
               - generate-tls-certificates
@@ -151,6 +161,16 @@ plans:
           - name: sts
             tasks:
               - sts
+  # update zookeeper conf
+  update-zk:
+    strategy: serial
+    phases:
+      - name: zookeeper
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - deploy-zookeeper
   # features plans
   mirrormaker:
     strategy: serial

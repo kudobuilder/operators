@@ -2,6 +2,11 @@
 
 ## latest
 
+## v1.4.0
+
+- Add zookeeper task to deploy zookeeper, removes the necessity to install KUDO Zookeeper separately 
+- Fixed workload and mirrormaker deployments
+
 ## v1.3.1
 
 - Fixed external service plan [pull/268](https://github.com/kudobuilder/operators/pull/268)

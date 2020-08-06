@@ -10,14 +10,10 @@ To run a production-grade KUDO Kafka cluster, please read [KUDO Kafka in product
 
 ## Installing the Operator
 
-#### Install Zookeeper 
-```
-kubectl kudo install zookeeper
-```
-
-#### Install Kafka 
+#### Install Kafka
 
 Please read the [limitations](./limitations.md) docs before creating the KUDO Kafka cluster. 
+From version `1.4.0` KUDO Kafka installs the KUDO Zookeeper as part of the KUDO Kafka Operator.
 
 ```
 kubectl kudo install kafka
@@ -28,19 +24,19 @@ Verify the if the deploy plan for `--instance=kafka-instance` is complete.
 $ kubectl kudo plan status --instance=kafka-instance
 Plan(s) for "kafka-instance" in namespace "default":
 .
-└── kafka-instance (Operator-Version: "kafka-1.3.1" Active-Plan: "deploy")
+└── kafka-instance (Operator-Version: "kafka-1.4.0" Active-Plan: "deploy")
     ├── Plan cruise-control (serial strategy) [NOT ACTIVE]
     │   └── Phase cruise-addon (serial strategy) [NOT ACTIVE]
     │       └── Step deploy-cruise-control [NOT ACTIVE]
-    ├── Plan deploy (serial strategy) [COMPLETE], last updated 2020-04-21 11:31:33
+    ├── Plan deploy (serial strategy) [COMPLETE], last updated 2020-07-15 11:10:15
     │   ├── Phase deploy-kafka (serial strategy) [COMPLETE]
+    │   │   ├── Step zookeeper-instance [COMPLETE]
     │   │   ├── Step generate-tls-certificates [COMPLETE]
     │   │   ├── Step configuration [COMPLETE]
     │   │   ├── Step service [COMPLETE]
     │   │   └── Step app [COMPLETE]
     │   └── Phase addons (parallel strategy) [COMPLETE]
     │       ├── Step monitoring [COMPLETE]
-    │       ├── Step access [COMPLETE]
     │       ├── Step mirror [COMPLETE]
     │       └── Step load [COMPLETE]
     ├── Plan external-access (serial strategy) [NOT ACTIVE]
@@ -64,6 +60,9 @@ Plan(s) for "kafka-instance" in namespace "default":
     │       ├── Step conf [NOT ACTIVE]
     │       ├── Step svc [NOT ACTIVE]
     │       └── Step sts [NOT ACTIVE]
+    ├── Plan update-zk (serial strategy) [NOT ACTIVE]
+    │   └── Phase zookeeper (serial strategy) [NOT ACTIVE]
+    │       └── Step deploy [NOT ACTIVE]
     └── Plan user-workload (serial strategy) [NOT ACTIVE]
         └── Phase workload (serial strategy) [NOT ACTIVE]
             └── Step toggle-workload [NOT ACTIVE]
@@ -87,25 +86,16 @@ all using the same zookeeper instance (also running in the `default` namespace).
 You can specify which namespace to install KUDO Kafka in using the `--namespace` flag
 or its short equivalent, `-n`.
 
-First, create a new namespace and install a Zookeeper ensemble there:
+First, create a new namespace:
 
 ```bash
 kubectl create ns hip-project
-kubectl kudo install zookeeper --instance=zk-dev -n hip-project
-```
-
-Then, install a kafka cluster for developers pointing it at this Zookeeper.
-You need to override the `ZOOKEEPER_URI` parameter to match the custom Zookeeper instance name.
-
-```bash
-kubectl kudo install kafka --instance=kafka-dev -n hip-project \
-  -p ZOOKEEPER_URI="zk-dev-zookeeper-0.zk-dev-hs:2181,zk-dev-zookeeper-1.zk-dev-hs:2181,zk-dev-zookeeper-2.zk-dev-hs:2181"
+kubectl kudo install kafka --instance=kafka-dev -n hip-project
 ```
 
 Next, install a kafka cluster for QA. This example shows how to point KUDO kafka at a Zookeeper instance
 that is running in a different namespace (`default` in this case)
 
 ```bash
-kubectl kudo install kafka --instance=kafka-qa -n hip-project \
-  -p ZOOKEEPER_URI="zookeeper-instance-zookeeper-0.zookeeper-instance-hs.default:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs.default:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs.default:2181"
+kubectl kudo install kafka --instance=kafka-qa -n hip-project
 ```

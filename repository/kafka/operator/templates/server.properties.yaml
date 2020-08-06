@@ -136,13 +136,7 @@ data:
 
     ############################# Zookeeper #############################
 
-    # Zookeeper connection string (see zookeeper docs for details).
-    # This is a comma separated host:port pairs, each corresponding to a zk
-    # server. e.g. "127.0.0.1:3000,127.0.0.1:3001,127.0.0.1:3002".
-    # You can also append an optional chroot string to the urls to specify the
-    # root directory for all kafka znodes.
-    zookeeper.connect={{ .Params.ZOOKEEPER_URI }}{{ if .Params.ZOOKEEPER_PATH }}{{ .Params.ZOOKEEPER_PATH }}{{ else }}/{{ .Name }}{{ end }}
-
+    # populated in bootstrap script
     # Timeout in ms for connecting to zookeeper
     # zookeeper.connection.timeout.ms= defaults to zookeeper.session.timeout.ms
 

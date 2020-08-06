@@ -113,7 +113,9 @@ spec:
             - -c
           args:
             - /bootstrap/bootstrap.sh;
+              set -x;
               source ${KAFKA_HOME}/.env;
+              set +x;
               echo "Starting the kafka broker using broker.id ${HOSTNAME##*-}...";
               KAFKA_OPTS="${KAFKA_OPTS} ${METRICS_OPTS}" exec ${KAFKA_HOME}/bin/kafka-server-start.sh ${KAFKA_HOME}/server.properties;
           env:
@@ -125,8 +127,8 @@ spec:
             - name: METRICS_OPTS
               value: "-javaagent:/opt/jmx-exporter/jmx_prometheus_javaagent.jar=9094:/metrics/metrics.properties"
             {{ end }}
-            - name: KAFKA_ZK_URI
-              value: {{ .Params.ZOOKEEPER_URI }}{{ if .Params.ZOOKEEPER_PATH }}{{ .Params.ZOOKEEPER_PATH }}{{ else }}/{{ .Name }}{{ end }}
+            - name: ZK_NODE_COUNT
+              value: "{{ .Params.ZK_NODE_COUNT }}"
             - name: GC_LOG_ENABLED
               value: "false"
             - name: LOG_DIR

@@ -14,7 +14,7 @@ metadata:
 spec:
   template:
     spec:
-      containers:
+     containers:
       - name: kafka-node-exporter
         resources:
           requests:
@@ -23,63 +23,7 @@ spec:
       - name: k8skafka
         resources:
           requests:
-            memory: "300Mi"
+            memory: "400Mi"
             cpu: "300m"
 status:
   readyReplicas: 1
----
-apiVersion: v1
-kind: Pod
-metadata:
-  name: kafka-kafka-0
-  labels:
-    heritage: kudo
-    app: kafka
-    kafka: kafka
-    kudo.dev/instance: kafka
-    statefulset.kubernetes.io/pod-name: kafka-kafka-0
-spec:
-  containers:
-  - imagePullPolicy: IfNotPresent
-    name: kafka-node-exporter
-    volumeMounts:
-    - mountPath: /var/lib/kafka
-      name: kafka-datadir
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
-  - imagePullPolicy: Always
-    name: k8skafka
-    volumeMounts:
-    - mountPath: /var/lib/kafka
-      name: kafka-datadir
-    - mountPath: /bootstrap
-      name: bootstrap
-    - mountPath: /config
-      name: config
-    - mountPath: /health-check-script
-      name: health-check-script
-    - mountPath: /metrics
-      name: metrics
-    - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    heritage: kudo
-    kudo.dev/instance: kafka
-    kudo.dev/operator: kafka
-    kudo.dev/servicemonitor: "true"
-  name: kafka-svc
-  ownerReferences:
-  - apiVersion: kudo.dev/v1beta1
-    blockOwnerDeletion: true
-    controller: true
-    kind: Instance
-    name: kafka
-spec:
-  clusterIP: None
-  selector:
-    app: kafka
-    kudo.dev/instance: kafka
-  sessionAffinity: None
-  type: ClusterIP

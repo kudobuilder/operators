@@ -4,14 +4,15 @@ metadata:
   name: kafka
 spec:
   operatorVersion:
-    name: kafka-1.3.2
+    name: kafka-1.4.0
     namespace: default
     kind: OperatorVersion
   name: "kafka"
   parameters:
-    BROKER_COUNT: "1"
-    BROKER_MEM: "300Mi"
+    BROKER_MEM: "400Mi"
     BROKER_CPUS: "300m"
-    ZOOKEEPER_URI: "zk-zookeeper-0.zk-hs:2181"
     NE_MEM: "10Mi"
     NE_CPUS: "50m"
+    ZK_NODE_COUNT: "1"
+    ZK_MEMORY: "256Mi"
+    ZK_CPUS: "0.3"

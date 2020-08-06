@@ -22,5 +22,5 @@ testDirs:
 - ./repository/zookeeper/tests
 - ./repository/kafka/tests
 startKIND: true
-timeout: 300
+timeout: 600
 

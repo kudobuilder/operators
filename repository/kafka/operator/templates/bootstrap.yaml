@@ -7,6 +7,16 @@ data:
   bootstrap.sh: |
     #!/usr/bin/env bash
 
+
+    CUSTOM_ZK_URI={{ .Params.ZOOKEEPER_URI}}
+    if [[ ! -z ${CUSTOM_ZK_URI} ]]; then
+      KAFKA_ZK_URI={{ .Params.ZOOKEEPER_URI}}
+    else
+      KAFKA_ZK_URI=$(for ((i = 0 ; i < ${ZK_NODE_COUNT} ; i++ )); do echo -n "{{ .Name }}-zookeeper-zookeeper-${i}.{{ .Name }}-zookeeper-hs:{{ .Params.ZK_CLIENT_PORT }}",; done| sed 's/,$//')
+    fi
+    ZK_PATH={{ if .Params.ZOOKEEPER_PATH }}{{ .Params.ZOOKEEPER_PATH }}{{ else }}{{ .Name }}{{ end }}
+    export KAFKA_ZK_URI=${KAFKA_ZK_URI}/${ZK_PATH}
+    printf "zookeeper URI configured: %s\n" $KAFKA_ZK_URI
     cp /health-check-script/health-check.sh health-check.sh;
     chmod +x health-check.sh;
 
@@ -134,6 +144,7 @@ data:
 
     # Set Environment
     echo "KAFKA_OPTS=\"$KAFKA_OPTS\"" > ${KAFKA_HOME}/.env
+    echo "KAFKA_ZK_URI=\"KAFKA_ZK_URI\"" >> ${KAFKA_HOME}/.env
     
     KAFKA_CONFIGURATION=$(cat /config/server.properties)
     # Write the config file
@@ -150,6 +161,7 @@ data:
     {{ end }}
     # Logs
     log.dirs=${KAFKA_LOG_DIR_PATH}
+    zookeeper.connect=${KAFKA_ZK_URI}
     # Provided configuration
     ${KAFKA_CONFIGURATION}
     EOF

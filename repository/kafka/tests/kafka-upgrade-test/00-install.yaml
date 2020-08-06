@@ -1,16 +1,20 @@
 apiVersion: kudo.dev/v1beta1
 kind: Instance
 metadata:
-  name: zk
+  name: kafka
+  namespace: default
 spec:
   operatorVersion:
-    name: zookeeper-0.3.0
+    name: kafka-1.4.0
     namespace: default
     kind: OperatorVersion
-  name: "zk"
+  name: "kafka"
   parameters:
-    NODE_COUNT: "1"
-    MEMORY: "256Mi"
-    CPUS: "0.3"
+    BROKER_COUNT: "1"
+    BROKER_MEM: "300Mi"
+    BROKER_CPUS: "300m"
     NE_MEM: "10Mi"
     NE_CPUS: "50m"
+    ZK_NODE_COUNT: "1"
+    ZK_MEMORY: "256Mi"
+    ZK_CPUS: "0.3"

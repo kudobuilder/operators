@@ -36,6 +36,7 @@ For more details, please see the [v1.3 docs](./docs/v1.3) folder.
 
 ## Unreleased version
 
-| KUDO Kafka | Apache Kafka | Minimum KUDO Version |
-| ---------- | ------------ | -------------------- |
-| 1.3.2      | 2.5.0        | 0.14.0               |
+| KUDO Kafka      | Apache Kafka | Minimum KUDO Version |
+| --------------- | ------------ | -------------------- |
+| 1.4.0-2.5.0     | 2.5.0        | 0.15.0               |
+| 1.4.0-2.6.0-rc2 | 2.6.0-rc0    | 0.15.0               |

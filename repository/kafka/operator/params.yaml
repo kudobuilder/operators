@@ -107,7 +107,7 @@ parameters:
     description: |
       host and port information for Zookeeper connection.
       e.g. zk:2181,zk2:2181,zk3:2181
-    default: "zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181"
+    default: ""
     required: true
   - name: ZOOKEEPER_PATH
     displayName: "zookeeper node path"
@@ -942,3 +942,49 @@ parameters:
     description: "Cruise Control REST Web UI default path prefix"
     default: "/*"
     trigger: "cruise-control"
+  # Zookeeper parameters
+  - name: ZK_NODE_COUNT
+    description: "Number of nodes spun up for Zookeeper"
+    default: "3"
+    displayName: "Node Count"
+    trigger: "update-zk"
+  - name: ZK_MEMORY
+    description: Amount of memory to provide to Zookeeper pods
+    default: "1024Mi"
+    trigger: "update-zk"
+  - name: ZK_MEM_LIMIT
+    description: "Memory (limit) for the Zookeeper nodes pods. spec.containers[].resources.limits.memory"
+    default: "2048Mi"
+    trigger: "update-zk"
+  - name: ZK_CPUS
+    description: Amount of cpu to provide to Zookeeper pods
+    default: "250m"
+    trigger: "update-zk"
+  - name: ZK_CPUS_LIMIT
+    description: "CPUs (limit) for the Zookeeper nodes pods. spec.containers[].resources.limits.cpu"
+    default: "1000m"
+    trigger: "update-zk"
+  - name: ZK_STORAGE_CLASS
+    description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
+    required: false
+    trigger: "not-allowed"
+  - name: ZK_DISK_SIZE
+    description: "Disk size for the Zookeeper servers"
+    default: "5Gi"
+    trigger: "not-allowed"
+  - name: ZK_CLIENT_PORT
+    default: "2181"
+    trigger: "update-zk"
+    description: |
+      The port on which the Zookeeper process will listen for client requests. The default is 2181.
+  - name: ZK_SERVER_PORT
+    default: "2888"
+    trigger: "update-zk"
+    description: |
+      The port on which the Zookeeper process will listen for requests from other servers in the ensemble.
+      The default is 2888.
+  - name: ZK_ELECTION_PORT
+    description: |
+      The port on which the Zookeeper process will perform leader election. The default is 3888.
+    default: "3888"
+    trigger: "update-zk"
