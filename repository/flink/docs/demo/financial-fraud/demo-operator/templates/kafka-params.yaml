@@ -1,0 +1,5 @@
+ZOOKEEPER_URI: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
+ZOOKEEPER_PATH: "/flink-demo-kafka"
+BROKER_COUNT: "3"
+AUTO_CREATE_TOPICS_ENABLE: "true"
+BROKER_MEM: "1024Mi"
