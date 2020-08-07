@@ -20,7 +20,7 @@ tasks:
     kind: KudoOperator
     spec:
       package: zookeeper
-      operatorVersion: 0.3.0
+      operatorVersion: 0.3.1
       parameterFile: zookeeper-params.yaml
       instanceName: zk
   - name: flink
