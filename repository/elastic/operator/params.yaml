@@ -30,3 +30,7 @@ parameters:
     default: "1Gi"
   - name: INGEST_DISK
     default: "2Gi"
+  - name: STORAGE_CLASS
+    description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
+    required: false
+  

@@ -63,3 +63,6 @@ spec:
         resources:
           requests:
             storage: {{ .Params.DATA_DISK }}
+        {{ if .Params.STORAGE_CLASS }}
+        storageClassName: {{ .Params.STORAGE_CLASS }}
+        {{ end }}
