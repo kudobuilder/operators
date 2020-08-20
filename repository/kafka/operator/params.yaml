@@ -1,944 +1,1015 @@
-apiVersion: kudo.dev/v1beta1
-parameters:
-  - name: AUTHORIZATION_ENABLED
-    description: "Enable authorization."
-    default: "false"
-    trigger: "update-instance"
-    displayName: "Authorization Enabled"
-  - name: AUTHORIZATION_SUPER_USERS
-    description: "Semi-colon delimited list of principals. For Kerberos principals, these will be of the form User:<Kerberos-Primary>. For TLS, they will be of the form User:<CN of TLS cert> (for the TLS cert CN=test-user,OU=,O=Confluent,L=London,ST=London,C=GB, the user would be test-user)"
-    default: ""
-    trigger: "update-instance"
-    displayName: "Super Users"
-  - name: AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND
-    description: "Allow any user to perform an action if no ACL is found for the resource."
-    default: "false"
-    trigger: "update-instance"
-    displayName: "Allow everyone if no acl found"
-  - name: BROKER_COUNT
-    description: "Number of brokers spun up for Kafka"
-    default: "3"
-    trigger: "update-instance"
-    displayName: "Broker Count"
-  - name: BROKER_CPUS
-    description: "CPUs (request) for the Kafka Broker container"
-    default: "500m"
-    trigger: "update-instance"
-  - name: BROKER_CPUS_LIMIT
-    description: "CPUs (limit) for the Kafka Broker container"
-    default: "2000m"
-    trigger: "update-instance"
-  - name: BROKER_MEM
-    description: "Memory (request) for the Kafka Broker container"
-    default: "2048Mi"
-    trigger: "update-instance"
-  - name: BROKER_MEM_LIMIT
-    description: "Memory (limit) for the Kafka Broker container"
-    default: "4096Mi"
-    trigger: "update-instance"
-  - name: NE_MEM
-    default: "20Mi"
-    trigger: "update-instance"
-    description: "Memory (request) for the Kafka node exporter sidecar"
-  - name: NE_CPUS
-    default: "100m"
-    trigger: "update-instance"
-    description: "CPUs (request) for the Kafka node exporter sidecar"
-  - name: NE_MEM_LIMIT
-    default: "512Mi"
-    trigger: "update-instance"
-    description: "Memory (limit) for the Kafka node exporter sidecar"
-  - name: NE_CPUS_LIMIT
-    default: "1500m"
-    trigger: "update-instance"
-    description: "CPUs (limit) for the Kafka node exporter sidecar"
-  - name: BROKER_PORT
-    description: "Port brokers run on"
-    default: "9093"
-    trigger: "update-instance"
-  - name: BROKER_PORT_TLS
-    description: "Port TLS-enabled brokers run on"
-    default: "9095"
-    trigger: "update-instance"
-  - name: DISK_SIZE
-    description: "Disk size for the brokers"
-    default: "5Gi"
-    trigger: "not-allowed"
-  - name: STORAGE_CLASS
-    description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
-    required: false
-    trigger: "not-allowed"
-  - name: PERSISTENT_STORAGE
-    description: "If false, ephemeral storage is used. Not recommended for Production use."
+type: object
+apiVersion: kudo.dev/v1beta2
+properties:
+  Authorization:
+    properties:
+      AUTHORIZATION_ENABLED:
+        type: "string"
+        description: "Enable authorization."
+        default: "false"
+        trigger: "update-instance"
+      AUTHORIZATION_SUPER_USERS:
+        type: "string"
+        description: "Semi-colon delimited list of principals. For Kerberos principals, these will be of the form User:<Kerberos-Primary>. For TLS, they will be of the form User:<CN of TLS cert> (for the TLS cert CN=test-user,OU=,O=Confluent,L=London,ST=London,C=GB, the user would be test-user)"
+        default: ""
+        trigger: "update-instance"
+      AUTHORIZATION_ALLOW_EVERYONE_IF_NO_ACL_FOUND:
+        type: "string"
+        description: "Allow any user to perform an action if no ACL is found for the resource."
+        default: "false"
+        trigger: "update-instance"
+  Broker:
+    properties:
+      BROKER_COUNT:
+        type: "string"
+        description: "Number of brokers spun up for Kafka"
+        default: "3"
+        trigger: "update-instance"
+      BROKER_CPUS:
+        type: "string"
+        description: "CPUs (request) for the Kafka Broker container"
+        default: "500m"
+        trigger: "update-instance"
+      BROKER_CPUS_LIMIT:
+        type: "string"
+        description: "CPUs (limit) for the Kafka Broker container"
+        default: "2000m"
+        trigger: "update-instance"
+      BROKER_MEM:
+        type: "string"
+        description: "Memory (request) for the Kafka Broker container"
+        default: "2048Mi"
+        trigger: "update-instance"
+      BROKER_MEM_LIMIT:
+        type: "string"
+        description: "Memory (limit) for the Kafka Broker container"
+        default: "4096Mi"
+        trigger: "update-instance"
+      BROKER_PORT:
+        type: "string"
+        description: "Port brokers run on"
+        default: "9093"
+        trigger: "update-instance"
+      BROKER_PORT_TLS:
+        type: "string"
+        description: "Port TLS-enabled brokers run on"
+        default: "9095"
+        trigger: "update-instance"
+      DISK_SIZE:
+        type: "string"
+        description: "Disk size for the brokers"
+        default: "5Gi"
+        trigger: "not-allowed"
+      STORAGE_CLASS:
+        type: "string"
+        description: "The storage class to be used in volumeClaimTemplates. By default its not required and the default storage class is used."
+        trigger: "not-allowed"
+      PERSISTENT_STORAGE:
+        type: "string"
+        description: "If false, ephemeral storage is used. Not recommended for Production use."
+        default: "true"
+        trigger: "not-allowed"
+      CLIENT_PORT:
+        type: "string"
+        description: "Broker client port"
+        default: "9092"
+        trigger: "update-instance"
+      CLIENT_PORT_ENABLED:
+        type: "string"
+        default: "true"
+        trigger: "update-instance"
+      ADD_SERVICE_MONITOR:
+        type: "string"
+        description: "Create a service monitor for the kafka service"
+        default: "false"
+        trigger: "service-monitor"
+      RUN_USER_WORKLOAD:
+        type: "string"
+        description: "Run dummy user workload on the kafka service"
+        default: "false"
+        trigger: "user-workload"
+      NUM_PARTITIONS:
+        type: "string"
+        description: "Number of partitions for Kafka topics"
+        default: "3"
+        trigger: "update-instance"
+      Metrics:
+        properties:
+          METRICS_PORT:
+            type: "string"
+            description: "Port JMX_EXPORTER binds"
+            default: "9094"
+            trigger: "update-instance"
+          METRICS_ENABLED:
+            type: "string"
+            default: "true"
+            trigger: "update-instance"
+          METRIC_REPORTERS:
+            type: "string"
+            description: "Java class to collect/report broker metrics"
+            default: ""
+            trigger: "update-instance"
+          METRICS_NUM_SAMPLES:
+            type: "string"
+            description: "The number of samples maintained to compute metrics."
+            default: "2"
+            trigger: "update-instance"
+          METRICS_SAMPLE_WINDOW_MS:
+            type: "string"
+            description: "The window of time a metrics sample is computed over."
+            default: "30000"
+            trigger: "update-instance"
+  "Node Exporter":
+    properties:
+      KAFKA_NODE_EXPORTER_PORT:
+        type: "string"
+        description: "Port NODE_EXPORTER binds"
+        default: "9096"
+        trigger: "update-instance"
+      NE_MEM:
+        type: "string"
+        default: "20Mi"
+        trigger: "update-instance"
+        description: "Memory (request) for the Kafka node exporter sidecar"
+      NE_CPUS:
+        type: "string"
+        default: "100m"
+        trigger: "update-instance"
+        description: "CPUs (request) for the Kafka node exporter sidecar"
+      NE_MEM_LIMIT:
+        type: "string"
+        default: "512Mi"
+        trigger: "update-instance"
+        description: "Memory (limit) for the Kafka node exporter sidecar"
+      NE_CPUS_LIMIT:
+        type: "string"
+        default: "1500m"
+        trigger: "update-instance"
+        description: "CPUs (limit) for the Kafka node exporter sidecar"
+  Zookeeper:
+    properties:
+      ZOOKEEPER_URI:
+        type: "string"
+        description: |
+          host and port information for Zookeeper connection.
+          e.g. zk:2181,zk2:2181,zk3:2181
+        default: "zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181, zookeeper-instance-zookeeper-1zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181"
+      ZOOKEEPER_PATH:
+        type: "string"
+        description: "Zookeeper node path. Defaults to Kafka instance name."
+        trigger: "update-instance"
+      ZOOKEEPER_SYNC_TIME_MS:
+        type: "string"
+        description: "How far a ZK follower can be behind a ZK leader"
+        default: "2000"
+        trigger: "update-instance"
+      ZOOKEEPER_SESSION_TIMEOUT_MS:
+        type: "string"
+        description: "Zookeeper session timeout"
+        default: "6000"
+        trigger: "update-instance"
+    required: ["ZOOKEEPER_URI"]
+  Kerberos:
+    properties:
+      KERBEROS_ENABLED:
+        type: "string"
+        description: "Enable kerberos authentication."
+        default: "false"
+        trigger: "update-instance"
+      KERBEROS_ENABLED_FOR_ZOOKEEPER:
+        type: "string"
+        description: "Enable Kerberos authentication for communication with Apache Zookeeper."
+        default: "false"
+        trigger: "update-instance"
+      KERBEROS_PRIMARY:
+        type: "string"
+        description: "The Kerberos primary used by Kafka tasks."
+        default: "kafka"
+        trigger: "update-instance"
+      KERBEROS_KEYTAB_SECRET:
+        type: "string"
+        description: "The name of the Kubernetes secret storing the keytab."
+        default: "base64-kafka-keytab-secret"
+        trigger: "update-instance"
+      KERBEROS_REALM:
+        type: "string"
+        description: "The Kerberos realm used to render the principal of Kafka broker pods."
+        default: "LOCAL"
+        trigger: "update-instance"
+      KERBEROS_KDC_HOSTNAME:
+        type: "string"
+        description: "The name or address of a host running a KDC for the realm."
+        default: "kdc-service"
+        trigger: "update-instance"
+      KERBEROS_KDC_PORT:
+        type: "string"
+        description: "The port of the host running a KDC for that realm."
+        default: "2500"
+        trigger: "update-instance"
+      KERBEROS_USE_TCP:
+        type: "string"
+        description: "Use TCP for KDC connection, by default it uses UDP protocol"
+        default: "false"
+        trigger: "update-instance"
+      KERBEROS_DEBUG:
+        type: "string"
+        description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
+        default: "false"
+        trigger: "update-instance"
+  Liveness:
+    properties:
+      LIVENESS_INITIAL_DELAY_SECONDS:
+        type: "string"
+        description: "Number of seconds after the container has started before liveness probes is initiated."
+        default: "30"
+        trigger: "update-instance"
+      LIVENESS_PERIOD_SECONDS:
+        type: "string"
+        description: "How often (in seconds) to perform the probe. Default to 30 seconds. Minimum value is 1."
+        default: "30"
+        trigger: "update-instance"
+      LIVENESS_TIMEOUT_SECONDS:
+        type: "string"
+        description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
+        default: "30"
+        trigger: "update-instance"
+      LIVENESS_FAILURE_THRESHOLD:
+        type: "string"
+        description: "When the Pod starts and the probe fails, Kubernetes will try failureThreshold times before restarting the Pod. Defaults to 3. Minimum value is 1."
+        default: "3"
+        trigger: "update-instance"
+      LIVENESS_METHOD:
+        type: "string"
+        description: "livenessProbe method values 'PORT' or 'FUNCTIONAL'"
+        default: "PORT"
+        trigger: "update-instance"
+      LIVENESS_TOPIC_PREFIX:
+        type: "string"
+        description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
+        default: "KafkaLivenessTopic"
+        trigger: "update-instance"
+      LIVENESS_KERBEROS_PRIMARY:
+        type: "string"
+        default: "livenessProbe"
+        trigger: "update-instance"
+        description: "The Kerberos primary used by the liveness probe when using FUNCTIONAL livenessProbe method."
+  Logging:
+    properties:
+      LOG_FLUSH_INTERVAL_MESSAGES:
+        type: "string"
+        default: "9223372036854775807"
+        trigger: "update-instance"
+        description: "The number of messages accumulated on a log partition before messages are flushed to disk"
+      LOG_FLUSH_INTERVAL_MS:
+        type: "string"
+        default: "9223372036854775807"
+        trigger: "update-instance"
+        description: "The maximum time in ms that a message in any topic is kept in memory before flushed to disk. If not set, the value in log.flush.scheduler.interval.ms is used"
+      LOG_FLUSH_OFFSET_CHECKPOINT_INTERVAL_MS:
+        type: "string"
+        default: "60000"
+        trigger: "update-instance"
+        description: "The frequency with which we update the persistent record of the last flush which acts as the log recovery point"
+      LOG_FLUSH_SCHEDULER_INTERVAL_MS:
+        type: "string"
+        default: "9223372036854775807"
+        trigger: "update-instance"
+        description: "The frequency in ms that the log flusher checks whether any log needs to be flushed to disk"
+      LOG_FLUSH_START_OFFSET_CHECKPOINT_INTERVAL_MS:
+        type: "string"
+        default: "60000"
+        trigger: "update-instance"
+        description: "The frequency with which we update the persistent record of log start offset"
+      LOG_RETENTION_BYTES:
+        type: "string"
+        description: "The maximum size of the log before deleting it"
+        default: "-1"
+        trigger: "update-instance"
+      LOG_RETENTION_MS:
+        type: "string"
+        description: "The number of milliseconds to keep a log file before deleting it (in milliseconds) If not set, the value in log.retention.minutes is used"
+        trigger: "update-instance"
+      LOG_RETENTION_MINUTES:
+        type: "string"
+        description: "The number of minutes to keep a log file before deleting it (in minutes), secondary to log.retention.ms property. If not set, the value in log.retention.hours is used"
+        trigger: "update-instance"
+      LOG_RETENTION_HOURS:
+        type: "string"
+        description: "The number of hours to keep a log file before deleting it (in hours), tertiary to log.retention.ms property"
+        default: "168"
+        trigger: "update-instance"
+      LOG_ROLL_MS:
+        type: "string"
+        description: "The maximum time before a new log segment is rolled out (in milliseconds). If not set, the value in log.roll.hours is used"
+        trigger: "update-instance"
+      LOG_ROLL_JITTER_MS:
+        type: "string"
+        description: "The maximum jitter to subtract from logRollTimeMillis (in milliseconds). If not set, the value in log.roll.jitter.hours is used"
+        trigger: "update-instance"
+      LOG_ROLL_HOURS:
+        type: "string"
+        description: "The maximum time before a new log segment is rolled out (in hours), secondary to log.roll.ms property"
+        default: "168"
+        trigger: "update-instance"
+      LOG_ROLL_JITTER_HOURS:
+        type: "string"
+        description: "The maximum jitter to subtract from logRollTimeMillis (in hours), secondary to log.roll.jitter.ms property"
+        default: "0"
+        trigger: "update-instance"
+      LOG_SEGMENT_BYTES:
+        type: "string"
+        description: "The maximum size of a single log file"
+        default: "1073741824"
+        trigger: "update-instance"
+      LOG_SEGMENT_DELETE_DELAY_MS:
+        type: "string"
+        description: "The amount of time to wait before deleting a file from the filesystem"
+        default: "60000"
+        trigger: "update-instance"
+      LOG_MESSAGE_FORMAT_VERSION:
+        type: "string"
+        description: "Specify which version of the log message format will be used, which must align with inter.broker.protocol.version. This is a new setting as of 0.10.0.0, and should be left at 0.9.0 until clients are updated to 0.10.0.x. Similarly it should be left at 0.10.0 until all clients are updated to 0.11.0. This is typically bumped *serially* one broker at a time, *after* all inter-protocol versions are updated. Clients on earlier versions may see a performance penalty if this is increased before they've upgraded. See the latest Kafka documentation for details."
+        default: "2.1"
+        trigger: "update-instance"
+      LOG_CLEANER_BACKOFF_MS:
+        type: "string"
+        description: "The amount of time to sleep when there are no logs to clean"
+        default: "15000"
+        trigger: "update-instance"
+      LOG_CLEANER_DEDUPE_BUFFER_SIZE:
+        type: "string"
+        description: "The total memory used for log deduplication across all cleaner threads"
+        default: "134217728"
+        trigger: "update-instance"
+      LOG_CLEANER_DELETE_RETENTION_MS:
+        type: "string"
+        description: "How long are delete records retained?"
+        default: "86400000"
+        trigger: "update-instance"
+      LOG_CLEANER_ENABLE:
+        type: "string"
+        description: "Enable the log cleaner process to run on the server. Should be enabled if using any topics with a cleanup.policy=compact including the internal offsets topic. If disabled those topics will not be compacted and continually grow in size."
+        default: "true"
+        trigger: "update-instance"
+      LOG_CLEANER_IO_BUFFER_LOAD_FACTOR:
+        type: "string"
+        description: "Log cleaner dedupe buffer load factor. The percentage full the dedupe buffer can become. A higher value will allow more log to be cleaned at once but will lead to more hash collisions"
+        default: "0.9"
+        trigger: "update-instance"
+      LOG_CLEANER_IO_BUFFER_SIZE:
+        type: "string"
+        description: "The total memory used for log cleaner I/O buffers across all cleaner threads"
+        default: "524288"
+        trigger: "update-instance"
+      LOG_CLEANER_IO_MAX_BYTES_PER_SECOND:
+        type: "string"
+        description: "The log cleaner will be throttled so that the sum of its read and write i/o will be less than this value on average"
+        default: "1.7976931348623157e+308"
+        trigger: "update-instance"
+      LOG_CLEANER_MIN_CLEANABLE_RATIO:
+        type: "string"
+        description: "The minimum ratio of dirty log to total log for a log to eligible for cleaning"
+        default: "0.5"
+        trigger: "update-instance"
+      LOG_CLEANER_MIN_COMPACTION_LAG_MS:
+        type: "string"
+        description: "The minimum time a message will remain uncompacted in the log. Only applicable for logs that are being compacted."
+        default: "0"
+        trigger: "update-instance"
+      LOG_CLEANER_THREADS:
+        type: "string"
+        description: "The number of background threads to use for log cleaning"
+        default: "1"
+        trigger: "update-instance"
+      LOG_CLEANUP_POLICY:
+        type: "string"
+        description: "The default cleanup policy for segments beyond the retention window. A comma separated list of valid policies. Valid policies are: \"delete\" and \"compact\""
+        default: "delete"
+        trigger: "update-instance"
+      LOG_INDEX_INTERVAL_BYTES:
+        type: "string"
+        description: "The interval with which we add an entry to the offset index"
+        default: "4096"
+        trigger: "update-instance"
+      LOG_INDEX_SIZE_MAX_BYTES:
+        type: "string"
+        description: "The maximum size in bytes of the offset index"
+        default: "10485760"
+        trigger: "update-instance"
+      LOG_PREALLOCATE:
+        type: "string"
+        description: "Should pre allocate file when create new segment? If you are using Kafka on Windows you probably need to set it to true."
+        default: "false"
+        trigger: "update-instance"
+      LOG_RETENTION_CHECK_INTERVAL_MS:
+        type: "string"
+        description: "The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion"
+        default: "300000"
+        trigger: "update-instance"
+  Readiness:
+    properties:
+      READINESS_INITIAL_DELAY_SECONDS:
+        type: "string"
+        description: "Number of seconds after the container has started before liveness probes is initiated. Defaults to 10."
+        default: "10"
+        trigger: "update-instance"
+      READINESS_PERIOD_SECONDS:
+        type: "string"
+        description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
+        default: "10"
+        trigger: "update-instance"
+      READINESS_TIMEOUT_SECONDS:
+        type: "string"
+        description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
+        default: "30"
+        trigger: "update-instance"
+      READINESS_SUCCESS_THRESHOLD:
+        type: "string"
+        description: "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Minimum value is 1."
+        default: "1"
+        trigger: "update-instance"
+      READINESS_FAILURE_THRESHOLD:
+        type: "string"
+        description: "When a Pod starts and the probe fails, Kubernetes will try failureThreshold times before the Pod will be marked Unready. Defaults to 3. Minimum value is 1."
+        default: "3"
+        trigger: "update-instance"
+  "Cruise Control":
+    properties:
+      ENABLE_CRUISE_CONTROL:
+        type: "string"
+        description: "Enable cruise control for the current KUDO Kafka cluster"
+        default: "false"
+        trigger: "cruise-control"
+      CRUISE_CONTROL_CPUS:
+        type: "string"
+        description: "CPUs (request) for the Cruise Control container"
+        default: "100m"
+        trigger: "cruise-control"
+      CRUISE_CONTROL_CPUS_LIMIT:
+        type: "string"
+        description: "CPUs (limit) for the Cruise Control container"
+        default: "100m"
+        trigger: "cruise-control"
+      CRUISE_CONTROL_MEM:
+        type: "string"
+        description: "Memory (request) for the Cruise Control container"
+        default: "512Mi"
+        trigger: "update-instance"
+      CRUISE_CONTROL_MEM_LIMIT:
+        type: "string"
+        description: "Memory (limit) for the Cruise Control container"
+        default: "512Mi"
+        trigger: "cruise-control"
+      CRUISE_CONTROL_PORT:
+        type: "string"
+        description: "Cruise Control Web UI port"
+        default: "9090"
+        trigger: "cruise-control"
+      CRUISE_CONTROL_WEBSERVER_API_URLPREFIX:
+        type: "string"
+        description: "Cruise Control REST API default prefix"
+        default: "/kafkacruisecontrol/*"
+        trigger: "cruise-control"
+      CRUISE_CONTROL_WEBSERVER_UI_URLPREFIX:
+        type: "string"
+        description: "Cruise Control REST Web UI default path prefix"
+        default: "/*"
+        trigger: "cruise-control"
+  "Kafka Connect":
+    properties:
+      KAFKA_CONNECT_ENABLED:
+        type: "string"
+        default: "false"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_REPLICA_COUNT:
+        type: "string"
+        default: "1"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_CPUS:
+        type: "string"
+        description: "CPUs (request) for the Kafka Connect pods. spec.containers[].resources.requests.cpu"
+        default: "500m"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_CPUS_LIMIT:
+        type: "string"
+        description: "CPUs (limit) for the Kafka Connect pods. spec.containers[].resources.limits.cpu"
+        default: "500m"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_MEM:
+        type: "string"
+        description: "Memory (request) for the Kafka Connect pods. spec.containers[].resources.requests.memory"
+        default: "2048Mi"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_MEM_LIMIT:
+        type: "string"
+        description: "Memory (limit) for the Kafka Connect pods. spec.containers[].resources.limits.memory"
+        default: "2048Mi"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_CUSTOM_CM:
+        type: "string"
+        description: "Kafka Connect custom configuration Config Map"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_CONNECTORS_CM:
+        type: "string"
+        description: "The configuration used by the Connect to bootstrap itself with the specified connectors."
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_REST_PORT:
+        type: "integer"
+        description: "Port for the REST API server to listen to."
+        default: 8083
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_KEY_CONVERTER:
+        type: "string"
+        description: "The key converters specify the format of data in Kafka message key and how to translate it into Connect data"
+        default: "org.apache.kafka.connect.json.JsonConverter"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_VALUE_CONVERTER:
+        type: "string"
+        description: "The value converter specify the format of data in Kafka message value and how to translate it into Connect data"
+        default: "org.apache.kafka.connect.json.JsonConverter"
+        trigger: "kafka-connect"
+      KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS:
+        type: "integer"
+        description: "Kafka Connect topic offset flush interval in milliseconds"
+        default: 10000
+        trigger: "kafka-connect"
+  "Mirror Maker":
+    properties:
+      MIRROR_MAKER_ENABLED:
+        type: "string"
+        default: "false"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_REPLICA_COUNT:
+        type: "string"
+        default: "1"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE:
+        type: "string"
+        default: "SOURCE"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS:
+        type: "string"
+        default: ""
+        trigger: "mirrormaker"
+      MIRROR_MAKER_ABORT_ON_SEND_FAILURE:
+        type: "string"
+        default: "true"
+        description: "Configure the mirror maker to exit on a failed send"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_TOPIC_WHITELIST:
+        type: "string"
+        default: ".*"
+        description: "Whitelist of topics to mirror"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_NUM_STREAMS:
+        type: "string"
+        default: "1"
+        description: "Number of consumer streams to use to consume topics from the source cluster"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_OFFSET_COMMIT_INTERVAL:
+        type: "string"
+        default: "60000"
+        description: "Offset commit interval in ms"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_CPUS:
+        type: "string"
+        description: "CPUs (request) for the Mirror Maker pods. spec.containers[].resources.requests.cpu"
+        default: "100m"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_CPUS_LIMIT:
+        type: "string"
+        description: "CPUs (limit) for the Mirror Maker pods. spec.containers[].resources.limits.cpu"
+        default: "100m"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_MEM:
+        type: "string"
+        description: "Memory (request) for the Mirror Maker pods. spec.containers[].resources.requests.memory"
+        default: "512Mi"
+        trigger: "mirrormaker"
+      MIRROR_MAKER_MEM_LIMIT:
+        type: "string"
+        description: "Memory (limit) for the Mirror Maker pods. spec.containers[].resources.limits.memory"
+        default: "512Mi"
+        trigger: "mirrormaker"
+  Replication:
+    properties:
+      REPLICA_FETCH_MAX_BYTES:
+        type: "string"
+        description: "The number of bytes of messages to attempt to fetch for each partition. This is not an absolute maximum, if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
+        default: "1048576"
+        trigger: "update-instance"
+      REPLICA_FETCH_MIN_BYTES:
+        type: "string"
+        description: "Minimum bytes expected for each fetch response. If not enough bytes, wait up to replicaMaxWaitTimeMs"
+        default: "1"
+        trigger: "update-instance"
+      REPLICA_FETCH_WAIT_MAX_MS:
+        type: "string"
+        description: "Max wait time for each fetcher request issued by follower replicas. This value should always be less than the replica.lag.time.max.ms at all times to prevent frequent shrinking of ISR for low throughput topics"
+        default: "500"
+        trigger: "update-instance"
+      REPLICA_FETCH_RESPONSE_MAX_BYTES:
+        type: "string"
+        description: "Maximum bytes expected for the entire fetch response. Records are fetched in batches, and if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. As such this is not an absolute maximum. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
+        default: "10485760"
+        trigger: "update-instance"
+      REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS:
+        type: "string"
+        description: "The frequency with which the high watermark is saved out to disk"
+        default: "5000"
+        trigger: "update-instance"
+      REPLICA_LAG_TIME_MAX_MS:
+        type: "string"
+        description: "If a follower hasn't sent any fetch requests or hasn't consumed up to the leaders log end offset for at least this time, the leader will remove the follower from isr"
+        default: "10000"
+        trigger: "update-instance"
+      REPLICA_SOCKET_RECEIVE_BUFFER_BYTES:
+        type: "string"
+        description: "The socket receive buffer for network requests"
+        default: "65536"
+        trigger: "update-instance"
+      REPLICA_SOCKET_TIMEOUT_MS:
+        type: "string"
+        description: "The socket timeout for network requests. Its value should be at least replica.fetch.wait.max.ms"
+        default: "30000"
+        trigger: "update-instance"
+      REPLICATION_QUOTA_WINDOW_NUM:
+        type: "string"
+        description: "The number of samples to retain in memory for replication quotas"
+        default: "11"
+        trigger: "update-instance"
+      REPLICATION_QUOTA_WINDOW_SIZE_SECONDS:
+        type: "string"
+        description: "The time span of each sample for replication quotas"
+        default: "1"
+        trigger: "update-instance"
+  AUTO_CREATE_TOPICS_ENABLE:
+    type: "string"
     default: "true"
-    trigger: "not-allowed"
-  - name: CLIENT_PORT
-    description: "Broker client port"
-    default: "9092"
     trigger: "update-instance"
-  - name: CLIENT_PORT_ENABLED
+  AUTO_LEADER_REBALANCE_ENABLE:
+    type: "string"
     default: "true"
     trigger: "update-instance"
-  - name: METRICS_PORT
-    description: "Port JMX_EXPORTER binds"
-    default: "9094"
-    trigger: "update-instance"
-  - name: KAFKA_NODE_EXPORTER_PORT
-    description: "Port NODE_EXPORTER binds"
-    default: "9096"
-    trigger: "update-instance"
-  - name: METRICS_ENABLED
-    default: "true"
-    trigger: "update-instance"
-  - name: ADD_SERVICE_MONITOR
-    description: "Create a service monitor for the kafka service"
-    default: "false"
-    trigger: "service-monitor"
-  - name: RUN_USER_WORKLOAD
-    description: "Run dummy user workload on the kafka service"
-    default: "false"
-    trigger: "user-workload"
-  - name: NUM_PARTITIONS
-    description: "Number of partitions for Kafka topics"
-    default: "3"
-    trigger: "update-instance"
-  - name: ZOOKEEPER_URI
-    displayName: "zookeeper cluster URI"
-    description: |
-      host and port information for Zookeeper connection.
-      e.g. zk:2181,zk2:2181,zk3:2181
-    default: "zookeeper-instance-zookeeper-0.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-1.zookeeper-instance-hs:2181,zookeeper-instance-zookeeper-2.zookeeper-instance-hs:2181"
-    required: true
-  - name: ZOOKEEPER_PATH
-    displayName: "zookeeper node path"
-    description: "Zookeeper node path. Defaults to Kafka instance name."
-    required: false
-    trigger: "update-instance"
-  - name: AUTO_CREATE_TOPICS_ENABLE
-    default: "true"
-    trigger: "update-instance"
-  - name: AUTO_LEADER_REBALANCE_ENABLE
-    default: "true"
-    trigger: "update-instance"
-  - name: BACKGROUND_THREADS
+  BACKGROUND_THREADS:
+    type: "string"
     description: "The number of threads to use for various background processing tasks"
     default: "10"
     trigger: "update-instance"
-  - name: COMPRESSION_TYPE
+  COMPRESSION_TYPE:
+    type: "string"
     default: "producer"
-    description: |
-      Specify the final compression type for a given topic. This configuration accepts the standard compression codecs ('gzip', 'snappy', 'lz4').
-      It additionally accepts 'uncompressed' which is equivalent to no compression; and 'producer' which means retain the original compression codec set by the producer.
-  - name: DELETE_TOPIC_ENABLE
-    displayName: "delete.topic.enable"
+    description: "Specify the final compression type for a given topic. This configuration accepts the standard compression codecs ('gzip', 'snappy', 'lz4'). It additionally accepts 'uncompressed' which is equivalent to no compression; and 'producer' which means retain the original compression codec set by the producer."
+  DELETE_TOPIC_ENABLE:
+    type: "string"
     default: "false"
     description: "Enables delete topic. Delete topic through the admin tool will have no effect if this config is turned off"
     trigger: "update-instance"
-  - name: DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS
+  DELETE_RECORDS_PURGATORY_PURGE_INTERVAL_REQUESTS:
+    type: "string"
     default: "1"
     description: "The purge interval (in number of requests) of the delete records request purgatory"
     trigger: "update-instance"
-  - name: KERBEROS_ENABLED
-    description: "Enable kerberos authentication."
-    default: "false"
-    displayName: "Kerberos Enabled"
-    trigger: "update-instance"
-  - name: KERBEROS_ENABLED_FOR_ZOOKEEPER
-    description: "Enable Kerberos authentication for communication with Apache Zookeeper."
-    default: "false"
-    displayName: "Zookeeper Kerberos Enabled"
-    trigger: "update-instance"
-  - name: KERBEROS_PRIMARY
-    description: "The Kerberos primary used by Kafka tasks."
-    default: "kafka"
-    displayName: "Kerberos Primary"
-    trigger: "update-instance"
-  - name: KERBEROS_KEYTAB_SECRET
-    description: "The name of the Kubernetes secret storing the keytab."
-    default: "base64-kafka-keytab-secret"
-    displayName: "Kerberos Keytab Secret"
-    trigger: "update-instance"
-  - name: KERBEROS_REALM
-    description: "The Kerberos realm used to render the principal of Kafka broker pods."
-    default: "LOCAL"
-    displayName: "Kerberos Realm"
-    trigger: "update-instance"
-  - name: KERBEROS_KDC_HOSTNAME
-    description: "The name or address of a host running a KDC for the realm."
-    default: "kdc-service"
-    displayName: "Kerberos Hostname"
-    trigger: "update-instance"
-  - name: KERBEROS_KDC_PORT
-    description: "The port of the host running a KDC for that realm."
-    default: "2500"
-    displayName: "Kerberos Port"
-    trigger: "update-instance"
-  - name: KERBEROS_USE_TCP
-    description: "Use TCP for KDC connection, by default it uses UDP protocol"
-    default: "false"
-    displayName: "Use TCP for Kerberos"
-    trigger: "update-instance"
-  - name: KERBEROS_DEBUG
-    description: "Turn debug Kerberos logging on or off to assist in diagnosing issues with Kerberos authentication."
-    default: "false"
-    displayName: "Kerberos Debug"
-    trigger: "update-instance"
-  - name: LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS
+  LEADER_IMBALANCE_CHECK_INTERVAL_SECONDS:
+    type: "string"
     default: "300"
     description: "The frequency with which the partition rebalance check is triggered by the controller"
     trigger: "update-instance"
-  - name: LEADER_IMBALANCE_PER_BROKER_PERCENTAGE
+  LEADER_IMBALANCE_PER_BROKER_PERCENTAGE:
+    type: "string"
     default: "10"
     description: "The ratio of leader imbalance allowed per broker. The controller would trigger a leader balance if it goes above this value per broker. The value is specified in percentage."
     trigger: "update-instance"
-  - name: LIVENESS_INITIAL_DELAY_SECONDS
-    displayName: "livenessProbe initial delay timeout seconds"
-    description: "Number of seconds after the container has started before liveness probes is initiated."
-    default: "30"
-    trigger: "update-instance"
-  - name: LIVENESS_PERIOD_SECONDS
-    displayName: "livenessProbe period seconds"
-    description: "How often (in seconds) to perform the probe. Default to 30 seconds. Minimum value is 1."
-    default: "30"
-    trigger: "update-instance"
-  - name: LIVENESS_TIMEOUT_SECONDS
-    displayName: "livenessProbe timeout seconds"
-    description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
-    default: "30"
-    trigger: "update-instance"
-  - name: LIVENESS_FAILURE_THRESHOLD
-    displayName: "livenessProbe timeout seconds"
-    description: "When the Pod starts and the probe fails, Kubernetes will try failureThreshold times before restarting the Pod. Defaults to 3. Minimum value is 1."
-    default: "3"
-    trigger: "update-instance"
-  - name: LIVENESS_METHOD
-    displayName: "livenessProbe method"
-    description: "livenessProbe method values 'PORT' or 'FUNCTIONAL'"
-    default: "PORT"
-    trigger: "update-instance"
-  - name: LIVENESS_TOPIC_PREFIX
-    displayName: "livenessProbe topic prefix"
-    description: "This topic is used by livenessProbe when 'FUNCTIONAL' method is selected."
-    default: "KafkaLivenessTopic"
-    trigger: "update-instance"
-  - name: LIVENESS_KERBEROS_PRIMARY
-    default: "livenessProbe"
-    trigger: "update-instance"
-    description: "The Kerberos primary used by the liveness probe when using FUNCTIONAL livenessProbe method."
-    displayName: "Liveness Probe Kerberos Primary"
-  - name: LOG_FLUSH_INTERVAL_MESSAGES
-    default: "9223372036854775807"
-    trigger: "update-instance"
-    description: "The number of messages accumulated on a log partition before messages are flushed to disk"
-  - name: LOG_FLUSH_INTERVAL_MS
-    default: "9223372036854775807"
-    trigger: "update-instance"
-    description: "The maximum time in ms that a message in any topic is kept in memory before flushed to disk. If not set, the value in log.flush.scheduler.interval.ms is used"
-  - name: LOG_FLUSH_OFFSET_CHECKPOINT_INTERVAL_MS
-    default: "60000"
-    trigger: "update-instance"
-    description: "The frequency with which we update the persistent record of the last flush which acts as the log recovery point"
-  - name: LOG_FLUSH_SCHEDULER_INTERVAL_MS
-    default: "9223372036854775807"
-    trigger: "update-instance"
-    description: "The frequency in ms that the log flusher checks whether any log needs to be flushed to disk"
-  - name: LOG_FLUSH_START_OFFSET_CHECKPOINT_INTERVAL_MS
-    default: "60000"
-    trigger: "update-instance"
-    description: "The frequency with which we update the persistent record of log start offset"
-  - name: LOG_RETENTION_BYTES
-    displayName: "log.retention.bytes"
-    description: "The maximum size of the log before deleting it"
-    default: "-1"
-    trigger: "update-instance"
-  - name: LOG_RETENTION_MS
-    displayName: "log.retention.ms"
-    description: "The number of milliseconds to keep a log file before deleting it (in milliseconds) If not set, the value in log.retention.minutes is used"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_RETENTION_MINUTES
-    displayName: "log.retention.minutes"
-    description: "The number of minutes to keep a log file before deleting it (in minutes), secondary to log.retention.ms property. If not set, the value in log.retention.hours is used"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_RETENTION_HOURS
-    displayName: "log.retention.hours"
-    description: "The number of hours to keep a log file before deleting it (in hours), tertiary to log.retention.ms property"
-    default: "168"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_ROLL_MS
-    displayName: "log.roll.ms"
-    description: "The maximum time before a new log segment is rolled out (in milliseconds). If not set, the value in log.roll.hours is used"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_ROLL_JITTER_MS
-    displayName: "log.roll.jitter.ms"
-    description: "The maximum jitter to subtract from logRollTimeMillis (in milliseconds). If not set, the value in log.roll.jitter.hours is used"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_ROLL_HOURS
-    displayName: "log.roll.hours"
-    description: "The maximum time before a new log segment is rolled out (in hours), secondary to log.roll.ms property"
-    default: "168"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_ROLL_JITTER_HOURS
-    displayName: "log.roll.jitter.hours"
-    description: "The maximum jitter to subtract from logRollTimeMillis (in hours), secondary to log.roll.jitter.ms property"
-    default: "0"
-    required: false
-    trigger: "update-instance"
-  - name: LOG_SEGMENT_BYTES
-    displayName: "log.segment.bytes"
-    description: "The maximum size of a single log file"
-    default: "1073741824"
-    trigger: "update-instance"
-  - name: LOG_SEGMENT_DELETE_DELAY_MS
-    displayName: "log.segment.delete.delay.ms"
-    description: "The amount of time to wait before deleting a file from the filesystem"
-    default: "60000"
-    trigger: "update-instance"
-  - name: MESSAGE_MAX_BYTES
-    displayName: "message.max.bytes"
+  MESSAGE_MAX_BYTES:
+    type: "string"
     description: "The largest record batch size allowed by Kafka. If this is increased and there are consumers older than 0.10.2, the consumers' fetch size must also be increased so that the they can fetch record batches this large.\nIn the latest message format version, records are always grouped into batches for efficiency. In previous message format versions, uncompressed records are not grouped into batches and this limit only applies to a single record in that case.\nThis can be set per  topic with the topic level max.message.bytes config."
     default: "1000012"
     trigger: "update-instance"
-  - name: MIN_INSYNC_REPLICAS
-    displayName: "min.insync.replicas"
+  MIN_INSYNC_REPLICAS:
+    type: "string"
     description: |
       When a producer sets acks to "all" (or "-1") MIN_INSYNC_REPLICAS is the minimum number of replicas that must acknowledge a write for the write to be considered successful.
       When used together, min.insync.replicas and acks allow you to enforce greater durability guarantees.
       A typical scenario would be to create a topic with a replication factor of 3, set min.insync.replicas to 2, and produce with acks of "all".
     default: "1"
     trigger: "update-instance"
-  - name: NUM_IO_THREADS
-    displayName: "num.io.threads"
+  NUM_IO_THREADS:
+    type: "string"
     description: "The number of threads that the server uses for processing requests, which may include disk I/O"
     default: "8"
     trigger: "update-instance"
-  - name: NUM_NETWORK_THREADS
-    displayName: "num.network.threads"
+  NUM_NETWORK_THREADS:
+    type: "string"
     description: "The number of threads that the server uses for receiving requests from the network and sending responses to the network"
     default: "3"
     trigger: "update-instance"
-  - name: NUM_RECOVERY_THREADS_PER_DATA_DIR
-    displayName: "num.recovery.threads.per.data.dir"
+  NUM_RECOVERY_THREADS_PER_DATA_DIR:
+    type: "string"
     description: "The number of threads per data directory to be used for log recovery at startup and flushing at shutdown"
     default: "1"
     trigger: "update-instance"
-  - name: NUM_REPLICA_FETCHERS
-    displayName: "num.replica.fetchers"
+  NUM_REPLICA_FETCHERS:
+    type: "string"
     description: "Number of fetcher threads used to replicate messages from a source broker. Increasing this value can increase the degree of I/O parallelism in the follower broker."
     default: "1"
     trigger: "update-instance"
-  - name: OFFSET_METADATA_MAX_BYTES
-    displayName: "offset.metadata.max.bytes"
+  OFFSET_METADATA_MAX_BYTES:
+    type: "string"
     description: "The maximum size for a metadata entry associated with an offset commit"
     default: "4096"
     trigger: "update-instance"
-  - name: OFFSETS_COMMIT_REQUIRED_ACKS
-    displayName: "offsets.commit.required.acks"
+  OFFSETS_COMMIT_REQUIRED_ACKS:
+    type: "integer"
     description: "The required acks before the commit can be accepted. In general the default (-1) should not be overridden"
     default: -1
     trigger: "update-instance"
-  - name: OFFSETS_COMMIT_TIMEOUT_MS
-    displayName: "offsets.commit.timeout.ms"
+  OFFSETS_COMMIT_TIMEOUT_MS:
+    type: "string"
     description: "Offset commit will be delayed until all replicas for the offsets topic receive the commit or this timeout is reached. This is similar to the producer request timeout."
     default: "5000"
     trigger: "update-instance"
-  - name: OFFSETS_LOAD_BUFFER_SIZE
-    displayName: "offsets.load.buffer.size"
+  OFFSETS_LOAD_BUFFER_SIZE:
+    type: "string"
     description: "Batch size for reading from the offsets segments when loading offsets into the cache."
     default: "5242880"
     trigger: "update-instance"
-  - name: OFFSETS_RETENTION_CHECK_INTERVAL_MS
-    displayName: "offsets.retention.check.interval.ms"
+  OFFSETS_RETENTION_CHECK_INTERVAL_MS:
+    type: "string"
     description: "Frequency at which to check for stale offsets"
     default: "600000"
     trigger: "update-instance"
-  - name: OFFSETS_RETENTION_MINUTES
-    displayName: "offsets.retention.minutes"
+  OFFSETS_RETENTION_MINUTES:
+    type: "string"
     description: "Offsets older than this retention period will be discarded"
     default: "1440"
     trigger: "update-instance"
-  - name: OFFSETS_TOPIC_COMPRESSION_CODEC
-    displayName: "offsets.topic.compression.codec"
-    description: "Compression codec for the offsets topic - compression may be used to achieve \"atomic\" commits"
+  OFFSETS_TOPIC_COMPRESSION_CODEC:
+    type: "string"
+    description: "Compression codec for the offsets topic   compression may be used to achieve \"atomic\" commits"
     default: "0"
     trigger: "update-instance"
-  - name: OFFSETS_TOPIC_NUM_PARTITIONS
-    displayName: "offsets.topic.num.partitions"
+  OFFSETS_TOPIC_NUM_PARTITIONS:
+    type: "string"
     description: "The number of partitions for the offset commit topic (should not change after deployment)"
     default: "50"
     trigger: "update-instance"
-  - name: OFFSETS_TOPIC_REPLICATION_FACTOR
-    displayName: "offsets.topic.replication.factor"
+  OFFSETS_TOPIC_REPLICATION_FACTOR:
+    type: "string"
     description: "The replication factor for the offsets topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement."
     default: "3"
     trigger: "update-instance"
-  - name: OFFSETS_TOPIC_SEGMENT_BYTES
-    displayName: "offsets.topic.segment.bytes"
+  OFFSETS_TOPIC_SEGMENT_BYTES:
+    type: "string"
     description: "The offsets topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
     default: "104857600"
     trigger: "update-instance"
-  - name: QUEUED_MAX_REQUESTS
-    displayName: "queued.max.requests"
+  QUEUED_MAX_REQUESTS:
+    type: "string"
     description: "The number of queued requests allowed before blocking the network threads"
     default: "500"
     trigger: "update-instance"
-  - name: QUEUED_MAX_REQUEST_BYTES
-    displayName: "queued.max.request.bytes"
+  QUEUED_MAX_REQUEST_BYTES:
+    type: "integer"
     description: "The number of queued bytes allowed before no more requests are read"
     default: -1
     trigger: "update-instance"
-  - name: QUOTA_CONSUMER_DEFAULT
-    displayName: "quota.consumer.default"
+  QUOTA_CONSUMER_DEFAULT:
+    type: "string"
     description: "Used only when dynamic default quotas are not configured for or in Zookeeper. Any consumer distinguished by clientId/consumer group will get throttled if it fetches more bytes than this value per-second"
     default: "9223372036854775807"
     trigger: "update-instance"
-  - name: QUOTA_PRODUCER_DEFAULT
-    displayName: "quota.producer.default"
+  QUOTA_PRODUCER_DEFAULT:
+    type: "string"
     description: "Used only when dynamic default quotas are not configured for , or in Zookeeper. Any producer distinguished by clientId will get throttled if it produces more bytes than this value per-second"
     default: "9223372036854775807"
     trigger: "update-instance"
-  - name: READINESS_INITIAL_DELAY_SECONDS
-    displayName: "livenessProbe initial delay timeout seconds"
-    description: "Number of seconds after the container has started before liveness probes is initiated. Defaults to 10."
-    default: "10"
-    trigger: "update-instance"
-  - name: READINESS_PERIOD_SECONDS
-    displayName: "livenessProbe period seconds"
-    description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
-    default: "10"
-    trigger: "update-instance"
-  - name: READINESS_TIMEOUT_SECONDS
-    displayName: "readinessProbe timeout seconds"
-    description: "Number of seconds after which the probe times out. Defaults to 30 seconds. Minimum value is 1."
-    default: "30"
-    trigger: "update-instance"
-  - name: READINESS_SUCCESS_THRESHOLD
-    displayName: "livenessProbe timeout seconds"
-    description: "Minimum consecutive successes for the probe to be considered successful after having failed. Defaults to 1. Minimum value is 1."
-    default: "1"
-    trigger: "update-instance"
-  - name: READINESS_FAILURE_THRESHOLD
-    displayName: "livenessProbe timeout seconds"
-    description: "When a Pod starts and the probe fails, Kubernetes will try failureThreshold times before the Pod will be marked Unready. Defaults to 3. Minimum value is 1."
-    default: "3"
-    trigger: "update-instance"
-  - name: REPLICA_FETCH_MAX_BYTES
-    displayName: "replica.fetch.max.bytes"
-    description: "The number of bytes of messages to attempt to fetch for each partition. This is not an absolute maximum, if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
-    default: "1048576"
-    trigger: "update-instance"
-  - name: REPLICA_FETCH_MIN_BYTES
-    displayName: "replica.fetch.min.bytes"
-    description: "Minimum bytes expected for each fetch response. If not enough bytes, wait up to replicaMaxWaitTimeMs"
-    default: "1"
-    trigger: "update-instance"
-  - name: REPLICA_FETCH_WAIT_MAX_MS
-    displayName: "replica.fetch.wait.max.ms"
-    description: "Max wait time for each fetcher request issued by follower replicas. This value should always be less than the replica.lag.time.max.ms at all times to prevent frequent shrinking of ISR for low throughput topics"
-    default: "500"
-    trigger: "update-instance"
-  - name: REPLICA_FETCH_RESPONSE_MAX_BYTES
-    displayName: "replica.fetch.response.max.bytes"
-    description: "Maximum bytes expected for the entire fetch response. Records are fetched in batches, and if the first record batch in the first non-empty partition of the fetch is larger than this value the record batch will still be returned to ensure that progress can be made. As such this is not an absolute maximum. The maximum record batch size accepted by the broker is defined via message.max.bytes (broker config) or max.message.bytes (topic config)."
-    default: "10485760"
-    trigger: "update-instance"
-  - name: REPLICA_HIGH_WATERMARK_CHECKPOINT_INTERVAL_MS
-    displayName: "replica.high.watermark.checkpoint.interval.ms"
-    description: "The frequency with which the high watermark is saved out to disk"
-    default: "5000"
-    trigger: "update-instance"
-  - name: REPLICA_LAG_TIME_MAX_MS
-    displayName: "replica.lag.time.max.ms"
-    description: "If a follower hasn't sent any fetch requests or hasn't consumed up to the leaders log end offset for at least this time, the leader will remove the follower from isr"
-    default: "10000"
-    trigger: "update-instance"
-  - name: REPLICA_SOCKET_RECEIVE_BUFFER_BYTES
-    displayName: "replica.socket.receive.buffer.bytes"
-    description: "The socket receive buffer for network requests"
-    default: "65536"
-    trigger: "update-instance"
-  - name: REPLICA_SOCKET_TIMEOUT_MS
-    displayName: "replica.socket.timeout.ms"
-    description: "The socket timeout for network requests. Its value should be at least replica.fetch.wait.max.ms"
-    default: "30000"
-    trigger: "update-instance"
-  - name: REPLICATION_QUOTA_WINDOW_NUM
-    displayName: "replication.quota.window.num"
-    description: "The number of samples to retain in memory for replication quotas"
-    default: "11"
-    trigger: "update-instance"
-  - name: REPLICATION_QUOTA_WINDOW_SIZE_SECONDS
-    displayName: "replication.quota.window.size.seconds"
-    description: "The time span of each sample for replication quotas"
-    default: "1"
-    trigger: "update-instance"
-  - name: REQUEST_TIMEOUT_MS
-    displayName: "request.timeout.ms"
+  REQUEST_TIMEOUT_MS:
+    type: "string"
     description: "The configuration controls the maximum amount of time the client will wait for the response of a request. If the response is not received before the timeout elapses the client will resend the request if necessary or fail the request if retries are exhausted."
     default: "30000"
     trigger: "update-instance"
-  - name: SOCKET_RECEIVE_BUFFER_BYTES
-    displayName: "socket.receive.buffer.bytes"
+  SOCKET_RECEIVE_BUFFER_BYTES:
+    type: "string"
     description: "The SO_RCVBUF buffer of the socket sever sockets. If the value is -1 the OS default will be used."
     default: "102400"
     trigger: "update-instance"
-  - name: SOCKET_REQUEST_MAX_BYTES
-    displayName: "socket.request.max.bytes"
+  SOCKET_REQUEST_MAX_BYTES:
+    type: "string"
     description: "The maximum number of bytes in a socket request"
     default: "104857600"
     trigger: "update-instance"
-  - name: SOCKET_SEND_BUFFER_BYTES
-    displayName: "socket.send.buffer.bytes"
+  SOCKET_SEND_BUFFER_BYTES:
+    type: "string"
     description: "The SO_SNDBUF buffer of the socket sever sockets. If the value is -1, the OS default will be used."
     default: "102400"
     trigger: "update-instance"
-  - name: UNCLEAN_LEADER_ELECTION_ENABLE
-    displayName: "unclean.leader.election.enable"
+  UNCLEAN_LEADER_ELECTION_ENABLE:
+    type: "string"
     description: "Indicates whether to enable replicas not in the ISR set to be elected as leader as a last resort, even though doing so may result in data loss"
     default: "false"
     trigger: "update-instance"
-  - name: ZOOKEEPER_SESSION_TIMEOUT_MS
-    displayName: "zookeeper.session.timeout.ms"
-    description: "Zookeeper session timeout"
-    default: "6000"
-    trigger: "update-instance"
-  - name: CONNECTIONS_MAX_IDLE_MS
-    displayName: "connections.max.idle.ms"
+  CONNECTIONS_MAX_IDLE_MS:
+    type: "string"
     description: "Idle connections timeout: the server socket processor threads close the connections that idle more than this"
     default: "600000"
     trigger: "update-instance"
-  - name: CONTROLLED_SHUTDOWN_ENABLE
-    displayName: "controlled.shutdown.enable"
+  CONTROLLED_SHUTDOWN_ENABLE:
+    type: "string"
     description: "Enable controlled shutdown of the server"
     default: "true"
     trigger: "update-instance"
-  - name: CONTROLLED_SHUTDOWN_MAX_RETRIES
-    displayName: "controlled.shutdown.max.retries"
+  CONTROLLED_SHUTDOWN_MAX_RETRIES:
+    type: "string"
     description: "Controlled shutdown can fail for multiple reasons. This determines the number of retries when such failure happens"
     default: "3"
     trigger: "update-instance"
-  - name: CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS
-    displayName: "controlled.shutdown.retry.backoff.ms"
+  CONTROLLED_SHUTDOWN_RETRY_BACKOFF_MS:
+    type: "string"
     description: "Before each retry, the system needs time to recover from the state that caused the previous failure (Controller fail over, replica lag etc). This config determines the amount of time to wait before retrying."
     default: "5000"
     trigger: "update-instance"
-  - name: CONTROLLER_SOCKET_TIMEOUT_MS
-    displayName: "controller.socket.timeout.ms"
+  CONTROLLER_SOCKET_TIMEOUT_MS:
+    type: "string"
     description: "The socket timeout for controller-to-broker channels"
     default: "30000"
     trigger: "update-instance"
-  - name: DEFAULT_REPLICATION_FACTOR
-    displayName: "default.replication.factor"
+  DEFAULT_REPLICATION_FACTOR:
+    type: "string"
     description: "Default replication factors for automatically created topics"
     default: "1"
     trigger: "update-instance"
-  - name: EXTERNAL_ADVERTISED_LISTENER
-    displayName: "Enable external advertised listeners"
+  EXTERNAL_ADVERTISED_LISTENER:
+    type: "string"
     description: "Enable external advertised listeners"
     default: "false"
     trigger: "external-access"
-  - name: EXTERNAL_ADVERTISED_LISTENER_PORT
-    displayName: "External advertised listener port"
+  EXTERNAL_ADVERTISED_LISTENER_PORT:
+    type: "string"
     description: "External advertised listener port"
     default: "9097"
     trigger: "external-access"
-  - name: EXTERNAL_ADVERTISED_LISTENER_TYPE
-    displayName: "External advertised listener load-balancer type"
+  EXTERNAL_ADVERTISED_LISTENER_TYPE:
+    type: "string"
     description: |
-        External advertised listener load-balancer type, by default its using Node ports.
-        Valid values are "NodePort" and "LoadBalancer"
+      External advertised listener load-balancer type, by default its using Node ports.
+      Valid values are "NodePort" and "LoadBalancer"
     default: "NodePort"
     trigger: "external-access"
-  - name: EXTERNAL_NODE_PORT
+  EXTERNAL_NODE_PORT:
+    type: "string"
     default: "30902"
-    displayName: "External Node Port starting value."
     trigger: "external-access"
-  - name: FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS
-    displayName: "fetch.purgatory.purge.interval.requests"
+  FETCH_PURGATORY_PURGE_INTERVAL_REQUESTS:
+    type: "string"
     description: "The purge interval (in number of requests) of the fetch request purgatory"
     default: "1000"
     trigger: "update-instance"
-  - name: GROUP_MAX_SESSION_TIMEOUT_MS
-    displayName: "group.max.session.timeout.ms"
+  GROUP_MAX_SESSION_TIMEOUT_MS:
+    type: "string"
     description: "The maximum allowed session timeout for registered consumers. Longer timeouts give consumers more time to process messages in between heartbeats at the cost of a longer time to detect failures."
     default: "300000"
     trigger: "update-instance"
-  - name: GROUP_MIN_SESSION_TIMEOUT_MS
-    displayName: "group.min.session.timeout.ms"
+  GROUP_MIN_SESSION_TIMEOUT_MS:
+    type: "string"
     description: "The minimum allowed session timeout for registered consumers. Shorter timeouts result in quicker failure detection at the cost of more frequent consumer heartbeating which can overwhelm broker resources."
     default: "6000"
     trigger: "update-instance"
-  - name: GROUP_INITIAL_REBALANCE_DELAY_MS
-    displayName: "group.initial.rebalance.delay.ms"
+  GROUP_INITIAL_REBALANCE_DELAY_MS:
+    type: "string"
     description: "The amount of time the group coordinator will wait for more consumers to join a new group before performing the first rebalance. A longer delay means potentially fewer rebalances, but increases the time until processing begins."
     default: "3000"
     trigger: "update-instance"
-  - name: INTER_BROKER_PROTOCOL_VERSION
-    displayName: "inter.broker.protocol.version"
+  INTER_BROKER_PROTOCOL_VERSION:
+    type: "string"
     description: "Specify which version of the inter-broker protocol will be used, which must align with log.message.format.version. This is typically bumped *serially* one broker at a time, *after* all brokers were upgraded to a new version. Example of some valid values are: 0.8.0, 0.8.1, 0.8.1.1, 0.8.2, 0.8.2.0, 0.8.2.1, 0.9.0.0, 0.9.0.1, 0.10.0.0, 0.10.1.x, 0.10.2.x, 0.11.0.0, 1.0, 1.1. Check ApiVersion for the full list."
     default: "2.1"
     trigger: "update-instance"
-  - name: LOG_MESSAGE_FORMAT_VERSION
-    displayName: "log.message.format.version"
-    description: "Specify which version of the log message format will be used, which must align with inter.broker.protocol.version. This is a new setting as of 0.10.0.0, and should be left at 0.9.0 until clients are updated to 0.10.0.x. Similarly it should be left at 0.10.0 until all clients are updated to 0.11.0. This is typically bumped *serially* one broker at a time, *after* all inter-protocol versions are updated. Clients on earlier versions may see a performance penalty if this is increased before they've upgraded. See the latest Kafka documentation for details."
-    default: "2.1"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_BACKOFF_MS
-    displayName: "log.cleaner.backoff.ms"
-    description: "The amount of time to sleep when there are no logs to clean"
-    default: "15000"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_DEDUPE_BUFFER_SIZE
-    displayName: "log.cleaner.dedupe.buffer.size"
-    description: "The total memory used for log deduplication across all cleaner threads"
-    default: "134217728"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_DELETE_RETENTION_MS
-    displayName: "log.cleaner.delete.retention.ms"
-    description: "How long are delete records retained?"
-    default: "86400000"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_ENABLE
-    displayName: "log.cleaner.enable"
-    description: "Enable the log cleaner process to run on the server. Should be enabled if using any topics with a cleanup.policy=compact including the internal offsets topic. If disabled those topics will not be compacted and continually grow in size."
-    default: "true"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_IO_BUFFER_LOAD_FACTOR
-    displayName: "log.cleaner.io.buffer.load.factor"
-    description: "Log cleaner dedupe buffer load factor. The percentage full the dedupe buffer can become. A higher value will allow more log to be cleaned at once but will lead to more hash collisions"
-    default: "0.9"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_IO_BUFFER_SIZE
-    displayName: "log.cleaner.io.buffer.size"
-    description: "The total memory used for log cleaner I/O buffers across all cleaner threads"
-    default: "524288"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_IO_MAX_BYTES_PER_SECOND
-    displayName: "log.cleaner.io.max.bytes.per.second"
-    description: "The log cleaner will be throttled so that the sum of its read and write i/o will be less than this value on average"
-    default: "1.7976931348623157e+308"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_MIN_CLEANABLE_RATIO
-    displayName: "log.cleaner.min.cleanable.ratio"
-    description: "The minimum ratio of dirty log to total log for a log to eligible for cleaning"
-    default: "0.5"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_MIN_COMPACTION_LAG_MS
-    displayName: "log.cleaner.min.compaction.lag.ms"
-    description: "The minimum time a message will remain uncompacted in the log. Only applicable for logs that are being compacted."
-    default: "0"
-    trigger: "update-instance"
-  - name: LOG_CLEANER_THREADS
-    displayName: "log.cleaner.threads"
-    description: "The number of background threads to use for log cleaning"
-    default: "1"
-    trigger: "update-instance"
-  - name: LOG_CLEANUP_POLICY
-    displayName: "log.cleanup.policy"
-    description: "The default cleanup policy for segments beyond the retention window. A comma separated list of valid policies. Valid policies are: \"delete\" and \"compact\""
-    default: "delete"
-    trigger: "update-instance"
-  - name: LOG_INDEX_INTERVAL_BYTES
-    displayName: "log.index.interval.bytes"
-    description: "The interval with which we add an entry to the offset index"
-    default: "4096"
-    trigger: "update-instance"
-  - name: LOG_INDEX_SIZE_MAX_BYTES
-    displayName: "log.index.size.max.bytes"
-    description: "The maximum size in bytes of the offset index"
-    default: "10485760"
-    trigger: "update-instance"
-  - name: LOG_PREALLOCATE
-    displayName: "log.preallocate"
-    description: "Should pre allocate file when create new segment? If you are using Kafka on Windows you probably need to set it to true."
-    default: "false"
-    trigger: "update-instance"
-  - name: LOG_RETENTION_CHECK_INTERVAL_MS
-    displayName: "log.retention.check.interval.ms"
-    description: "The frequency in milliseconds that the log cleaner checks whether any log is eligible for deletion"
-    default: "300000"
-    trigger: "update-instance"
-  - name: MAX_CONNECTIONS_PER_IP
-    displayName: "max.connections.per.ip"
+  MAX_CONNECTIONS_PER_IP:
+    type: "string"
     description: "The maximum number of connections we allow from each ip address"
     default: "2147483647"
     trigger: "update-instance"
-  - name: MAX_CONNECTIONS_PER_IP_OVERRIDES
-    displayName: "max.connections.per.ip.overrides"
+  MAX_CONNECTIONS_PER_IP_OVERRIDES:
+    type: "string"
     description: "Per-ip or hostname overrides to the default maximum number of connections"
     default: ""
     trigger: "update-instance"
-  - name: MAX_INCREMENTAL_FETCH_SESSION_CACHE_SLOTS
-    displayName: "max.incremental.fetch.session.cache.slots"
+  MAX_INCREMENTAL_FETCH_SESSION_CACHE_SLOTS:
+    type: "string"
     description: "Per-ip or hostname overrides to the default maximum number of connections"
     default: "1000"
     trigger: "update-instance"
-  - name: PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS
-    displayName: "producer.purgatory.purge.interval.requests"
+  PRODUCER_PURGATORY_PURGE_INTERVAL_REQUESTS:
+    type: "string"
     description: "The purge interval (in number of requests) of the producer request purgatory"
     default: "1000"
     trigger: "update-instance"
-  - name: REPLICA_FETCH_BACKOFF_MS
-    displayName: "replica.fetch.backoff.ms"
+  REPLICA_FETCH_BACKOFF_MS:
+    type: "string"
     description: "The amount of time to sleep when fetch partition error occurs."
     default: "1000"
     trigger: "update-instance"
-  - name: RESERVED_BROKER_MAX_ID
-    displayName: "reserved.broker.max.id"
+  RESERVED_BROKER_MAX_ID:
+    type: "string"
     description: "Max number that can be used for a broker.id"
     default: "1000"
     trigger: "update-instance"
-  - name: METRIC_REPORTERS
-    displayName: "metric.reporters"
-    description: "Java class to collect/report broker metrics"
-    default: ""
-    trigger: "update-instance"
-  - name: METRICS_NUM_SAMPLES
-    displayName: "metrics.num.samples"
-    description: "The number of samples maintained to compute metrics."
-    default: "2"
-    trigger: "update-instance"
-  - name: METRICS_SAMPLE_WINDOW_MS
-    displayName: "metrics.sample.window.ms"
-    description: "The window of time a metrics sample is computed over."
-    default: "30000"
-    trigger: "update-instance"
-  - name: QUOTA_WINDOW_NUM
-    displayName: "quota.window.num"
+  QUOTA_WINDOW_NUM:
+    type: "string"
     description: "The number of samples to retain in memory for client quotas"
     default: "11"
     trigger: "update-instance"
-  - name: QUOTA_WINDOW_SIZE_SECONDS
-    displayName: "quota.window.size.seconds"
+  QUOTA_WINDOW_SIZE_SECONDS:
+    type: "string"
     description: "The time span of each sample for client quotas"
     default: "1"
     trigger: "update-instance"
-  - name: SSL_ENDPOINT_IDENTIFICATION_ALGORITHM
-    displayName: "ssl.endpoint.identification.algorithm"
+  SSL_ENDPOINT_IDENTIFICATION_ALGORITHM:
+    type: "string"
     description: |
       The endpoint identification algorithm used by clients to validate server host name. The default value is HTTPS.
       Clients including client connections created by the broker for inter-broker communication verify that the broker host name matches the host name in the broker’s certificate.
       Server host name verification may be disabled by setting ssl.endpoint.identification.algorithm to an empty string.
     default: "HTTPS"
     trigger: "update-instance"
-  - name: TRANSACTION_STATE_LOG_SEGMENT_BYTES
-    displayName: "transaction.state.log.segment.bytes"
+  TRANSACTION_STATE_LOG_SEGMENT_BYTES:
+    type: "string"
     description: "The transaction topic segment bytes should be kept relatively small in order to facilitate faster log compaction and cache loads"
     default: "104857600"
     trigger: "update-instance"
-  - name: TRANSACTION_REMOVE_EXPIRED_TRANSACTION_CLEANUP_INTERVAL_MS
-    displayName: "transaction.remove.expired.transaction.cleanup.interval.ms"
+  TRANSACTION_REMOVE_EXPIRED_TRANSACTION_CLEANUP_INTERVAL_MS:
+    type: "string"
     description: "The interval at which to remove transactions that have expired due to transactional.id.expiration.ms passing"
     default: "3600000"
     trigger: "update-instance"
-  - name: TRANSACTION_MAX_TIMEOUT_MS
-    displayName: "transaction.max.timeout.ms"
+  TRANSACTION_MAX_TIMEOUT_MS:
+    type: "string"
     description: "The maximum allowed timeout for transactions. If a client's requested transaction time exceeds this then the broker will return an error in InitProducerIdRequest. This prevents a client from too large of a timeout which can stall consumers reading from topics included in the transaction."
     default: "900000"
     trigger: "update-instance"
-  - name: TRANSACTION_STATE_LOG_NUM_PARTITIONS
-    displayName: "transaction.state.log.num.partitions"
+  TRANSACTION_STATE_LOG_NUM_PARTITIONS:
+    type: "string"
     description: "The number of partitions for the transaction topic (should not change after deployment)."
     default: "50"
     trigger: "update-instance"
-  - name: TRANSACTION_ABORT_TIMED_OUT_TRANSACTION_CLEANUP_INTERVAL_MS
-    displayName: "transaction.abort.timed.out.transaction.cleanup.interval.ms"
+  TRANSACTION_ABORT_TIMED_OUT_TRANSACTION_CLEANUP_INTERVAL_MS:
+    type: "string"
     description: "The interval at which to rollback transactions that have timed out"
     default: "60000"
     trigger: "update-instance"
-  - name: TRANSACTION_STATE_LOG_LOAD_BUFFER_SIZE
-    displayName: "transaction.state.log.load.buffer.size"
+  TRANSACTION_STATE_LOG_LOAD_BUFFER_SIZE:
+    type: "string"
     description: "Batch size for reading from the transaction log segments when loading producer ids and transactions into the cache."
     default: "5242880"
     trigger: "update-instance"
-  - name: TRANSACTION_STATE_LOG_REPLICATION_FACTOR
-    displayName: "transaction.state.log.replication.factor"
+  TRANSACTION_STATE_LOG_REPLICATION_FACTOR:
+    type: "string"
     description: "The replication factor for the transaction topic (set higher to ensure availability). Internal topic creation will fail until the cluster size meets this replication factor requirement."
     default: "3"
     trigger: "update-instance"
-  - name: TRANSACTION_STATE_LOG_MIN_ISR
-    displayName: "transaction.state.log.min.isr"
+  TRANSACTION_STATE_LOG_MIN_ISR:
+    type: "string"
     description: "Overridden min.insync.replicas config for the transaction topic."
     default: "2"
     trigger: "update-instance"
-  - name: TRANSACTIONAL_ID_EXPIRATION_MS
-    displayName: "transactional.id.expiration.ms"
+  TRANSACTIONAL_ID_EXPIRATION_MS:
+    type: "string"
     description: "The maximum amount of time in ms that the transaction coordinator will wait before proactively expire a producer's transactional id without receiving any transaction status updates from it."
     default: "604800000"
     trigger: "update-instance"
-  - name: ZOOKEEPER_SYNC_TIME_MS
-    displayName: "zookeeper.sync.time.ms"
-    description: "How far a ZK follower can be behind a ZK leader"
-    default: "2000"
-    trigger: "update-instance"
-  - name: TRANSPORT_ENCRYPTION_ENABLED
-    displayName: "Enable transport encryption (TLS)"
+  TRANSPORT_ENCRYPTION_ENABLED:
+    type: "string"
     description: "Enable transport encryption (TLS)"
     default: "false"
     trigger: "update-instance"
-  - name: TRANSPORT_ENCRYPTION_CIPHERS
-    displayName: "Cipher Suite Names"
+  TRANSPORT_ENCRYPTION_CIPHERS:
+    type: "string"
     description: "Comma-separated list of JSSE Cipher Suite Names"
     default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
     trigger: "update-instance"
-  - name: TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT
-    displayName: "Allow Plaintext Traffic"
+  TRANSPORT_ENCRYPTION_ALLOW_PLAINTEXT:
+    type: "string"
     description: "Allow plaintext alongside encrypted traffic"
     default: "false"
     trigger: "update-instance"
-  - name: SSL_AUTHENTICATION_ENABLED
-    displayName: "Enable SSL authentication"
+  SSL_AUTHENTICATION_ENABLED:
+    type: "string"
     description: "Enable SSL authentication"
     default: "false"
     trigger: "update-instance"
-  - name: TLS_SECRET_NAME
+  TLS_SECRET_NAME:
+    type: "string"
     default: "kafka-tls"
-    displayName: "kafka-tls"
     trigger: "update-instance"
-  - name: USE_AUTO_TLS_CERTIFICATE
+  USE_AUTO_TLS_CERTIFICATE:
+    type: "string"
     default: "false"
-    displayName: "kafka-auto-tls"
     description: "The operator will auto create secrets that contains TLS certificate and is mounted as a volume to make them available to the brokers."
-  - name: CUSTOM_SERVER_PROPERTIES_CM_NAME
-    displayName: "custom server properties configmap name"
+  CUSTOM_SERVER_PROPERTIES_CM_NAME:
+    type: "string"
     description: "The properties present in this configmap will be appended to the Kafka server properties"
-    required: false
     trigger: "update-instance"
-  - name: CUSTOM_METRICS_CM_NAME
-    displayName: "custom metrics properties and rules"
+  CUSTOM_METRICS_CM_NAME:
+    type: "string"
     description: "These metrics prometheus rules to be used instead of the default metrics rules."
-    required: false
     trigger: "update-instance"
-  - name: MIRROR_MAKER_ENABLED
-    default: "false"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_REPLICA_COUNT
-    default: "1"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_EXTERNAL_CLUSTER_TYPE
-    default: "SOURCE"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_EXTERNAL_BOOTSTRAP_SERVERS
-    default: ""
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_ABORT_ON_SEND_FAILURE
-    default: "true"
-    description: "Configure the mirror maker to exit on a failed send"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_TOPIC_WHITELIST
-    default: ".*"
-    description: "Whitelist of topics to mirror"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_NUM_STREAMS
-    default: "1"
-    description: "Number of consumer streams to use to consume topics from the source cluster"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_OFFSET_COMMIT_INTERVAL
-    default: "60000"
-    description: "Offset commit interval in ms"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_CPUS
-    description: "CPUs (request) for the Mirror Maker pods. spec.containers[].resources.requests.cpu"
-    default: "100m"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_CPUS_LIMIT
-    description: "CPUs (limit) for the Mirror Maker pods. spec.containers[].resources.limits.cpu"
-    default: "100m"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_MEM
-    description: "Memory (request) for the Mirror Maker pods. spec.containers[].resources.requests.memory"
-    default: "512Mi"
-    trigger: "mirrormaker"
-  - name: MIRROR_MAKER_MEM_LIMIT
-    description: "Memory (limit) for the Mirror Maker pods. spec.containers[].resources.limits.memory"
-    default: "512Mi"
-    trigger: "mirrormaker"
-  - name: KAFKA_CONNECT_ENABLED
-    default: "false"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_REPLICA_COUNT
-    default: "1"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_CPUS
-    description: "CPUs (request) for the Kafka Connect pods. spec.containers[].resources.requests.cpu"
-    default: "500m"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_CPUS_LIMIT
-    description: "CPUs (limit) for the Kafka Connect pods. spec.containers[].resources.limits.cpu"
-    default: "500m"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_MEM
-    description: "Memory (request) for the Kafka Connect pods. spec.containers[].resources.requests.memory"
-    default: "2048Mi"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_MEM_LIMIT
-    description: "Memory (limit) for the Kafka Connect pods. spec.containers[].resources.limits.memory"
-    default: "2048Mi"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_CUSTOM_CM
-    displayName: "Kafka Connect custom configuration Config Map"
-    description: "Kafka Connect custom configuration Config Map"
-    required: false
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_CONNECTORS_CM
-    displayName: "Connectors configuration Config Map"
-    description: "The configuration used by the Connect to bootstrap itself with the specified connectors."
-    required: false
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_REST_PORT
-    displayName: "Kafka Connect port"
-    description: "Port for the REST API server to listen to."
-    default: 8083
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_KEY_CONVERTER
-    displayName: "Kafka Connect key converter"
-    description: "The key converters specify the format of data in Kafka message key and how to translate it into Connect data"
-    default: "org.apache.kafka.connect.json.JsonConverter"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_VALUE_CONVERTER
-    displayName: "Kafka Connect value converter"
-    description: "The value converter specify the format of data in Kafka message value and how to translate it into Connect data"
-    default: "org.apache.kafka.connect.json.JsonConverter"
-    trigger: "kafka-connect"
-  - name: KAFKA_CONNECT_OFFSET_FLUSH_INTERVAL_MS
-    displayName: "Kafka Connect offset flush interval in milliseconds"
-    description: "Kafka Connect topic offset flush interval in milliseconds"
-    default: 10000
-    trigger: "kafka-connect"
-  - name: ENABLE_CRUISE_CONTROL
-    description: "Enable cruise control for the current KUDO Kafka cluster"
-    default: "false"
-    trigger: "cruise-control"
-  - name: CRUISE_CONTROL_CPUS
-    description: "CPUs (request) for the Cruise Control container"
-    default: "100m"
-    trigger: "cruise-control"
-  - name: CRUISE_CONTROL_CPUS_LIMIT
-    description: "CPUs (limit) for the Cruise Control container"
-    default: "100m"
-    trigger: "cruise-control"
-  - name: CRUISE_CONTROL_MEM
-    description: "Memory (request) for the Cruise Control container"
-    default: "512Mi"
-    trigger: "update-instance"
-  - name: CRUISE_CONTROL_MEM_LIMIT
-    description: "Memory (limit) for the Cruise Control container"
-    default: "512Mi"
-    trigger: "cruise-control"
-  - name: CRUISE_CONTROL_PORT
-    description: "Cruise Control Web UI port"
-    default: "9090"
-    trigger: "cruise-control"
-  - name: CRUISE_CONTROL_WEBSERVER_API_URLPREFIX
-    description: "Cruise Control REST API default prefix"
-    default: "/kafkacruisecontrol/*"
-    trigger: "cruise-control"
-  - name: CRUISE_CONTROL_WEBSERVER_UI_URLPREFIX
-    description: "Cruise Control REST Web UI default path prefix"
-    default: "/*"
-    trigger: "cruise-control"
