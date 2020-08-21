@@ -10,7 +10,7 @@ The documentation is available in [docs/2.4.5-1.0.1](./docs/2.4.5-1.0.1) folder.
 
 | KUDO Spark version | Apache Spark version     | Operator version        | Minimum KUDO Version | Status |
 | ------------------ | --------------------     | ----------------------- | -------------------- | ------ |
-| latest             | 2.4.5 (Hadoop 2.9.2)     | v1beta2-1.1.1           | 0.13.0               | GA     |
+| latest             | 3.0.0 (Hadoop 2.9.2)     | v1beta2-1.2.0           | 0.15.0               | GA     |
 | **2.4.5-1.0.1**    | **2.4.5 (Hadoop 2.9.2)** | **v1beta2-1.1.1**       | **0.13.0**           | GA     |
 | 2.4.5-1.0.0        | 2.4.5 (Hadoop 2.9.2)     | v1beta2-1.1.0           | 0.10.1               | GA     |
 | 2.4.4-0.2.0        | 2.4.4 (Hadoop 2.9.2)     | v1beta2-1.0.1           | 0.10.1               | beta   |
