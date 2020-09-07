@@ -38,4 +38,4 @@ For more details, please see the [v1.3 docs](./docs/v1.3) folder.
 
 | KUDO Kafka | Apache Kafka | Minimum KUDO Version |
 | ---------- | ------------ | -------------------- |
-| 1.3.2      | 2.5.0        | 0.14.0               |
+| 1.3.2      | 2.5.1        | 0.14.0               |
