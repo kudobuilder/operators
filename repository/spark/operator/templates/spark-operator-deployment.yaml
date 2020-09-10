@@ -85,7 +85,7 @@ spec:
         - -webhook-svc-namespace={{ .Namespace }}
         - -webhook-port={{ .Params.webhookPort }}
         - -webhook-svc-name={{ .Name }}-webhook
-        - -webhook-config-name={{ .OperatorName }}-webhook-config
+        - -webhook-config-name={{ .Namespace }}-{{ .Name }}-webhook-config
         {{- end }}
         {{- if eq .Params.enableLeaderElection "true" }}
         - -leader-election=true
