@@ -397,7 +397,11 @@ spec:
                               containerName:
                                 type: string
                               divisor:
-                                type: string
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                x-kubernetes-int-or-string: true
                               resource:
                                 type: string
                             required:
@@ -417,6 +421,27 @@ spec:
                         type: object
                     required:
                       - name
+                    type: object
+                  type: array
+                envFrom:
+                  items:
+                    properties:
+                      configMapRef:
+                        properties:
+                          name:
+                            type: string
+                          optional:
+                            type: boolean
+                        type: object
+                      prefix:
+                        type: string
+                      secretRef:
+                        properties:
+                          name:
+                            type: string
+                          optional:
+                            type: boolean
+                        type: object
                     type: object
                   type: array
                 envSecretKeyRefs:
@@ -495,7 +520,11 @@ spec:
                                     containerName:
                                       type: string
                                     divisor:
-                                      type: string
+                                      anyOf:
+                                        - type: integer
+                                        - type: string
+                                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                      x-kubernetes-int-or-string: true
                                     resource:
                                       type: string
                                   required:
@@ -729,6 +758,7 @@ spec:
                               type: string
                           required:
                             - containerPort
+                            - protocol
                           type: object
                         type: array
                         x-kubernetes-list-map-keys:
@@ -804,11 +834,19 @@ spec:
                         properties:
                           limits:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                           requests:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                         type: object
                       securityContext:
@@ -851,6 +889,80 @@ spec:
                               user:
                                 type: string
                             type: object
+                          windowsOptions:
+                            properties:
+                              gmsaCredentialSpec:
+                                type: string
+                              gmsaCredentialSpecName:
+                                type: string
+                              runAsUserName:
+                                type: string
+                            type: object
+                        type: object
+                      startupProbe:
+                        properties:
+                          exec:
+                            properties:
+                              command:
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          failureThreshold:
+                            format: int32
+                            type: integer
+                          httpGet:
+                            properties:
+                              host:
+                                type: string
+                              httpHeaders:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      type: string
+                                  required:
+                                    - name
+                                    - value
+                                  type: object
+                                type: array
+                              path:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                              scheme:
+                                type: string
+                            required:
+                              - port
+                            type: object
+                          initialDelaySeconds:
+                            format: int32
+                            type: integer
+                          periodSeconds:
+                            format: int32
+                            type: integer
+                          successThreshold:
+                            format: int32
+                            type: integer
+                          tcpSocket:
+                            properties:
+                              host:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                            required:
+                              - port
+                            type: object
+                          timeoutSeconds:
+                            format: int32
+                            type: integer
                         type: object
                       stdin:
                         type: boolean
@@ -887,6 +999,8 @@ spec:
                               type: boolean
                             subPath:
                               type: string
+                            subPathExpr:
+                              type: string
                           required:
                             - mountPath
                             - name
@@ -900,9 +1014,114 @@ spec:
                   type: array
                 javaOptions:
                   type: string
+                kubernetesMaster:
+                  type: string
                 labels:
                   additionalProperties:
                     type: string
+                  type: object
+                lifecycle:
+                  properties:
+                    postStart:
+                      properties:
+                        exec:
+                          properties:
+                            command:
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        httpGet:
+                          properties:
+                            host:
+                              type: string
+                            httpHeaders:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  value:
+                                    type: string
+                                required:
+                                  - name
+                                  - value
+                                type: object
+                              type: array
+                            path:
+                              type: string
+                            port:
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              x-kubernetes-int-or-string: true
+                            scheme:
+                              type: string
+                          required:
+                            - port
+                          type: object
+                        tcpSocket:
+                          properties:
+                            host:
+                              type: string
+                            port:
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              x-kubernetes-int-or-string: true
+                          required:
+                            - port
+                          type: object
+                      type: object
+                    preStop:
+                      properties:
+                        exec:
+                          properties:
+                            command:
+                              items:
+                                type: string
+                              type: array
+                          type: object
+                        httpGet:
+                          properties:
+                            host:
+                              type: string
+                            httpHeaders:
+                              items:
+                                properties:
+                                  name:
+                                    type: string
+                                  value:
+                                    type: string
+                                required:
+                                  - name
+                                  - value
+                                type: object
+                              type: array
+                            path:
+                              type: string
+                            port:
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              x-kubernetes-int-or-string: true
+                            scheme:
+                              type: string
+                          required:
+                            - port
+                          type: object
+                        tcpSocket:
+                          properties:
+                            host:
+                              type: string
+                            port:
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              x-kubernetes-int-or-string: true
+                          required:
+                            - port
+                          type: object
+                      type: object
                   type: object
                 memory:
                   type: string
@@ -973,9 +1192,22 @@ spec:
                           - value
                         type: object
                       type: array
+                    windowsOptions:
+                      properties:
+                        gmsaCredentialSpec:
+                          type: string
+                        gmsaCredentialSpecName:
+                          type: string
+                        runAsUserName:
+                          type: string
+                      type: object
                   type: object
                 serviceAccount:
                   type: string
+                serviceAnnotations:
+                  additionalProperties:
+                    type: string
+                  type: object
                 sidecars:
                   items:
                     properties:
@@ -1021,7 +1253,11 @@ spec:
                                     containerName:
                                       type: string
                                     divisor:
-                                      type: string
+                                      anyOf:
+                                        - type: integer
+                                        - type: string
+                                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                      x-kubernetes-int-or-string: true
                                     resource:
                                       type: string
                                   required:
@@ -1255,6 +1491,7 @@ spec:
                               type: string
                           required:
                             - containerPort
+                            - protocol
                           type: object
                         type: array
                         x-kubernetes-list-map-keys:
@@ -1330,11 +1567,19 @@ spec:
                         properties:
                           limits:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                           requests:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                         type: object
                       securityContext:
@@ -1377,6 +1622,80 @@ spec:
                               user:
                                 type: string
                             type: object
+                          windowsOptions:
+                            properties:
+                              gmsaCredentialSpec:
+                                type: string
+                              gmsaCredentialSpecName:
+                                type: string
+                              runAsUserName:
+                                type: string
+                            type: object
+                        type: object
+                      startupProbe:
+                        properties:
+                          exec:
+                            properties:
+                              command:
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          failureThreshold:
+                            format: int32
+                            type: integer
+                          httpGet:
+                            properties:
+                              host:
+                                type: string
+                              httpHeaders:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      type: string
+                                  required:
+                                    - name
+                                    - value
+                                  type: object
+                                type: array
+                              path:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                              scheme:
+                                type: string
+                            required:
+                              - port
+                            type: object
+                          initialDelaySeconds:
+                            format: int32
+                            type: integer
+                          periodSeconds:
+                            format: int32
+                            type: integer
+                          successThreshold:
+                            format: int32
+                            type: integer
+                          tcpSocket:
+                            properties:
+                              host:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                            required:
+                              - port
+                            type: object
+                          timeoutSeconds:
+                            format: int32
+                            type: integer
                         type: object
                       stdin:
                         type: boolean
@@ -1413,6 +1732,8 @@ spec:
                               type: boolean
                             subPath:
                               type: string
+                            subPathExpr:
+                              type: string
                           required:
                             - mountPath
                             - name
@@ -1424,6 +1745,9 @@ spec:
                       - name
                     type: object
                   type: array
+                terminationGracePeriodSeconds:
+                  format: int64
+                  type: integer
                 tolerations:
                   items:
                     properties:
@@ -1453,11 +1777,30 @@ spec:
                         type: boolean
                       subPath:
                         type: string
+                      subPathExpr:
+                        type: string
                     required:
                       - mountPath
                       - name
                     type: object
                   type: array
+              type: object
+            dynamicAllocation:
+              properties:
+                enabled:
+                  type: boolean
+                initialExecutors:
+                  format: int32
+                  type: integer
+                maxExecutors:
+                  format: int32
+                  type: integer
+                minExecutors:
+                  format: int32
+                  type: integer
+                shuffleTrackingTimeout:
+                  format: int64
+                  type: integer
               type: object
             executor:
               properties:
@@ -1803,7 +2146,11 @@ spec:
                               containerName:
                                 type: string
                               divisor:
-                                type: string
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                x-kubernetes-int-or-string: true
                               resource:
                                 type: string
                             required:
@@ -1823,6 +2170,27 @@ spec:
                         type: object
                     required:
                       - name
+                    type: object
+                  type: array
+                envFrom:
+                  items:
+                    properties:
+                      configMapRef:
+                        properties:
+                          name:
+                            type: string
+                          optional:
+                            type: boolean
+                        type: object
+                      prefix:
+                        type: string
+                      secretRef:
+                        properties:
+                          name:
+                            type: string
+                          optional:
+                            type: boolean
+                        type: object
                     type: object
                   type: array
                 envSecretKeyRefs:
@@ -1901,7 +2269,11 @@ spec:
                                     containerName:
                                       type: string
                                     divisor:
-                                      type: string
+                                      anyOf:
+                                        - type: integer
+                                        - type: string
+                                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                      x-kubernetes-int-or-string: true
                                     resource:
                                       type: string
                                   required:
@@ -2135,6 +2507,7 @@ spec:
                               type: string
                           required:
                             - containerPort
+                            - protocol
                           type: object
                         type: array
                         x-kubernetes-list-map-keys:
@@ -2210,11 +2583,19 @@ spec:
                         properties:
                           limits:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                           requests:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                         type: object
                       securityContext:
@@ -2257,6 +2638,80 @@ spec:
                               user:
                                 type: string
                             type: object
+                          windowsOptions:
+                            properties:
+                              gmsaCredentialSpec:
+                                type: string
+                              gmsaCredentialSpecName:
+                                type: string
+                              runAsUserName:
+                                type: string
+                            type: object
+                        type: object
+                      startupProbe:
+                        properties:
+                          exec:
+                            properties:
+                              command:
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          failureThreshold:
+                            format: int32
+                            type: integer
+                          httpGet:
+                            properties:
+                              host:
+                                type: string
+                              httpHeaders:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      type: string
+                                  required:
+                                    - name
+                                    - value
+                                  type: object
+                                type: array
+                              path:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                              scheme:
+                                type: string
+                            required:
+                              - port
+                            type: object
+                          initialDelaySeconds:
+                            format: int32
+                            type: integer
+                          periodSeconds:
+                            format: int32
+                            type: integer
+                          successThreshold:
+                            format: int32
+                            type: integer
+                          tcpSocket:
+                            properties:
+                              host:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                            required:
+                              - port
+                            type: object
+                          timeoutSeconds:
+                            format: int32
+                            type: integer
                         type: object
                       stdin:
                         type: boolean
@@ -2292,6 +2747,8 @@ spec:
                             readOnly:
                               type: boolean
                             subPath:
+                              type: string
+                            subPathExpr:
                               type: string
                           required:
                             - mountPath
@@ -2380,7 +2837,18 @@ spec:
                           - value
                         type: object
                       type: array
+                    windowsOptions:
+                      properties:
+                        gmsaCredentialSpec:
+                          type: string
+                        gmsaCredentialSpecName:
+                          type: string
+                        runAsUserName:
+                          type: string
+                      type: object
                   type: object
+                serviceAccount:
+                  type: string
                 sidecars:
                   items:
                     properties:
@@ -2426,7 +2894,11 @@ spec:
                                     containerName:
                                       type: string
                                     divisor:
-                                      type: string
+                                      anyOf:
+                                        - type: integer
+                                        - type: string
+                                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                      x-kubernetes-int-or-string: true
                                     resource:
                                       type: string
                                   required:
@@ -2660,6 +3132,7 @@ spec:
                               type: string
                           required:
                             - containerPort
+                            - protocol
                           type: object
                         type: array
                         x-kubernetes-list-map-keys:
@@ -2735,11 +3208,19 @@ spec:
                         properties:
                           limits:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                           requests:
                             additionalProperties:
-                              type: string
+                              anyOf:
+                                - type: integer
+                                - type: string
+                              pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                              x-kubernetes-int-or-string: true
                             type: object
                         type: object
                       securityContext:
@@ -2782,6 +3263,80 @@ spec:
                               user:
                                 type: string
                             type: object
+                          windowsOptions:
+                            properties:
+                              gmsaCredentialSpec:
+                                type: string
+                              gmsaCredentialSpecName:
+                                type: string
+                              runAsUserName:
+                                type: string
+                            type: object
+                        type: object
+                      startupProbe:
+                        properties:
+                          exec:
+                            properties:
+                              command:
+                                items:
+                                  type: string
+                                type: array
+                            type: object
+                          failureThreshold:
+                            format: int32
+                            type: integer
+                          httpGet:
+                            properties:
+                              host:
+                                type: string
+                              httpHeaders:
+                                items:
+                                  properties:
+                                    name:
+                                      type: string
+                                    value:
+                                      type: string
+                                  required:
+                                    - name
+                                    - value
+                                  type: object
+                                type: array
+                              path:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                              scheme:
+                                type: string
+                            required:
+                              - port
+                            type: object
+                          initialDelaySeconds:
+                            format: int32
+                            type: integer
+                          periodSeconds:
+                            format: int32
+                            type: integer
+                          successThreshold:
+                            format: int32
+                            type: integer
+                          tcpSocket:
+                            properties:
+                              host:
+                                type: string
+                              port:
+                                anyOf:
+                                  - type: integer
+                                  - type: string
+                                x-kubernetes-int-or-string: true
+                            required:
+                              - port
+                            type: object
+                          timeoutSeconds:
+                            format: int32
+                            type: integer
                         type: object
                       stdin:
                         type: boolean
@@ -2818,6 +3373,8 @@ spec:
                               type: boolean
                             subPath:
                               type: string
+                            subPathExpr:
+                              type: string
                           required:
                             - mountPath
                             - name
@@ -2829,6 +3386,9 @@ spec:
                       - name
                     type: object
                   type: array
+                terminationGracePeriodSeconds:
+                  format: int64
+                  type: integer
                 tolerations:
                   items:
                     properties:
@@ -2857,6 +3417,8 @@ spec:
                       readOnly:
                         type: boolean
                       subPath:
+                        type: string
+                      subPathExpr:
                         type: string
                     required:
                       - mountPath
@@ -2899,6 +3461,8 @@ spec:
                 exposeExecutorMetrics:
                   type: boolean
                 metricsProperties:
+                  type: string
+                metricsPropertiesFile:
                   type: string
                 prometheus:
                   properties:
@@ -2963,6 +3527,27 @@ spec:
               type: object
             sparkConfigMap:
               type: string
+            sparkUIOptions:
+              properties:
+                ingressAnnotations:
+                  additionalProperties:
+                    type: string
+                  type: object
+                ingressTLS:
+                  items:
+                    properties:
+                      hosts:
+                        items:
+                          type: string
+                        type: array
+                      secretName:
+                        type: string
+                    type: object
+                  type: array
+                servicePort:
+                  format: int32
+                  type: integer
+              type: object
             sparkVersion:
               type: string
             timeToLiveSeconds:
@@ -3085,6 +3670,26 @@ spec:
                       optional:
                         type: boolean
                     type: object
+                  csi:
+                    properties:
+                      driver:
+                        type: string
+                      fsType:
+                        type: string
+                      nodePublishSecretRef:
+                        properties:
+                          name:
+                            type: string
+                        type: object
+                      readOnly:
+                        type: boolean
+                      volumeAttributes:
+                        additionalProperties:
+                          type: string
+                        type: object
+                    required:
+                      - driver
+                    type: object
                   downwardAPI:
                     properties:
                       defaultMode:
@@ -3112,7 +3717,11 @@ spec:
                                 containerName:
                                   type: string
                                 divisor:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 resource:
                                   type: string
                               required:
@@ -3128,7 +3737,11 @@ spec:
                       medium:
                         type: string
                       sizeLimit:
-                        type: string
+                        anyOf:
+                          - type: integer
+                          - type: string
+                        pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                        x-kubernetes-int-or-string: true
                     type: object
                   fc:
                     properties:
@@ -3353,7 +3966,11 @@ spec:
                                           containerName:
                                             type: string
                                           divisor:
-                                            type: string
+                                            anyOf:
+                                              - type: integer
+                                              - type: string
+                                            pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                            x-kubernetes-int-or-string: true
                                           resource:
                                             type: string
                                         required:
@@ -3410,6 +4027,8 @@ spec:
                       readOnly:
                         type: boolean
                       registry:
+                        type: string
+                      tenant:
                         type: string
                       user:
                         type: string
@@ -3605,12 +4224,14 @@ status:
   acceptedNames:
     kind: ""
     plural: ""
-  conditions: []
-  storedVersions: []
+  conditions: null
+  storedVersions: null
 ---
 apiVersion: apiextensions.k8s.io/v1beta1
 kind: CustomResourceDefinition
 metadata:
+  annotations:
+    controller-gen.kubebuilder.io/version: (unknown)
   creationTimestamp: null
   name: scheduledsparkapplications.sparkoperator.k8s.io
 spec:
@@ -4020,7 +4641,11 @@ spec:
                                   containerName:
                                     type: string
                                   divisor:
-                                    type: string
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
                                   resource:
                                     type: string
                                 required:
@@ -4040,6 +4665,27 @@ spec:
                             type: object
                         required:
                           - name
+                        type: object
+                      type: array
+                    envFrom:
+                      items:
+                        properties:
+                          configMapRef:
+                            properties:
+                              name:
+                                type: string
+                              optional:
+                                type: boolean
+                            type: object
+                          prefix:
+                            type: string
+                          secretRef:
+                            properties:
+                              name:
+                                type: string
+                              optional:
+                                type: boolean
+                            type: object
                         type: object
                       type: array
                     envSecretKeyRefs:
@@ -4118,7 +4764,11 @@ spec:
                                         containerName:
                                           type: string
                                         divisor:
-                                          type: string
+                                          anyOf:
+                                            - type: integer
+                                            - type: string
+                                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                          x-kubernetes-int-or-string: true
                                         resource:
                                           type: string
                                       required:
@@ -4352,6 +5002,7 @@ spec:
                                   type: string
                               required:
                                 - containerPort
+                                - protocol
                               type: object
                             type: array
                             x-kubernetes-list-map-keys:
@@ -4427,11 +5078,19 @@ spec:
                             properties:
                               limits:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                               requests:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                             type: object
                           securityContext:
@@ -4474,6 +5133,80 @@ spec:
                                   user:
                                     type: string
                                 type: object
+                              windowsOptions:
+                                properties:
+                                  gmsaCredentialSpec:
+                                    type: string
+                                  gmsaCredentialSpecName:
+                                    type: string
+                                  runAsUserName:
+                                    type: string
+                                type: object
+                            type: object
+                          startupProbe:
+                            properties:
+                              exec:
+                                properties:
+                                  command:
+                                    items:
+                                      type: string
+                                    type: array
+                                type: object
+                              failureThreshold:
+                                format: int32
+                                type: integer
+                              httpGet:
+                                properties:
+                                  host:
+                                    type: string
+                                  httpHeaders:
+                                    items:
+                                      properties:
+                                        name:
+                                          type: string
+                                        value:
+                                          type: string
+                                      required:
+                                        - name
+                                        - value
+                                      type: object
+                                    type: array
+                                  path:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                  scheme:
+                                    type: string
+                                required:
+                                  - port
+                                type: object
+                              initialDelaySeconds:
+                                format: int32
+                                type: integer
+                              periodSeconds:
+                                format: int32
+                                type: integer
+                              successThreshold:
+                                format: int32
+                                type: integer
+                              tcpSocket:
+                                properties:
+                                  host:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                required:
+                                  - port
+                                type: object
+                              timeoutSeconds:
+                                format: int32
+                                type: integer
                             type: object
                           stdin:
                             type: boolean
@@ -4510,6 +5243,8 @@ spec:
                                   type: boolean
                                 subPath:
                                   type: string
+                                subPathExpr:
+                                  type: string
                               required:
                                 - mountPath
                                 - name
@@ -4523,9 +5258,114 @@ spec:
                       type: array
                     javaOptions:
                       type: string
+                    kubernetesMaster:
+                      type: string
                     labels:
                       additionalProperties:
                         type: string
+                      type: object
+                    lifecycle:
+                      properties:
+                        postStart:
+                          properties:
+                            exec:
+                              properties:
+                                command:
+                                  items:
+                                    type: string
+                                  type: array
+                              type: object
+                            httpGet:
+                              properties:
+                                host:
+                                  type: string
+                                httpHeaders:
+                                  items:
+                                    properties:
+                                      name:
+                                        type: string
+                                      value:
+                                        type: string
+                                    required:
+                                      - name
+                                      - value
+                                    type: object
+                                  type: array
+                                path:
+                                  type: string
+                                port:
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  x-kubernetes-int-or-string: true
+                                scheme:
+                                  type: string
+                              required:
+                                - port
+                              type: object
+                            tcpSocket:
+                              properties:
+                                host:
+                                  type: string
+                                port:
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  x-kubernetes-int-or-string: true
+                              required:
+                                - port
+                              type: object
+                          type: object
+                        preStop:
+                          properties:
+                            exec:
+                              properties:
+                                command:
+                                  items:
+                                    type: string
+                                  type: array
+                              type: object
+                            httpGet:
+                              properties:
+                                host:
+                                  type: string
+                                httpHeaders:
+                                  items:
+                                    properties:
+                                      name:
+                                        type: string
+                                      value:
+                                        type: string
+                                    required:
+                                      - name
+                                      - value
+                                    type: object
+                                  type: array
+                                path:
+                                  type: string
+                                port:
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  x-kubernetes-int-or-string: true
+                                scheme:
+                                  type: string
+                              required:
+                                - port
+                              type: object
+                            tcpSocket:
+                              properties:
+                                host:
+                                  type: string
+                                port:
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  x-kubernetes-int-or-string: true
+                              required:
+                                - port
+                              type: object
+                          type: object
                       type: object
                     memory:
                       type: string
@@ -4596,9 +5436,22 @@ spec:
                               - value
                             type: object
                           type: array
+                        windowsOptions:
+                          properties:
+                            gmsaCredentialSpec:
+                              type: string
+                            gmsaCredentialSpecName:
+                              type: string
+                            runAsUserName:
+                              type: string
+                          type: object
                       type: object
                     serviceAccount:
                       type: string
+                    serviceAnnotations:
+                      additionalProperties:
+                        type: string
+                      type: object
                     sidecars:
                       items:
                         properties:
@@ -4644,7 +5497,11 @@ spec:
                                         containerName:
                                           type: string
                                         divisor:
-                                          type: string
+                                          anyOf:
+                                            - type: integer
+                                            - type: string
+                                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                          x-kubernetes-int-or-string: true
                                         resource:
                                           type: string
                                       required:
@@ -4878,6 +5735,7 @@ spec:
                                   type: string
                               required:
                                 - containerPort
+                                - protocol
                               type: object
                             type: array
                             x-kubernetes-list-map-keys:
@@ -4953,11 +5811,19 @@ spec:
                             properties:
                               limits:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                               requests:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                             type: object
                           securityContext:
@@ -5000,6 +5866,80 @@ spec:
                                   user:
                                     type: string
                                 type: object
+                              windowsOptions:
+                                properties:
+                                  gmsaCredentialSpec:
+                                    type: string
+                                  gmsaCredentialSpecName:
+                                    type: string
+                                  runAsUserName:
+                                    type: string
+                                type: object
+                            type: object
+                          startupProbe:
+                            properties:
+                              exec:
+                                properties:
+                                  command:
+                                    items:
+                                      type: string
+                                    type: array
+                                type: object
+                              failureThreshold:
+                                format: int32
+                                type: integer
+                              httpGet:
+                                properties:
+                                  host:
+                                    type: string
+                                  httpHeaders:
+                                    items:
+                                      properties:
+                                        name:
+                                          type: string
+                                        value:
+                                          type: string
+                                      required:
+                                        - name
+                                        - value
+                                      type: object
+                                    type: array
+                                  path:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                  scheme:
+                                    type: string
+                                required:
+                                  - port
+                                type: object
+                              initialDelaySeconds:
+                                format: int32
+                                type: integer
+                              periodSeconds:
+                                format: int32
+                                type: integer
+                              successThreshold:
+                                format: int32
+                                type: integer
+                              tcpSocket:
+                                properties:
+                                  host:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                required:
+                                  - port
+                                type: object
+                              timeoutSeconds:
+                                format: int32
+                                type: integer
                             type: object
                           stdin:
                             type: boolean
@@ -5036,6 +5976,8 @@ spec:
                                   type: boolean
                                 subPath:
                                   type: string
+                                subPathExpr:
+                                  type: string
                               required:
                                 - mountPath
                                 - name
@@ -5047,6 +5989,9 @@ spec:
                           - name
                         type: object
                       type: array
+                    terminationGracePeriodSeconds:
+                      format: int64
+                      type: integer
                     tolerations:
                       items:
                         properties:
@@ -5076,11 +6021,30 @@ spec:
                             type: boolean
                           subPath:
                             type: string
+                          subPathExpr:
+                            type: string
                         required:
                           - mountPath
                           - name
                         type: object
                       type: array
+                  type: object
+                dynamicAllocation:
+                  properties:
+                    enabled:
+                      type: boolean
+                    initialExecutors:
+                      format: int32
+                      type: integer
+                    maxExecutors:
+                      format: int32
+                      type: integer
+                    minExecutors:
+                      format: int32
+                      type: integer
+                    shuffleTrackingTimeout:
+                      format: int64
+                      type: integer
                   type: object
                 executor:
                   properties:
@@ -5426,7 +6390,11 @@ spec:
                                   containerName:
                                     type: string
                                   divisor:
-                                    type: string
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                    x-kubernetes-int-or-string: true
                                   resource:
                                     type: string
                                 required:
@@ -5446,6 +6414,27 @@ spec:
                             type: object
                         required:
                           - name
+                        type: object
+                      type: array
+                    envFrom:
+                      items:
+                        properties:
+                          configMapRef:
+                            properties:
+                              name:
+                                type: string
+                              optional:
+                                type: boolean
+                            type: object
+                          prefix:
+                            type: string
+                          secretRef:
+                            properties:
+                              name:
+                                type: string
+                              optional:
+                                type: boolean
+                            type: object
                         type: object
                       type: array
                     envSecretKeyRefs:
@@ -5524,7 +6513,11 @@ spec:
                                         containerName:
                                           type: string
                                         divisor:
-                                          type: string
+                                          anyOf:
+                                            - type: integer
+                                            - type: string
+                                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                          x-kubernetes-int-or-string: true
                                         resource:
                                           type: string
                                       required:
@@ -5758,6 +6751,7 @@ spec:
                                   type: string
                               required:
                                 - containerPort
+                                - protocol
                               type: object
                             type: array
                             x-kubernetes-list-map-keys:
@@ -5833,11 +6827,19 @@ spec:
                             properties:
                               limits:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                               requests:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                             type: object
                           securityContext:
@@ -5880,6 +6882,80 @@ spec:
                                   user:
                                     type: string
                                 type: object
+                              windowsOptions:
+                                properties:
+                                  gmsaCredentialSpec:
+                                    type: string
+                                  gmsaCredentialSpecName:
+                                    type: string
+                                  runAsUserName:
+                                    type: string
+                                type: object
+                            type: object
+                          startupProbe:
+                            properties:
+                              exec:
+                                properties:
+                                  command:
+                                    items:
+                                      type: string
+                                    type: array
+                                type: object
+                              failureThreshold:
+                                format: int32
+                                type: integer
+                              httpGet:
+                                properties:
+                                  host:
+                                    type: string
+                                  httpHeaders:
+                                    items:
+                                      properties:
+                                        name:
+                                          type: string
+                                        value:
+                                          type: string
+                                      required:
+                                        - name
+                                        - value
+                                      type: object
+                                    type: array
+                                  path:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                  scheme:
+                                    type: string
+                                required:
+                                  - port
+                                type: object
+                              initialDelaySeconds:
+                                format: int32
+                                type: integer
+                              periodSeconds:
+                                format: int32
+                                type: integer
+                              successThreshold:
+                                format: int32
+                                type: integer
+                              tcpSocket:
+                                properties:
+                                  host:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                required:
+                                  - port
+                                type: object
+                              timeoutSeconds:
+                                format: int32
+                                type: integer
                             type: object
                           stdin:
                             type: boolean
@@ -5915,6 +6991,8 @@ spec:
                                 readOnly:
                                   type: boolean
                                 subPath:
+                                  type: string
+                                subPathExpr:
                                   type: string
                               required:
                                 - mountPath
@@ -6003,7 +7081,18 @@ spec:
                               - value
                             type: object
                           type: array
+                        windowsOptions:
+                          properties:
+                            gmsaCredentialSpec:
+                              type: string
+                            gmsaCredentialSpecName:
+                              type: string
+                            runAsUserName:
+                              type: string
+                          type: object
                       type: object
+                    serviceAccount:
+                      type: string
                     sidecars:
                       items:
                         properties:
@@ -6049,7 +7138,11 @@ spec:
                                         containerName:
                                           type: string
                                         divisor:
-                                          type: string
+                                          anyOf:
+                                            - type: integer
+                                            - type: string
+                                          pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                          x-kubernetes-int-or-string: true
                                         resource:
                                           type: string
                                       required:
@@ -6283,6 +7376,7 @@ spec:
                                   type: string
                               required:
                                 - containerPort
+                                - protocol
                               type: object
                             type: array
                             x-kubernetes-list-map-keys:
@@ -6358,11 +7452,19 @@ spec:
                             properties:
                               limits:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                               requests:
                                 additionalProperties:
-                                  type: string
+                                  anyOf:
+                                    - type: integer
+                                    - type: string
+                                  pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                  x-kubernetes-int-or-string: true
                                 type: object
                             type: object
                           securityContext:
@@ -6405,6 +7507,80 @@ spec:
                                   user:
                                     type: string
                                 type: object
+                              windowsOptions:
+                                properties:
+                                  gmsaCredentialSpec:
+                                    type: string
+                                  gmsaCredentialSpecName:
+                                    type: string
+                                  runAsUserName:
+                                    type: string
+                                type: object
+                            type: object
+                          startupProbe:
+                            properties:
+                              exec:
+                                properties:
+                                  command:
+                                    items:
+                                      type: string
+                                    type: array
+                                type: object
+                              failureThreshold:
+                                format: int32
+                                type: integer
+                              httpGet:
+                                properties:
+                                  host:
+                                    type: string
+                                  httpHeaders:
+                                    items:
+                                      properties:
+                                        name:
+                                          type: string
+                                        value:
+                                          type: string
+                                      required:
+                                        - name
+                                        - value
+                                      type: object
+                                    type: array
+                                  path:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                  scheme:
+                                    type: string
+                                required:
+                                  - port
+                                type: object
+                              initialDelaySeconds:
+                                format: int32
+                                type: integer
+                              periodSeconds:
+                                format: int32
+                                type: integer
+                              successThreshold:
+                                format: int32
+                                type: integer
+                              tcpSocket:
+                                properties:
+                                  host:
+                                    type: string
+                                  port:
+                                    anyOf:
+                                      - type: integer
+                                      - type: string
+                                    x-kubernetes-int-or-string: true
+                                required:
+                                  - port
+                                type: object
+                              timeoutSeconds:
+                                format: int32
+                                type: integer
                             type: object
                           stdin:
                             type: boolean
@@ -6441,6 +7617,8 @@ spec:
                                   type: boolean
                                 subPath:
                                   type: string
+                                subPathExpr:
+                                  type: string
                               required:
                                 - mountPath
                                 - name
@@ -6452,6 +7630,9 @@ spec:
                           - name
                         type: object
                       type: array
+                    terminationGracePeriodSeconds:
+                      format: int64
+                      type: integer
                     tolerations:
                       items:
                         properties:
@@ -6480,6 +7661,8 @@ spec:
                           readOnly:
                             type: boolean
                           subPath:
+                            type: string
+                          subPathExpr:
                             type: string
                         required:
                           - mountPath
@@ -6522,6 +7705,8 @@ spec:
                     exposeExecutorMetrics:
                       type: boolean
                     metricsProperties:
+                      type: string
+                    metricsPropertiesFile:
                       type: string
                     prometheus:
                       properties:
@@ -6586,6 +7771,27 @@ spec:
                   type: object
                 sparkConfigMap:
                   type: string
+                sparkUIOptions:
+                  properties:
+                    ingressAnnotations:
+                      additionalProperties:
+                        type: string
+                      type: object
+                    ingressTLS:
+                      items:
+                        properties:
+                          hosts:
+                            items:
+                              type: string
+                            type: array
+                          secretName:
+                            type: string
+                        type: object
+                      type: array
+                    servicePort:
+                      format: int32
+                      type: integer
+                  type: object
                 sparkVersion:
                   type: string
                 timeToLiveSeconds:
@@ -6708,6 +7914,26 @@ spec:
                           optional:
                             type: boolean
                         type: object
+                      csi:
+                        properties:
+                          driver:
+                            type: string
+                          fsType:
+                            type: string
+                          nodePublishSecretRef:
+                            properties:
+                              name:
+                                type: string
+                            type: object
+                          readOnly:
+                            type: boolean
+                          volumeAttributes:
+                            additionalProperties:
+                              type: string
+                            type: object
+                        required:
+                          - driver
+                        type: object
                       downwardAPI:
                         properties:
                           defaultMode:
@@ -6735,7 +7961,11 @@ spec:
                                     containerName:
                                       type: string
                                     divisor:
-                                      type: string
+                                      anyOf:
+                                        - type: integer
+                                        - type: string
+                                      pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                      x-kubernetes-int-or-string: true
                                     resource:
                                       type: string
                                   required:
@@ -6751,7 +7981,11 @@ spec:
                           medium:
                             type: string
                           sizeLimit:
-                            type: string
+                            anyOf:
+                              - type: integer
+                              - type: string
+                            pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                            x-kubernetes-int-or-string: true
                         type: object
                       fc:
                         properties:
@@ -6976,7 +8210,11 @@ spec:
                                               containerName:
                                                 type: string
                                               divisor:
-                                                type: string
+                                                anyOf:
+                                                  - type: integer
+                                                  - type: string
+                                                pattern: ^(\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))(([KMGTPE]i)|[numkMGTPE]|([eE](\+|-)?(([0-9]+(\.[0-9]*)?)|(\.[0-9]+))))?$
+                                                x-kubernetes-int-or-string: true
                                               resource:
                                                 type: string
                                             required:
@@ -7033,6 +8271,8 @@ spec:
                           readOnly:
                             type: boolean
                           registry:
+                            type: string
+                          tenant:
                             type: string
                           user:
                             type: string
@@ -7205,6 +8445,6 @@ status:
   acceptedNames:
     kind: ""
     plural: ""
-  conditions: []
-  storedVersions: []
+  conditions: null
+  storedVersions: null
 {{- end }}
