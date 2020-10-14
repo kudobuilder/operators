@@ -32,8 +32,8 @@ rules:
   resources: ["sparkapplications", "scheduledsparkapplications", "sparkapplications/status", "scheduledsparkapplications/status"]
   verbs: ["*"]
   {{- if eq .Params.enableBatchScheduler "true" }}
-  # This api resources below is configured for the `volcano` batch scheduler.
-- apiGroups: ["scheduling.incubator.k8s.io", "scheduling.sigs.dev"]
+  # The API resources below allow creating resources for the Volcano batch scheduler.
+- apiGroups: ["scheduling.incubator.k8s.io", "scheduling.sigs.dev", "scheduling.volcano.sh"]
   resources: ["podgroups"]
   verbs: ["*"]
   {{- end }}
