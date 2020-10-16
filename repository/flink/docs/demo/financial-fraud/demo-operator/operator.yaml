@@ -1,6 +1,6 @@
 name: "flink-demo"
-operatorVersion: "0.1.5"
-kudoVersion: 0.10.0 # TODO: update to 0.15 once released
+operatorVersion: "0.1.6"
+kudoVersion: 0.15.0
 kubernetesVersion: 1.15.0
 maintainers:
   - name: Fabian Baier
@@ -14,6 +14,7 @@ tasks:
     spec:
       package: kafka
       operatorVersion: 1.3.1
+      appVersion: 2.5.0
       parameterFile: kafka-params.yaml
       instanceName: kafka
   - name: zookeeper
@@ -21,6 +22,7 @@ tasks:
     spec:
       package: zookeeper
       operatorVersion: 0.3.1
+      appVersion: 3.4.14
       parameterFile: zookeeper-params.yaml
       instanceName: zk
   - name: flink
@@ -28,6 +30,7 @@ tasks:
     spec:
       package: flink
       operatorVersion: 0.2.1
+      appVersion: 1.7.2
       parameterFile: flink-params.yaml
       instanceName: flink
   - name: generator
