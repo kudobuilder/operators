@@ -1,6 +1,6 @@
 apiVersion: kudo.dev/v1beta1
 name: "zookeeper"
-operatorVersion: "0.3.1"
+operatorVersion: "0.3.2"
 kudoVersion: 0.10.0
 appVersion: 3.4.14
 kubernetesVersion: 1.14.8

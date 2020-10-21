@@ -10,7 +10,7 @@ spec:
       restartPolicy: Never
       containers:
         - name: kubernetes-zookeeper
-          imagePullPolicy: Always
+          imagePullPolicy: {{ .Params.IMAGE_PULL_POLICY }}
           image: "zookeeper:3.4.14"
           env:
             - name: CONN
