@@ -1,0 +1,8 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: SST_USER
+    description: "User to perform SST as"
+    default: "root"
+  - name: SST_PASSWORD
+    description: "Password for SST user"
+    default: "admin"

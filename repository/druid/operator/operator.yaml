@@ -1,0 +1,25 @@
+apiVersion: kudo.dev/v1beta1
+appVersion: 0.20.0  
+kubernetesVersion: 0.16.0
+kudoVersion: 0.17.1
+maintainers:
+- email: symbiotek2012@gmail.com
+  name: SymbioTekGit
+name: druid
+operatorVersion: 0.1.0
+plans:
+  deploy:
+    phases:
+    - name: deploy
+      steps:
+      - name: bootstrap_config
+        tasks:
+        - bootstrap_config
+      strategy: serial
+    strategy: serial
+tasks:
+- kind: Apply
+  name: bootstrap_config
+  spec:
+    resources:
+      - bootstrap_config.yaml

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-bootstrap
+  namespace: {{ .Namespace }}
+data:
+  galera.cnf: |
+    [galera]
+    wsrep_on = ON
+    wsrep_provider = /usr/lib/galera/libgalera_smm.so
+    wsrep_sst_method = mariabackup
+    wsrep_cluster_address = gcomm://
+    wsrep_sst_auth = "{{ .Params.SST_USER }}:{{ .Params.SST_PASSWORD }}"
+    binlog_format = ROW
