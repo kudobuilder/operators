@@ -389,6 +389,10 @@ parameters:
   - name: CREDENTIALS_UPDATE_INTERVAL_IN_MS
     description: "After this interval, cache entries become eligible for refresh. The next time the cache is accessed, the system schedules an asynchronous reload of the cache. Until this cache reload is complete, the cache returns the old values. If credentials_validity_in_ms is nonzero, this property must also be nonzero."
     default: ""
+  
+  - name: PERMISSIONS_CACHE_MAX_ENTRIES
+    description: "The maximum number of entries that are held by the standard authentication cache and row-level access control (RLAC) cache."
+    default: "1000"
 
   - name: PERMISSIONS_VALIDITY_IN_MS
     description: "How many milliseconds permissions in cache remain valid. Fetching permissions can be resource intensive. To disable the cache, set this to 0."

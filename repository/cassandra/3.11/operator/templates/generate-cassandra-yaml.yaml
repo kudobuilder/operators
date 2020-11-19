@@ -240,6 +240,15 @@ data:
     permissions_update_interval_in_ms: {{ .Params.PERMISSIONS_UPDATE_INTERVAL_IN_MS }}
     {{ end }}
 
+    # The maximum number of entries that are held by the standard authentication
+    # cache and row-level access control (RLAC) cache. With the default value of 1000,
+    # the RLAC permissions cache can have up to 1000 entries in it, and the standard
+    # authentication cache can have up to 1000 entries. This single option applies to
+    # both caches.
+    {{ if .Params.PERMISSIONS_CACHE_MAX_ENTRIES }}
+    permissions_cache_max_entries: {{ .Params.PERMISSIONS_CACHE_MAX_ENTRIES }}
+    {{ end }}
+
     # Validity period for credentials cache. This cache is tightly coupled to
     # the provided PasswordAuthenticator implementation of IAuthenticator. If
     # another IAuthenticator implementation is configured, this cache will not
