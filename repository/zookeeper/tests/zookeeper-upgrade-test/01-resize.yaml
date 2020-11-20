@@ -4,7 +4,7 @@ metadata:
   name: zk
 spec:
   operatorVersion:
-    name: zookeeper-3.4.14-0.3.1
+    name: zookeeper-3.6.2-0.3.3
     namespace: default
     kind: OperatorVersion
   name: "zk"
