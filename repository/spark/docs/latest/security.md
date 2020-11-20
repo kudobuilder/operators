@@ -37,7 +37,7 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: "mesosphere/spark:spark-2.4.5-hadoop-2.9-k8s"
+  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s-rc3"
   imagePullPolicy: Always
   mainClass: MockTaskRunner
   mainApplicationFile: "https://infinity-artifacts.s3.amazonaws.com/scale-tests/dcos-spark-scala-tests-assembly-2.4.0-20190325.jar"
@@ -152,7 +152,7 @@ metadata:
   namespace: <namespace>
 spec:
   ...
-  image: "mesosphere/spark:spark-2.4.5-hadoop-2.9-k8s"
+  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s-rc3"
   sparkConf:
     "spark.ssl.enabled":    "true",
     "spark.ssl.keyStore":   "/tmp/spark/ssl/keystore.jks",
