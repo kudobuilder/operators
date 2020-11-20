@@ -4,7 +4,7 @@ The KUDO Zookeeper operator creates, configures and manages [Apache Zookeeper](h
 
 ## Getting started
 
-The latest stable version of Zookeeper operator is `0.3.2`
+The latest stable version of Zookeeper operator is `0.3.3`
 
 ## Version Chart
 
