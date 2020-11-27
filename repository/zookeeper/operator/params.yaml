@@ -37,6 +37,9 @@ parameters:
     description: |
       The port on which the Zookeeper process will perform leader election. The default is 3888.
     default: "3888"
+  - name: IMAGE_VERSION
+    description: "Zookeeper container image"
+    default: "zookeeper:3.6.2"
   - name: IMAGE_PULL_POLICY
     description: "Zookeeper container image pull policy"
     default: "Always"
