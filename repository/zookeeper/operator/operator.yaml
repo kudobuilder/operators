@@ -1,8 +1,8 @@
 apiVersion: kudo.dev/v1beta1
 name: "zookeeper"
-operatorVersion: "0.3.2"
+operatorVersion: "0.3.3"
 kudoVersion: 0.10.0
-appVersion: 3.4.14
+appVersion: 3.6.2
 kubernetesVersion: 1.14.8
 maintainers:
   - name: Alena Varkockova

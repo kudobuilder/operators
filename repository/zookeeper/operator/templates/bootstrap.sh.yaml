@@ -192,6 +192,7 @@ data:
     maxSessionTimeout=$MAX_SESSION_TIMEOUT
     autopurge.snapRetainCount=$SNAP_RETAIN_COUNT
     autopurge.purgeInteval=$PURGE_INTERVAL
+    4lw.commands.whitelist=srvr, ruok
 
     EOF
         if [ $SERVERS -gt 1 ]; then
