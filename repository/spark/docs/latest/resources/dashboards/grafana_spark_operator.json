@@ -93,7 +93,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_submit_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_submit_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -176,7 +176,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_failure_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_failure_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -430,7 +430,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_running_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_running_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -515,7 +515,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_executor_failure_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_executor_failure_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -598,7 +598,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_success_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_success_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -681,7 +681,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_executor_running_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_executor_running_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -763,7 +763,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_app_executor_success_count{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_app_executor_success_count{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -861,7 +861,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_application_controller_adds{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_application_controller_adds{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -923,7 +923,7 @@
       "pluginVersion": "6.1.6",
       "targets": [
         {
-          "expr": "spark_application_controller_depth{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_application_controller_depth{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -1172,7 +1172,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_application_controller_retries{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_application_controller_retries{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -1254,7 +1254,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_application_controller_unfinished_work_seconds{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_application_controller_unfinished_work_seconds{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -1336,7 +1336,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "spark_application_controller_longest_running_processor_microseconds{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "spark_application_controller_longest_running_processor_microseconds{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -1434,7 +1434,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "scheduled_spark_application_controller_adds{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "scheduled_spark_application_controller_adds{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "{{pod}}",
@@ -1496,7 +1496,7 @@
       "pluginVersion": "6.1.6",
       "targets": [
         {
-          "expr": "scheduled_spark_application_controller_depth{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "scheduled_spark_application_controller_depth{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -1745,7 +1745,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "scheduled_spark_application_controller_retries{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "scheduled_spark_application_controller_retries{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -1827,7 +1827,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "scheduled_spark_application_controller_unfinished_work_seconds{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "scheduled_spark_application_controller_unfinished_work_seconds{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "refId": "A"
@@ -1909,7 +1909,7 @@
       "tableColumn": "",
       "targets": [
         {
-          "expr": "scheduled_spark_application_controller_longest_running_processor_microseconds{pod=\"$Spark_Operator_Instance\"}",
+          "expr": "scheduled_spark_application_controller_longest_running_processor_microseconds{pod=\"$Spark_Operator_Instance\", endpoint=\"$Spark_Metrics_Endpoint\"}",
           "format": "time_series",
           "intervalFactor": 1,
           "legendFormat": "",
@@ -1962,6 +1962,32 @@
         "tagsQuery": "",
         "type": "query",
         "useTags": false
+      },
+      {
+        "allValue": null,
+        "current": {
+          "selected": false,
+          "text": "metrics",
+          "value": "metrics"
+        },
+        "datasource": "Prometheus",
+        "definition": "label_values(spark_app_submit_count, endpoint)",
+        "hide": 0,
+        "includeAll": false,
+        "label": "Spark Metrics Endpoint",
+        "multi": false,
+        "name": "Spark_Metrics_Endpoint",
+        "options": [],
+        "query": "label_values(spark_app_submit_count, endpoint)",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 0,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
@@ -1997,5 +2023,5 @@
   "timezone": "",
   "title": "Spark Operator",
   "uid": "AjD9P4hWz",
-  "version": 66
+  "version": 67
 }
