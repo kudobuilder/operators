@@ -1,9 +1,9 @@
 # Release Notes
 
 ## 3.0.0-1.1.0 (latest)
-* Changed `sparkJobNamespace` parameter propagation logic, making the operator manage Spark jobs across all namespaces by default
-* Spark Operator based on version `v1beta2-1.1.1`
-* KUDO version updated to `0.13.0`
+* Upgraded to Spark 3.0.0 with Scala 2.12 and Hadoop 2.9.2 support
+* Spark Operator based on version `v1beta2-1.2.2`
+* KUDO version updated to `0.15.0`
 
 ## 2.4.5-1.0.1
 * Changed `sparkJobNamespace` parameter propagation logic, making the operator manage Spark jobs across all namespaces by default
