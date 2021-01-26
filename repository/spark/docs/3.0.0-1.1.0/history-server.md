@@ -4,7 +4,7 @@
 
 Required software:
 * K8s cluster
-* [KUDO CLI Plugin](https://kudo.dev/docs/#install-kudo-cli) 0.10.1 or higher
+* [KUDO CLI Plugin](https://kudo.dev/docs/#install-kudo-cli) 0.15.0 or higher
 
 ## Installing Spark Operator with History Server Enabled
 
