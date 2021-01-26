@@ -15,7 +15,7 @@ Docker images used by KUDO Spark and image pull policy can be specified by provi
 ```bash
 kubectl kudo install spark --instance=spark-operator \
         -p operatorImageName=mesosphere/kudo-spark-operator \
-        -p operatorVersion=2.4.5-1.0.1 \
+        -p operatorVersion=3.0.0-1.1.0 \
         -p imagePullPolicy=Always
 ```
 

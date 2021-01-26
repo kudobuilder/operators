@@ -10,7 +10,7 @@ when monitoring is enabled.
 #### Exporting Spark Operator and Spark Application metrics to Prometheus
 
 ##### Prerequisites
-* KUDO v0.10.1 or later
+* KUDO v0.15.0 or later
 * The `prometheus-operator`.
 If you don't already have the `prometheus-operator` installed on your Kubernetes cluster, you can do so by following
 the [quick start guide](https://github.com/coreos/prometheus-operator#quickstart).
@@ -28,7 +28,7 @@ Full list of metrics configuration parameters and defaults is available in KUDO 
 
 ##### Running Spark Application with metrics enabled
 1) Composing your Spark Application yaml:
-   - use the following Spark image which includes the `JMXPrometheus` exporter jar: `mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s-rc3`
+   - use the following Spark image which includes the `JMXPrometheus` exporter jar: `mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s`
    - enable Driver and Executors metrics reporting by adding the following configuration into `SparkApplication` `spec` section:
      ```yaml
        monitoring:

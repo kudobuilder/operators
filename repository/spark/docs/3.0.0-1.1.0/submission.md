@@ -24,7 +24,7 @@ spec:
   mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.12-3.0.0.jar"
   sparkConf:
     "spark.ui.port": "4041"
-  sparkVersion: "2.4.5"
+  sparkVersion: "3.0.0"
   restartPolicy:
     type: Never
   driver:

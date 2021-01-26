@@ -37,7 +37,7 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s-rc3"
+  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s"
   imagePullPolicy: Always
   mainClass: MockTaskRunner
   mainApplicationFile: "https://kudo-spark.s3-us-west-2.amazonaws.com/spark-scala-tests-3.0.0-20200819.jar"
@@ -51,7 +51,7 @@ spec:
     "spark.network.crypto.enabled": "true"
     "spark.kubernetes.driver.secretKeyRef.SPARK_AUTHENTICATE_SECRET": "spark-secret:secret"
     "spark.kubernetes.executor.secretKeyRef.SPARK_AUTHENTICATE_SECRET": "spark-secret:secret"
-  sparkVersion: 2.4.5
+  sparkVersion: 3.0.0
   sparkConfigMap: spark-conf-map
   restartPolicy:
     type: Never
@@ -59,14 +59,14 @@ spec:
     cores: 1
     memory: "512m"
     labels:
-      version: 2.4.5
+      version: 3.0.0
     serviceAccount: <service-account>
   executor:
     cores: 1
     instances: 1
     memory: "512m"
     labels:
-      version: 2.4.5
+      version: 3.0.0
     javaOptions: "-Dlog4j.configuration=file:/etc/spark/conf/log4j.properties"
 ```
 
@@ -152,7 +152,7 @@ metadata:
   namespace: <namespace>
 spec:
   ...
-  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s-rc3"
+  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s"
   sparkConf:
     "spark.ssl.enabled":    "true",
     "spark.ssl.keyStore":   "/tmp/spark/ssl/keystore.jks",

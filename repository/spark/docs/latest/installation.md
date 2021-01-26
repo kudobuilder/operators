@@ -33,8 +33,8 @@ kubectl kudo plan status --instance spark-instance --namespace spark
 
 Plan(s) for "spark-instance" in namespace "spark":
 .
-└── spark-instance (Operator-Version: "spark-1.0.1" Active-Plan: "deploy")
-    └── Plan deploy (serial strategy) [COMPLETE], last updated 2020-07-10 12:21:26
+└── spark-instance (Operator-Version: "spark-1.1.0" Active-Plan: "deploy")
+    └── Plan deploy (serial strategy) [COMPLETE], last updated 2021-01-25 12:24:26
         ├── Phase preconditions (serial strategy) [COMPLETE]
         │   ├── Step crds [COMPLETE]
         │   ├── Step service-account [COMPLETE]

@@ -18,27 +18,27 @@ metadata:
 spec:
   type: Scala
   mode: cluster
-  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s-rc3"
+  image: "mesosphere/spark:spark-3.0.0-hadoop-2.9-k8s"
   imagePullPolicy: Always
   mainClass: org.apache.spark.examples.SparkPi
-  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.11-2.4.5.jar"
+  mainApplicationFile: "local:///opt/spark/examples/jars/spark-examples_2.12-3.0.0.jar"
   sparkConf:
     "spark.ui.port": "4041"
-  sparkVersion: "2.4.5"
+  sparkVersion: "3.0.0"
   restartPolicy:
     type: Never
   driver:
     cores: 1
     memory: "512m"
     labels:
-      version: 2.4.5
+      version: 3.0.0
     serviceAccount: spark-spark-service-account
   executor:
     cores: 1
     instances: 2
     memory: "512m"
     labels:
-      version: 2.4.5
+      version: 3.0.0
 ```
 
 All the Spark application configuration is placed under `spec` section. Here you can specify Spark related configuration properties, such as number of executors, number of cores for drivers/executors, amount of memory, etc. There is also a `sparkConf` section, where you can place configuration parameters in the form of key-value pairs. In this example, we override the default `spark.ui.port` with a custom value.
