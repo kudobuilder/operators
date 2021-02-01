@@ -1,4 +1,0 @@
-apiVersion: kudo.dev/v1beta1
-parameters:
-  - name: NODE_COUNT
-    default: "3"
