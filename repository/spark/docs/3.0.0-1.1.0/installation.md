@@ -70,7 +70,7 @@ the `sparkJobNamespace` parameter to corresponding operator namespace.
 #### Uninstalling the Spark Operator
 The KUDO Spark Operator installation includes Custom Resource Definitions (CRDs) for Spark Applications and the KUDO Spark
 Operator instances. While Operator instance can be used on a per-namespace basis, the Custom Resource Definitions
-are a cluster-global resource which requires a manual cleanup when all KUDO Spark Operator instances are uninstalled.
+are a cluster-scoped resource which requires a manual cleanup when all KUDO Spark Operator instances are uninstalled.
 
 To completely remove KUDO Spark Operator from a Kubernetes cluster:
 1. Wait for the running jobs to complete or terminate them
