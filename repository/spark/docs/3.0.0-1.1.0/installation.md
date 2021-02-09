@@ -24,7 +24,7 @@ This will install a Spark operator instance with the name `spark-instance` to th
 You can also specify a different instance name using `--instance` parameter:
 
 ```
-kubectl kudo install spark --instance spark-operator --namespace spark
+kubectl kudo install spark --instance spark-instance --namespace spark
 ```
 
 Verify if the deploy plan for `--instance spark-instance` is complete:
@@ -33,8 +33,8 @@ kubectl kudo plan status --instance spark-instance --namespace spark
 
 Plan(s) for "spark-instance" in namespace "spark":
 .
-└── spark-instance (Operator-Version: "spark-1.1.0" Active-Plan: "deploy")
-    └── Plan deploy (serial strategy) [COMPLETE], last updated 2021-01-25 12:24:26
+└── spark-instance (Operator-Version: "spark-3.0.0-1.1.0" Active-Plan: "deploy")
+    └── Plan deploy (serial strategy) [COMPLETE], last updated 2021-02-09 10:58:24
         ├── Phase preconditions (serial strategy) [COMPLETE]
         │   ├── Step crds [COMPLETE]
         │   ├── Step service-account [COMPLETE]
@@ -66,3 +66,23 @@ kubectl kudo install spark --instance=spark-2 --namespace spark-operator-2 -p sp
 The above commands will install two Spark Operators in two different namespaces. Spark Applications submitted to a specific
 namespace will be handled by the Operator installed in the same namespace. This is achieved by explicitly setting 
 the `sparkJobNamespace` parameter to corresponding operator namespace.
+
+#### Uninstalling the Spark Operator
+The KUDO Spark Operator installation includes Custom Resource Definitions (CRDs) for Spark Applications and the KUDO Spark
+Operator instances. While Operator instance can be used on a per-namespace basis, the Custom Resource Definitions
+are a cluster-scoped resource which requires a manual cleanup when all KUDO Spark Operator instances are uninstalled.
+
+To completely remove KUDO Spark Operator from a Kubernetes cluster:
+1. Wait for the running jobs to complete or terminate them
+  ```
+  kubectl delete sparkapplications --all
+  kubectl delete scheduledsparkapplications --all
+  ```
+1. Uninstall each KUDO Spark Operator instance:
+  ```
+  kubectl kudo uninstall --instance spark-instance --namespace spark
+  ```
+1. Remove Spark Applications CRDs:
+  ```
+  kubectl delete crds sparkapplications.sparkoperator.k8s.io scheduledsparkapplications.sparkoperator.k8s.io
+  ```
