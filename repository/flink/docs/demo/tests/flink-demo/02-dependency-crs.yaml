@@ -1,0 +1,9 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+commands:
+  - command: kubectl kudo install zookeeper --operator-version=0.3.0 --skip-instance
+    namespaced: true
+  - command: kubectl kudo install kafka --operator-version=1.2.0 --skip-instance
+    namespaced: true
+  - command: kubectl kudo install flink --operator-version=0.2.1 --skip-instance
+    namespaced: true

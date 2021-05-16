@@ -1,0 +1,15 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestAssert
+timeout: 600
+---
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: flink  
+status:
+  planStatus:
+    deploy:
+      status: COMPLETE
+
+#  kubectl kudo plan status --instance flink
+#  this object does not exist until created by demo deploy plan

@@ -1,0 +1,5 @@
+apiVersion: kuttl.dev/v1beta1
+kind: TestStep
+commands:
+  - command: kubectl kudo install ../../financial-fraud/demo-operator --instance flink-demo
+    namespaced: true

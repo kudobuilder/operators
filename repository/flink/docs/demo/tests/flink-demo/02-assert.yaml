@@ -1,0 +1,27 @@
+apiVersion: kudo.dev/v1beta1
+kind: OperatorVersion
+metadata:
+  name: flink-0.2.1
+spec:
+  appVersion: 1.7.2
+  operator:
+    kind: Operator
+    name: flink
+---
+apiVersion: kudo.dev/v1beta1
+kind: OperatorVersion
+metadata:
+  name: kafka-1.2.0
+spec:
+  appVersion: 2.4.0
+  operator:
+    kind: Operator
+---
+apiVersion: kudo.dev/v1beta1
+kind: OperatorVersion
+metadata:
+  name: zookeeper-0.3.0
+spec:
+  appVersion: 3.4.14
+  operator:
+    kind: Operator
