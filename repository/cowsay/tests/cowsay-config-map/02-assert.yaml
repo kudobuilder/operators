@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  annotations:
+    kudo.dev/phase: main
+    kudo.dev/plan: deploy
+    kudo.dev/step: genfiles
+  labels:
+    heritage: kudo
+    kudo.dev/instance: cowsay-instance
+    kudo.dev/operator: cowsay
+  name: cowsayinstance.deploy.main.genfiles.genwww.indexhtml
+  namespace: default
