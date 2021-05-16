@@ -1,0 +1,26 @@
+apiVersion: kudo.dev/v1beta1
+name: mongodb
+version: 0.0.2
+kubernetesVersion: 1.13.0
+appVersion: 3.6.15
+url: https://www.mongodb.com
+maintainers:
+  - name: xiao wei
+    email: xiaow10@chinaunicom.cn
+tasks:
+  - name: deploy
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+        - statefulset.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - deploy

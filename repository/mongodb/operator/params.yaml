@@ -1,0 +1,10 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: InitRootUser
+    description: "Super User name of init user which created in the admin authentication database, which is a 'superuser' role"
+    default: "root"
+    displayName: "Mongo Init Root Username"
+  - name: InitRootPasswrd
+    description: "password"
+    default: "secret"
+    displayName: "Mongo Init Root Password"
