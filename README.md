@@ -38,7 +38,7 @@ Elasticsearch is a search engine based on the Lucene library. It provides a dist
 
 ## [First Operator](https://github.com/kudobuilder/operators/tree/master/repository/first-operator)
 
-This is an example operator as described in the [KUDO documentation](https://kudo.dev/docs/developing-operators.html).
+This is an example operator as described in the [KUDO documentation](https://kudo.dev/docs/developing-operators/getting-started.html).
 
 ## [Apache Flink](https://github.com/kudobuilder/operators/tree/master/repository/flink)
 
