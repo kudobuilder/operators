@@ -14,7 +14,11 @@ metadata:
     app.kubernetes.io/instance: {{ .Name }}
     app.kubernetes.io/version: {{ .Params.operatorVersion }}
 spec:
+  {{- if eq .Params.enableLeaderElection "true" }}
+  replicas: {{ .Params.replicas }}
+  {{- else }}
   replicas: 1
+  {{- end }}
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ .OperatorName }}
@@ -63,11 +67,7 @@ spec:
         {{ end }}
         args:
         - -v={{ .Params.logLevel }}
-        {{- if (ne .Params.sparkJobNamespace "") }}
         - -namespace={{ .Params.sparkJobNamespace }}
-        {{- else }}
-        - -namespace={{ .Namespace }}
-        {{- end }}
         - -ingress-url-format={{ .Params.ingressUrlFormat }}
         - -controller-threads={{ .Params.controllerThreads }}
         - -resync-interval={{ .Params.resyncIntervalSeconds }}
@@ -85,5 +85,17 @@ spec:
         - -webhook-svc-namespace={{ .Namespace }}
         - -webhook-port={{ .Params.webhookPort }}
         - -webhook-svc-name={{ .Name }}-webhook
-        - -webhook-config-name={{ .OperatorName }}-webhook-config
+        - -webhook-config-name={{ .Namespace }}-{{ .Name }}-webhook-config
+        {{- end }}
+        {{- if eq .Params.enableLeaderElection "true" }}
+        - -leader-election=true
+        {{- if eq .Params.leaderElectionLockNamespace "" }}
+        - -leader-election-lock-namespace={{ .Namespace }}
+        {{- else }}
+        - -leader-election-lock-namespace={{ .Params.leaderElectionLockNamespace }}
+        {{- end }}
+        - -leader-election-lock-name={{ .Params.leaderElectionLockName }}
+        - -leader-election-lease-duration={{ .Params.leaderElectionLeaseDuration }}
+        - -leader-election-renew-deadline={{ .Params.leaderElectionRenewDeadline }}
+        - -leader-election-retry-period={{ .Params.leaderElectionRetryPeriod }}
         {{- end }}

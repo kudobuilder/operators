@@ -1,0 +1,3 @@
+high_availability: ZOOKEEPER
+zookeeper_url: "zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181"
+zookeeper_path: "/flink-demo-flink"

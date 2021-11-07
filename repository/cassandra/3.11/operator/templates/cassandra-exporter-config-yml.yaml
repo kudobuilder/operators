@@ -4,9 +4,31 @@ metadata:
   name: {{ .Name }}-cassandra-exporter-config-yml
   namespace: {{ .Namespace }}
 data:
+  setup.sh: |
+      cp /cassandra-exporter-config/config.yml /etc/cassandra_exporter/config.yml;
+      {{ if .Params.PROMETHEUS_EXPORTER_CUSTOM_CONFIG_CM_NAME }}
+      PROMETHEUS_CUSTOM_CONFIGURATION_FILE=$(ls -d /custom-configuration/* | head -n 1);
+      cp $PROMETHEUS_CUSTOM_CONFIGURATION_FILE /tmp/custom-configuration;
+      echo "Appending custom configuration file to the config.yml..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1;
+      skip_properties=("host" "listenAddress" "listenPort" "user" "password" "ssl");
+      for property in "${skip_properties[@]}"; do
+        if grep -q "${property}:" /tmp/custom-configuration; then
+          echo "WARN: cannot override '$property' using custom properties configmap.";
+          echo "Removing property '$property'";
+          sed -i "/^${property}:/d" /tmp/custom-configuration;
+        fi;
+      done;
+      CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration);
+      echo ${CUSTOM_CONFIGURATION};
+      printf "\n${CUSTOM_CONFIGURATION}" >> /etc/cassandra_exporter/config.yml;
+      {{ end }}
   config.yml: |
     host: localhost:{{ .Params.JMX_PORT }}
+    {{ if ne $.Params.JMX_LOCAL_ONLY "true" }}
+    ssl: True
+    {{ else }}
     ssl: False
+    {{ end }}
     user:
     password:
     listenAddress: 0.0.0.0

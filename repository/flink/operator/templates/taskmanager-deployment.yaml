@@ -1,10 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: taskmanager
+  name: {{ .Name }}-taskmanager
   namespace: {{ .Namespace }}
 spec:
   replicas: {{ .Params.flink_taskmanager_replicas }}
+  selector:
+    matchLabels:
+      app: flink
+      component: {{ .Name }}-taskmanager
   template:
     metadata:
       labels:
@@ -27,7 +31,7 @@ spec:
             - "-Dtaskmanager.data.port=6121"
             - "-Dquery.server.port=6125"
             - "-Dblob.server.port=6124"
-            - "-Dlog.file=/logs/jobmanager.log"
+            - "-Dlog.file=/logs/taskmanager.log"
           ports:
             - containerPort: 6121
               name: data

@@ -1,0 +1,16 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: zk
+spec:
+  operatorVersion:
+    name: zookeeper-3.4.14-0.3.1
+    namespace: default
+    kind: OperatorVersion
+  name: "zk"
+  parameters:
+    NODE_COUNT: "1"
+    MEMORY: "256Mi"
+    CPUS: "0.3"
+    NE_MEM: "10Mi"
+    NE_CPUS: "50m"

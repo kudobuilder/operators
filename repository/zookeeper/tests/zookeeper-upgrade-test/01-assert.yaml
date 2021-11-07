@@ -3,8 +3,9 @@ kind: Instance
 metadata:
   name: zk
 status:
-  aggregatedStatus:
-    status: COMPLETE
+  planStatus:
+    deploy:
+      status: COMPLETE
 ---
 apiVersion: apps/v1
 kind: StatefulSet
@@ -20,4 +21,4 @@ spec:
            memory: "256Mi"
            cpu: "200m"
 status:
-  readyReplicas: 3
+  readyReplicas: 1

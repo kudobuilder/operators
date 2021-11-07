@@ -4,10 +4,11 @@ metadata:
   name: zk
 spec:
   operatorVersion:
-    name: zookeeper-0.2.0
+    name: zookeeper-3.6.2-0.3.3
     namespace: default
     kind: OperatorVersion
   name: "zk"
   parameters:
+    NODE_COUNT: "1"
     MEMORY: "256Mi"
     CPUS: "0.3"

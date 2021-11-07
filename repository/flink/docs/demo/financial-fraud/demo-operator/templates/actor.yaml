@@ -4,6 +4,9 @@ metadata:
   name: actor
 spec:
   replicas: 1
+  selector:
+    matchLabels:
+      actor: {{ .Name }}
   template:
     metadata:
       name: flink-demo-actor
@@ -15,4 +18,4 @@ spec:
           image: dcoslabs/flink-demo-actor:0.3
           command: ["/fraudDisplay-linux"]
           imagePullPolicy: Always
-          args: ["--broker", "{{ .Name }}-kafka-kafka-0.{{ .Name }}-kafka-svc:9093"]
+          args: ["--broker", "kafka-kafka-0.kafka-svc:9093"]

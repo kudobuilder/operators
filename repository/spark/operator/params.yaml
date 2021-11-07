@@ -34,7 +34,7 @@ parameters:
 
   - name: operatorVersion
     description: "Operator Docker image version (tag)"
-    default: latest
+    default: 3.0.0-1.1.0
     displayName: "Operator Docker image version (tag)"
 
   - name: imagePullPolicy
@@ -45,13 +45,23 @@ parameters:
   ## Metrics
   - name: enableMetrics
     description: "Enable metrics"
-    default: true
+    default: false
     displayName: "Enable metrics"
 
   - name: operatorMetricsPort
     description: "Spark Operator Metrics port"
     default: 10254
     displayName: "Spark Operator Metrics port"
+
+  - name: appMetricsPort
+    desription: "The port the JMX exporter Java agent binds to for driver/executor pods"
+    default: 8090
+    displayName: "Spark Application Metrics port"
+
+  - name: metricsPollingInterval
+    description: "Interval at which metrics should be scraped"
+    default: "5s"
+    displayName: "Metrics polling interval"
 
   - name: metricsEndpoint
     description: "Metrics endpoint"
@@ -104,9 +114,19 @@ parameters:
     default: ""
     displayName: "Spark History Server Persistent Volume Claim Name"
 
+  - name: historyServerSparkConfSecret
+    description: "Name of a Secret with Spark config file. The secret should be in the same namespace as the Operator."
+    default: ""
+    displayName: "Name of a Secret with Spark History Server configuration file"
+
+  - name: delegationTokenSecret
+    description: "Name of a Secret with Hadoop Delegation Token. The secret should be in the same namespace as the Operator."
+    default: ""
+    displayName: "Name of a Secret with Hadoop Delegation Token"
+
   ## Miscellaneous
   - name: sparkJobNamespace
-    description: "Namespace for Spark Applications. Defaults to Operator namespace"
+    description: "Namespace for Spark Applications. By default, Spark Operator will monitor Spark Application across all the namespaces."
     default: ""
     displayName: "Namespace for Spark Applications"
 
@@ -148,3 +168,38 @@ parameters:
     description: "Install sparkapplications.sparkoperator.k8s.io and scheduledsparkapplications.sparkoperator.k8s.io"
     default: true
     displayName: "Install Spark Operator CRDs"
+
+  - name: replicas
+    description: "The number of replicas of the operator Deployment"
+    default: 1
+    displayName: "Number of replicas"
+
+  - name: enableLeaderElection
+    description: "Whether to enable leader election when the operator Deployment has more than one replica, i.e., when replicas is greater than 1."
+    default: false
+    displayName: "Enable leader election"
+
+  - name: leaderElectionLockName
+    description: "Name of the lock resource (ConfigMap) used for leader election"
+    default: spark-operator-lock
+    displayName: "Name of the lock resource"
+
+  - name: leaderElectionLockNamespace
+    description: "Namespace of the lock resource used for leader election. Defaults to Operator namespace"
+    default: ""
+    displayName: "Lock resource namespace"
+
+  - name: leaderElectionLeaseDuration
+    description: "Leader election lease duration."
+    default: 15s
+    displayName: "Leader election lease duration"
+
+  - name: leaderElectionRenewDeadline
+    description: "Leader election renew deadline."
+    default: 14s
+    displayName: "Leader election renew deadline"
+
+  - name: leaderElectionRetryPeriod
+    description: "Leader election retry period."
+    default: 4s
+    displayName: "Leader election retry period"

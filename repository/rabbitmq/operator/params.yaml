@@ -1,0 +1,28 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: NODE_COUNT
+    description: "Number of rabbitmq servers."
+    default: "3"
+    displayName: "Node Count"
+  - name: AMQP_PORT
+    description: "AMQP port"
+    default: "5672"
+  - name: MANAGEMENT_PORT
+    description: "Management port"
+    default: "15672"
+  - name: MEMORY
+    description: Amount of memory to provide to a RabbitMQ pod
+    default: "512Mi"
+  - name: MEM_LIMIT
+    description: "Memory (limit) for the RabbitMQ pod. spec.containers[].resources.limits.memory"
+    default: "1024Mi"
+  - name: CPUS
+    description: Amount of cpu to provide to a RabbitMQ pod
+    default: "250m"
+  - name: CPUS_LIMIT
+    description: "CPUs (limit) for the RabbitMQ pod. spec.containers[].resources.limits.cpu"
+    default: "1000m"
+  - name: DISK_SIZE
+    description: "Disk size for the RabbitMQ servers"
+    default: "1Gi"
+    trigger: "not-allowed"

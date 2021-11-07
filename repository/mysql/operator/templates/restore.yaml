@@ -1,8 +1,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: default
   name: {{ .PlanName }}-job
+  namespace: {{ .Namespace }}
 spec:
   template:
     metadata:
@@ -16,7 +16,7 @@ spec:
         command:
         - /bin/sh
         - -c
-        - "mysql -u root -h {{ .Name }}-mysql -p{{ .Params.PASSWORD }} --database=kudo < /backups/{{ .Params.BACKUP_FILE }}"
+        - "mysql -u root -h {{ .Name }}-svc -p{{ .Params.PASSWORD }} --database=kudo < /backups/{{ .Params.RESTORE_FILE }}"
         volumeMounts:
         - name: backup-pv
           mountPath: /backups

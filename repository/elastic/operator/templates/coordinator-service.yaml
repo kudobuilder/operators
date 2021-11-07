@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  name: coordinator-hs
+  name: {{ .Name }}-coordinator-hs
   namespace: {{ .Namespace }}
 spec:
   selector:

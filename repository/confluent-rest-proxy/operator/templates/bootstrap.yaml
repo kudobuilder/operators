@@ -1,0 +1,80 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-bootstrap
+  namespace: {{ .Namespace }}
+data:
+  bootstrap.sh: |
+    #!/usr/bin/env bash
+
+    {{ if .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+    CUSTOM_CONFIGURATION_FILE=$(ls -d /custom-configuration/* | head -n 1)
+    cp $CUSTOM_CONFIGURATION_FILE /tmp/custom-configuration
+    echo "Appending custom configuration file $CUSTOM_CONFIGURATION_FILE to the kafka-rest.properties..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1
+    RP_CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration)
+    echo ${RP_CUSTOM_CONFIGURATION}
+    cat >> /etc/confluent/docker/kafka-rest.properties.template <<EOF
+    ${RP_CUSTOM_CONFIGURATION}
+    EOF
+    {{ end }}
+
+    {{ if or (eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true") (eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true") }}
+    
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    # This is required as confluent uses admin.properties only when this is set
+    export KAFKA_REST_CLIENT_SECURITY_PROTOCOL=SSL
+    /etc/tls/bin/enable-tls.sh {{ .Params.SSL_AUTHENTICATION_KAFKA_CLIENT_NAME }} "server"
+
+    # Properties for transport encryption between kafka-ready and kafka
+    cat >> /etc/confluent/docker/admin.properties.template <<EOF
+    security.protocol=SSL
+    ssl.cipher.suites={{.Params.TRANSPORT_ENCRYPTION_CIPHERS}}
+    ssl.keystore.location=/tmp/confluent-rest-proxy/tls/confluent-rest-proxy.server.keystore.jks
+    ssl.keystore.password=changeit
+    ssl.truststore.password=changeit
+    ssl.truststore.location=/tmp/confluent-rest-proxy/tls/confluent-rest-proxy.server.truststore.jks
+    EOF
+
+    # Properties for transport encryption between rest-proxy and kafka
+    cat >> /etc/confluent/docker/kafka-rest.properties.template <<EOF
+    security.protocol=SSL
+    client.ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    client.ssl.keystore.location=/tmp/confluent-rest-proxy/tls/confluent-rest-proxy.server.keystore.jks
+    client.ssl.keystore.password=changeit
+    client.ssl.truststore.location=/tmp/confluent-rest-proxy/tls/confluent-rest-proxy.server.truststore.jks
+    client.ssl.truststore.password=changeit
+    EOF
+    {{ end }}
+
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+    /etc/tls/bin/enable-tls.sh "$(hostname -f)" "client"
+    # Properties for transport encryption between rest-proxy and rest-proxy clients
+    cat >> /etc/confluent/docker/kafka-rest.properties.template <<EOF
+    ssl.keystore.location=/tmp/confluent-rest-proxy/client-tls/confluent-rest-proxy-client.server.keystore.jks
+    ssl.keystore.password=changeit
+    ssl.key.password=changeit
+    ssl.truststore.location=/tmp/confluent-rest-proxy/client-tls/confluent-rest-proxy-client.server.truststore.jks
+    ssl.truststore.password=changeit
+    ssl.cipher.suites={{.Params.TRANSPORT_ENCRYPTION_CLIENT_CIPHERS}}
+    {{ if eq .Params.SSL_AUTHENTICATION_CLIENT_ENABLED "true" }}
+    ssl.client.auth=true
+    {{ end }}
+    EOF
+    {{ end }}
+    
+    {{ end }}
+    
+    # Configure listerners
+    
+    listeners="http://0.0.0.0:{{ .Params.REST_PROXY_PORT }}"
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+    listeners="https://0.0.0.0:{{ .Params.REST_PROXY_PORT_TLS }}"
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ALLOW_PLAINTEXT "true" }}
+    listeners="$listeners,http://0.0.0.0:{{ .Params.REST_PROXY_PORT }}"
+    {{ end }}
+    {{ end }}
+    
+    export KAFKA_REST_LISTENERS=${listeners}
+
+    # Start Kafka Rest Proxy
+    /etc/confluent/docker/run

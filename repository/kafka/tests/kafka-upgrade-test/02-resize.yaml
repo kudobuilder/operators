@@ -1,0 +1,15 @@
+apiVersion: kudo.dev/v1beta1
+kind: Instance
+metadata:
+  name: kafka
+spec:
+  operatorVersion:
+    name: kafka-2.5.1-1.3.2
+    namespace: default
+    kind: OperatorVersion
+  name: "kafka"
+  parameters:
+    BROKER_MEM: "400Mi"
+    BROKER_CPUS: "300m"
+    NE_MEM: "10Mi"
+    NE_CPUS: "50m"

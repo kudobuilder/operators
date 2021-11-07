@@ -1,0 +1,58 @@
+apiVersion: kudo.dev/v1beta1
+parameters:
+  - name: HOST_NAME
+    description: "Host name used to generate absolute URLs in responses"
+    default: "confluent-schema-registry"
+  - name: NODE_COUNT
+    description: "Number of nodes that would be running Confluent REST Proxy service"
+    default: "1"
+  - name: SCHEMA_REGISTRY_PORT
+    description: "Port on which Confluent Schema Registry will be exported to listen on for new connections"
+    default: 8081
+  - name: KAFKA_BOOTSTRAP_SERVERS
+    description: "A list of Kafka brokers to connect to. Eg. PLAINTEXT://hostname:9092"
+    default: "kafka-instance-kafka-0.kafka-instance-svc:9093,kafka-instance-kafka-1.kafka-instance-svc:9093,kafka-instance-kafka-2.kafka-instance-svc:9093"
+  - name: MEMORY
+    description: Amount of memory to provide to Confluent Schema Registry pods
+    default: "256Mi"
+  - name: MEM_LIMIT
+    description: "Memory (limit) for the Confluent Schema Registry nodes pods. spec.containers[].resources.limits.memory"
+    default: "1024Mi"
+  - name: CPUS
+    description: Amount of cpu to provide to Confluent Schema Registry pods
+    default: "250m"
+  - name: CPUS_LIMIT
+    description: "CPUs (limit) for the Confluent Schema Registry nodes pods. spec.containers[].resources.limits.cpu"
+    default: "1000m"
+  - name: LIVENESS_INITIAL_DELAY_SECONDS
+    displayName: "livenessProbe initial delay timeout seconds"
+    description: "Number of seconds after the container has started before liveness probes is initiated."
+    default: "30"
+  - name: LIVENESS_PERIOD_SECONDS
+    displayName: "livenessProbe period seconds"
+    description: "How often (in seconds) to perform the probe. Default to 10 seconds. Minimum value is 1."
+    default: "10"
+  - name: LIVENESS_TIMEOUT_SECONDS
+    displayName: "livenessProbe timeout seconds"
+    description: "Number of seconds after which the probe times out. Defaults to 10 seconds. Minimum value is 1."
+    default: "10"
+  - name: CUSTOM_SR_PROPERTIES_CM_NAME
+    displayName: "custom server properties configmap name"
+    description: "The properties present in this configmap will be appended to the Schema Registry properties"
+    required: false
+  - name: TRANSPORT_ENCRYPTION_ENABLED
+    displayName: "Enable transport encryption (TLS)"
+    description: "Enable transport encryption (TLS)"
+    default: "false"
+  - name: TLS_SECRET_NAME
+    default: "confluent-schema-registry-tls"
+    displayName: "confluent-schema-registry-tls"
+    description: "The secret that contains TLS certificate and is mounted as a volume to make them available to Schema Registry."
+  - name: TRANSPORT_ENCRYPTION_CIPHERS
+    displayName: "Cipher Suite Names"
+    description: "Comma-separated list of JSSE Cipher Suite Names"
+    default: "TLS_RSA_WITH_AES_128_GCM_SHA256,TLS_RSA_WITH_AES_128_CBC_SHA256,TLS_RSA_WITH_AES_256_GCM_SHA384,TLS_RSA_WITH_AES_256_CBC_SHA256,TLS_DHE_RSA_WITH_AES_128_GCM_SHA256,TLS_DHE_RSA_WITH_AES_128_CBC_SHA256,TLS_DHE_RSA_WITH_AES_256_GCM_SHA384,TLS_DHE_RSA_WITH_AES_256_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384"
+  - name: SSL_AUTHENTICATION_CLIENT_NAME
+    displayName: "SSL Authentication Client Name"
+    description: "The name used as the client certificate CN(Common Name) when communicating with Kafka over TLS"
+    default: "SchemaRegistryClient"

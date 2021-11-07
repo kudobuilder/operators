@@ -1,10 +1,16 @@
 apiVersion: policy/v1beta1
 kind: PodDisruptionBudget
 metadata:
-  name: pdb
+  namespace: {{ .Namespace }}
+  name: {{ .Name }}-{{ .OperatorName }}-pdb
+  labels:
+    app: redis
+    redis: {{ .OperatorName }}
+    instance: {{ .Name }}
 spec:
   selector:
     matchLabels:
       app: redis
+      redis: {{ .OperatorName }}
       instance: {{ .Name }}
   minAvailable: 2

@@ -34,7 +34,7 @@ parameters:
 
   - name: NODE_DOCKER_IMAGE
     description: "Cassandra node Docker image."
-    default: "mesosphere/cassandra:3.11.4-0.1.0"
+    default: "mesosphere/cassandra:3.11.6-1.0.1"
 
   - name: NODE_DOCKER_IMAGE_PULL_POLICY
     description: "Cassandra node Docker image pull policy."
@@ -53,23 +53,177 @@ parameters:
     default: "60"
 
   - name: NODE_READINESS_PROBE_SUCCESS_THRESHOLD
-    description: "Minimum consecutive successes for the probe to be considered successful after having failed."
+    description: "Minimum consecutive successes for the readiness probe to be considered successful after having failed."
     default: "1"
 
   - name: NODE_READINESS_PROBE_FAILURE_THRESHOLD
-    description: "When a pod starts and the probe fails, `failure_threshold` attempts will be made before marking the pod as 'unready'."
+    description: "When a pod starts and the readiness probe fails, `failure_threshold` attempts will be made before marking the pod as 'unready'."
     default: "3"
+
+  - name: NODE_LIVENESS_PROBE_INITIAL_DELAY_S
+    description: "Number of seconds after the container has started before the liveness probe is initiated."
+    default: "15"
+
+  - name: NODE_LIVENESS_PROBE_PERIOD_S
+    description: "How often (in seconds) to perform the liveness probe."
+    default: "20"
+
+  - name: NODE_LIVENESS_PROBE_TIMEOUT_S
+    description: "How long (in seconds) to wait for a liveness probe to succeed."
+    default: "60"
+
+  - name: NODE_LIVENESS_PROBE_SUCCESS_THRESHOLD
+    description: "Minimum consecutive successes for the liveness probe to be considered successful after having failed."
+    default: "1"
+
+  - name: NODE_LIVENESS_PROBE_FAILURE_THRESHOLD
+    description: "When a pod starts and the liveness probe fails, `failure_threshold` attempts will be made before restarting the pod."
+    default: "3"
+
+  - name: NODE_TOLERATIONS
+    description: A list of kubernetes tolerations to let pods get scheduled on tainted nodes
+    type: array
 
   - name: OVERRIDE_CLUSTER_NAME
     description: "Override the name of the Cassandra cluster set by the operator. This shouldn't be explicit set, unless you know what you're doing."
     default: ""
+
+  - name: EXTERNAL_SERVICE
+    displayName: "Main toggle for external access"
+    description: "Needs to be true for either EXTERNAL_NATIVE_TRANSPORT or EXTERNAL_RPC to work"
+    default: "false"
+
+  - name: EXTERNAL_NATIVE_TRANSPORT
+    displayName: "Enable external native transport"
+    description: "This exposes the Cassandra cluster via an external service so it can be accessed from outside the Kubernetes cluster"
+    default: "false"
+
+  - name: EXTERNAL_RPC
+    displayName: "Enable external rpc"
+    description: "This exposes the Cassandra cluster via an external service so it can be accessed from outside the Kubernetes cluster. Works only if START_RPC is true"
+    default: "false"
+
+  - name: EXTERNAL_NATIVE_TRANSPORT_PORT
+    displayName: "External advertised native transport port"
+    description: "The external port to use for Cassandra native transport protocol."
+    default: "9042"
+
+  - name: EXTERNAL_RPC_PORT
+    displayName: "External advertised rpc port"
+    description: "The external port to use for Cassandra rpc protocol."
+    default: "9160"
+
+  - name: BOOTSTRAP_TIMEOUT
+    description: "Timeout for the bootstrap binary to join the cluster with the new IP. Valid time units are 'ns', 'us', 'ms', 's', 'm', 'h'."
+    default: "12h30m"
+
+  - name: SHUTDOWN_OLD_REACHABLE_NODE
+    description: "When a node replace is done, try to connect to the old node and shut it down before starting up the old node"
+    default: false
+
+  - name: JOLOKIA_PORT
+    description: "The internal port for the Jolokia Agent. This port is not exposed, but can be changed if it conflicts with another port."
+    default: 7777
+
+  ################################################################################
+  ########################## Backup and Restore settings #########################
+  ################################################################################
+
+  - name: BACKUP_RESTORE_ENABLED
+    description: "Global flag that enables the medusa sidecar for backups"
+    default: "false"
+
+  - name: BACKUP_TRIGGER
+    description: "Trigger parameter to start a backup. Simply needs to be changed from the current value to start a backup"
+    default: "1"
+    trigger: backup
+
+  - name: BACKUP_AWS_CREDENTIALS_SECRET
+    description: If set, can be used to provide the access_key, secret_key and security_token with a secret
+    required: false
+
+  - name: BACKUP_AWS_S3_BUCKET_NAME
+    description: The name of the AWS S3 bucket to store the backups
+    required: false
+
+  - name: BACKUP_AWS_S3_STORAGE_PROVIDER
+    description: Should be one of the s3_* values from https://github.com/apache/libcloud/blob/trunk/libcloud/storage/types.py
+    required: false
+    default: s3_us_west_oregon
+
+  - name: BACKUP_PREFIX
+    description: A prefix to be used inside the S3 bucket
+    required: false
+
+  - name: BACKUP_MEDUSA_CPU_MC
+    description: "CPU request (in millicores) for the Medusa backup containers."
+    default: "100"
+
+  - name: BACKUP_MEDUSA_CPU_LIMIT_MC
+    description: "CPU limit (in millicores) for the Medusa backup containers."
+    default: "500"
+
+  - name: BACKUP_MEDUSA_MEM_MIB
+    description: "Memory request (in MiB) for the Medusa backup containers."
+    default: "256"
+
+  - name: BACKUP_MEDUSA_MEM_LIMIT_MIB
+    description: "Memory limit (in MiB) for the Medusa backup containers."
+    default: "512"
+
+  - name: BACKUP_MEDUSA_DOCKER_IMAGE
+    description: "Medusa backup Docker image."
+    default: "mesosphere/kudo-cassandra-medusa:0.6.0-1.0.1"
+
+  - name: BACKUP_MEDUSA_DOCKER_IMAGE_PULL_POLICY
+    description: "Medusa backup Docker image pull policy."
+    default: "Always"
+
+  - name: BACKUP_NAME
+    description: "The name of the backup to create or restore"
+    default: ""
+
+  - name: RESTORE_FLAG
+    description: "If true, a restore is done on installation"
+    default: "false"
+
+  - name: RESTORE_OLD_NAMESPACE
+    description: "The namespace from the operator that was used to create the backup"
+    default: ""
+
+  - name: RESTORE_OLD_NAME
+    description: "The instance name from the operator that was used to create the backup"
+    default: ""
+
+  ################################################################################
+  ######################### Datacenter and Rack awareness ########################
+  ################################################################################
+
+  - name: NODE_TOPOLOGY
+    description: "This describes a multi-datacenter setup. When set it has precedence over NODE_COUNT. See docs/multidatacenter.md for more details."
+    default:
+    type: array
+
+  - name: NODE_ANTI_AFFINITY
+    description: "Ensure that every Cassandra node is deployed on separate hosts."
+    default: "false"
+
+  - name: SERVICE_ACCOUNT_INSTALL
+    description: "This flag can be set to true to automatic installation of a cluster role, service account and role binding."
+    default: "false"
+
+  - name: EXTERNAL_SEED_NODES
+    description: "List of seed nodes external to this instance to add to the cluster. This allows clusters spanning multiple Kubernetes clusters."
+    default:
+    type: array
 
   ################################################################################
   ######################### Prometheus exporter settings #########################
   ################################################################################
 
   - name: PROMETHEUS_EXPORTER_ENABLED
-    default: "true"
+    description: "A toggle to enable the prometheus metrics exporter."
+    default: "false"
 
   - name: PROMETHEUS_EXPORTER_PORT
     description: "Prometheus exporter port."
@@ -77,7 +231,7 @@ parameters:
 
   - name: PROMETHEUS_EXPORTER_CPU_MC
     description: "CPU request (in millicores) for the Prometheus exporter containers."
-    default: "1000"
+    default: "500"
 
   - name: PROMETHEUS_EXPORTER_CPU_LIMIT_MC
     description: "CPU limit (in millicores) for the Prometheus exporter containers."
@@ -93,11 +247,16 @@ parameters:
 
   - name: PROMETHEUS_EXPORTER_DOCKER_IMAGE
     description: "Prometheus exporter Docker image."
-    default: "mesosphere/cassandra-prometheus-exporter:2.2.1-0.1.0"
+    default: "mesosphere/cassandra-prometheus-exporter:2.3.4-1.0.1"
 
   - name: PROMETHEUS_EXPORTER_DOCKER_IMAGE_PULL_POLICY
     description: "Prometheus exporter Docker image pull policy."
     default: "Always"
+
+  - name: PROMETHEUS_EXPORTER_CUSTOM_CONFIG_CM_NAME
+    displayName: "custom prometheus configuration configmap name"
+    description: "The properties present in this configmap will be appended to the prometheus configuration properties"
+    required: false
 
   ################################################################################
   ########################### Cassandra node settings ############################
@@ -122,6 +281,42 @@ parameters:
   - name: JMX_PORT
     description: "The JMX port that will be used to interface with the Cassandra application."
     default: "7199"
+
+  - name: RMI_PORT
+    description: "The RMI port that will be used to interface with the Cassandra application when TRANSPORT_ENCRYPTION_ENABLED is set."
+    default: "7299"
+
+  - name: JMX_LOCAL_ONLY
+    description: "If true, the JMX port will only be opened on localhost and not be available to the cluster"
+    default: "true"
+
+  - name: TRANSPORT_ENCRYPTION_ENABLED
+    description: "Enable node-to-node encryption."
+    default: "false"
+
+  - name: TRANSPORT_ENCRYPTION_CLIENT_ENABLED
+    description: "Enable client-to-node encryption."
+    default: "false"
+
+  - name: TRANSPORT_ENCRYPTION_CIPHERS
+    description: "Comma-separated list of JSSE Cipher Suite Names."
+    default: "TLS_RSA_WITH_AES_128_CBC_SHA,TLS_RSA_WITH_AES_256_CBC_SHA,TLS_DHE_RSA_WITH_AES_128_CBC_SHA,TLS_DHE_RSA_WITH_AES_256_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA"
+
+  - name: TRANSPORT_ENCRYPTION_CLIENT_ALLOW_PLAINTEXT
+    description: "Enable Server-Client plaintext communication alongside encrypted traffic."
+    default: "false"
+
+  - name: TRANSPORT_ENCRYPTION_REQUIRE_CLIENT_AUTH
+    description: "Enable client certificate authentication on node-to-node transport encryption."
+    default: "true"
+
+  - name: TRANSPORT_ENCRYPTION_CLIENT_REQUIRE_CLIENT_AUTH
+    description: "Enable client certificate authentication on client-to-node transport encryption."
+    default: "true"
+
+  - name: TLS_SECRET_NAME
+    description: "The TLS secret that contains the self-signed certificate (cassandra.crt) and the private key (cassandra.key). The secret will be mounted as a volume to make the artifacts available."
+    default: "cassandra-tls"
 
   - name: NODE_MIN_HEAP_SIZE_MB
     description: "The minimum JVM heap size in MB. This has a smart default and doesn't need to be explicitly set."
@@ -166,6 +361,10 @@ parameters:
   - name: AUTHENTICATOR
     description: "Authentication backend, implementing IAuthenticator; used to identify users."
     default: "AllowAllAuthenticator"
+
+  - name: AUTHENTICATION_SECRET_NAME
+    description: "Name of the secret containing the credentials used by the operator when running 'nodetool' for its functionality. Only relevant if AUTHENTICATOR is set to 'PasswordAuthenticator'. The secret needs to have a 'username' and a 'password' entry."
+    default: ""
 
   - name: AUTHORIZER
     description: "Authorization backend, implementing IAuthorizer; used to limit access/provide permissions."
@@ -659,9 +858,21 @@ parameters:
     description: "How many milliseconds to wait between two expiration runs on the backlog (queue) of the OutboundTcpConnection."
     default: ""
 
+  - name: REPAIR_SESSION_MAX_TREE_DEPTH
+    description: "Limits the maximum Merkle tree depth to avoid consuming too much memory during repairs."
+    default: ""
+
+  - name: ENABLE_SASI_INDEXES
+    description: "Enables SASI index creation on this node. SASI indexes are considered experimental and are not recommended for production use."
+    default: ""
+
   - name: CUSTOM_CASSANDRA_YAML_BASE64
     description: "Base64-encoded Cassandra properties appended to cassandra.yaml."
     default: ""
+
+  - name: KUBECTL_VERSION
+    description: "Version of 'bitnami/kubectl' image. This image is used for some functionality of the operator."
+    default: "1.18.4"
 
   ################################################################################
   ################################ JVM Options ###################################
@@ -774,3 +985,49 @@ parameters:
   - name: CUSTOM_JVM_OPTIONS_BASE64
     description: "Base64-encoded JVM options appended to jvm.options."
     default: ""
+
+  - name: POD_MANAGEMENT_POLICY
+    description: "podManagementPolicy of the Cassandra Statefulset"
+    default: "OrderedReady"
+
+  ################################################################################
+  ################################ Repair options ################################
+  ################################################################################
+
+  - name: REPAIR_POD
+    description: "Name of the pod on which 'nodetool repair' should be run."
+    default: ""
+    trigger: repair
+
+  ################################################################################
+  ################################ Repair options ################################
+  ################################################################################
+
+  - name: RECOVERY_CONTROLLER
+    displayName: "Enables or disables the recovery controller"
+    description: "Needs to be true for automatic failure recovery and node eviction"
+    default: "false"
+
+  - name: RECOVERY_CONTROLLER_DOCKER_IMAGE
+    description: "Recovery controller Docker image."
+    default: "mesosphere/kudo-cassandra-recovery:0.0.2-1.0.1"
+
+  - name: RECOVERY_CONTROLLER_DOCKER_IMAGE_PULL_POLICY
+    description: "Recovery controller Docker image pull policy."
+    default: "Always"
+
+  - name: RECOVERY_CONTROLLER_CPU_MC
+    description: "CPU request (in millicores) for the Recovery controller container."
+    default: "50"
+
+  - name: RECOVERY_CONTROLLER_CPU_LIMIT_MC
+    description: "CPU limit (in millicores) for the Recovery controller container."
+    default: "200"
+
+  - name: RECOVERY_CONTROLLER_MEM_MIB
+    description: "Memory request (in MiB) for the Recovery controller container."
+    default: "50"
+
+  - name: RECOVERY_CONTROLLER_MEM_LIMIT_MIB
+    description: "Memory limit (in MiB) for the Recovery controller container."
+    default: "256"

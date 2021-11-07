@@ -1,5 +1,6 @@
-KUBERNETES_VERSION=1.15.0
-KUDO_VERSION=0.8.0-pre.2
+KUBERNETES_VERSION=1.16.9
+KUDO_VERSION=0.17.0
+KUTTL_VERSION=0.6.1
 
 ARTIFACTS ?= artifacts/
 
@@ -26,11 +27,32 @@ bin/kubectl-kudo_$(KUDO_VERSION): bin/
 	chmod +x bin/kubectl-kudo_$(KUDO_VERSION)
 	ln -sf ./kubectl-kudo_$(KUDO_VERSION) ./bin/kubectl-kudo
 
+bin/kubectl-kuttl_$(KUTTL_VERSION): bin/
+	curl -Lo bin/kubectl-kuttl_$(KUTTL_VERSION) https://github.com/kudobuilder/kuttl/releases/download/v$(KUTTL_VERSION)/kubectl-kuttl_$(KUTTL_VERSION)_$(OS)_$(KUDO_MACHINE)
+	chmod +x bin/kubectl-kuttl_$(KUTTL_VERSION)
+	ln -sf ./kubectl-kuttl_$(KUTTL_VERSION) ./bin/kubectl-kuttl
+
+.PHONY: install-kudo
+install-kudo: bin/kubectl-kudo_$(KUDO_VERSION)
+
+.PHONY: install-kuttl
+install-kuttl: bin/kubectl-kuttl_$(KUTTL_VERSION)
+
 .PHONY: create-cluster
 create-cluster:
 	echo
 
 .PHONY: test
 # Test runs the test harness using kubectl-kudo test.
-test: bin/kubectl-kudo_$(KUDO_VERSION) bin/kubectl_$(KUBERNETES_VERSION)
-	kubectl kudo test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
+test:  install-kudo bin/kubectl_$(KUBERNETES_VERSION) install-kuttl
+	kubectl kuttl test --kind-config=test/kind/kubernetes-$(KUBERNETES_VERSION).yaml --artifacts-dir=$(ARTIFACTS)
+
+.PHONY: clean
+# cleans project
+clean:
+	./clean-build.sh
+
+.PHONY: index
+# builds repo index
+index: bin/kubectl-kudo_$(KUDO_VERSION)
+	./build-community-repo.sh

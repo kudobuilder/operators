@@ -29,8 +29,8 @@ spec:
     spec:
       containers:
         - name: kubernetes-zookeeper
-          imagePullPolicy: Always
-          image: "zookeeper:3.4.14"
+          imagePullPolicy: {{ .Params.IMAGE_PULL_POLICY }}
+          image: "zookeeper:3.6.2"
           resources:
             requests:
               memory: {{ .Params.MEMORY }}

@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Name }}-bootstrap
+  namespace: {{ .Namespace }}
+data:
+  bootstrap.sh: |
+    #!/usr/bin/env bash
+
+    {{ if .Params.CUSTOM_SR_PROPERTIES_CM_NAME }}
+    CUSTOM_CONFIGURATION_FILE=$(ls -d /custom-configuration/* | head -n 1)
+    cp $CUSTOM_CONFIGURATION_FILE /tmp/custom-configuration
+    echo "Appending custom configuration file $CUSTOM_CONFIGURATION_FILE to the schema-registry.properties..." | xargs -L 1 echo $(date +'[%Y-%m-%d %H:%M:%S,%3N]') $1
+    SR_CUSTOM_CONFIGURATION=$(cat /tmp/custom-configuration)
+    echo ${SR_CUSTOM_CONFIGURATION}
+    cat >> /etc/confluent/docker/schema-registry.properties.template <<EOF
+    ${SR_CUSTOM_CONFIGURATION}
+    EOF
+    {{ end }}
+
+    {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+    # This is required as confluent uses admin.properties only when this is set
+    export SCHEMA_REGISTRY_KAFKASTORE_SECURITY_PROTOCOL=SSL
+
+    /etc/tls/bin/enable-tls.sh {{ .Params.SSL_AUTHENTICATION_CLIENT_NAME }}
+    
+    cat >> /etc/confluent/docker/admin.properties.template <<EOF
+    security.protocol=SSL
+    ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
+    ssl.keystore.password=changeit
+    ssl.truststore.password=changeit
+    ssl.key.password=changeit
+    ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
+    EOF
+    
+    cat >> /etc/confluent/docker/schema-registry.properties.template <<EOF
+    kafkastore.security.protocol=SSL
+    kafkastore.ssl.cipher.suites={{ .Params.TRANSPORT_ENCRYPTION_CIPHERS }}
+    kafkastore.ssl.keystore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.keystore.jks
+    kafkastore.ssl.keystore.password=changeit
+    kafkastore.ssl.truststore.location=/tmp/confluent-schema-registry/tls/confluent-schema-registry.server.truststore.jks
+    kafkastore.ssl.truststore.password=changeit
+    kafkastore.ssl.key.password=changeit
+    EOF
+    {{ end }}
+
+    /etc/confluent/docker/run

@@ -8,7 +8,7 @@ But users can and should tune the configurations based on the workload requireme
 ##### Tuning the resources for the Kafka Cluster
 
 ```
-kubectl kudo install kafka --instance=my-kafka-name \
+$ kubectl kudo install kafka --instance=my-kafka-name \
             -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
             -p ZOOKEEPER_PATH=/custom-path \
             -p BROKER_CPUS=3000m \
@@ -29,16 +29,16 @@ For using a more robust health check based on broker functionality you can set t
 This check is a producer-consumer check based on a custom heartbeat topic which you can set using the parameter `LIVENESS_TOPIC_PREFIX`.
 
 ```
-kubectl kudo install kafka --instance=my-kafka-name -p LIVENESS_METHOD=FUNCTIONAL -p LIVENESS_TOPIC_PREFIX=MyHealthCheckTopic
+$ kubectl kudo install kafka --instance=my-kafka-name -p LIVENESS_METHOD=FUNCTIONAL -p LIVENESS_TOPIC_PREFIX=MyHealthCheckTopic
 ```
 ###### Using Kerberos with health checks
 
 Health checks can be enabled when using [Kerberos with KUDO Kafka](security.md). 
 When using `FUNCTIONAL` method then additional principals needs to be  created. Assuming `livenessProbe` as the principal name the principals will be: 
 ```
-livenessProbe/kafka-kafka-0.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
-livenessProbe/kafka-kafka-1.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
-livenessProbe/kafka-kafka-2.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+livenessProbe/my-kafka-name-kafka-0.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+livenessProbe/my-kafka-name-kafka-1.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
+livenessProbe/my-kafka-name-kafka-2.kafka-svc.kudo-kafka.svc.cluster.local@LOCAL
 ```
 You need to create one principal per broker for each individual livenessProbe.
 
@@ -49,13 +49,13 @@ By default, the Kafka operator will use the default storage class of the Kuberne
 To deploy Kafka using a different storage class, you can use the parameter `STORAGE_CLASS`
 
 ```
-kubectl kudo install kafka --instance=my-kafka-name -p STORAGE_CLASS=<STORAGE_CLASS_NAME>
+$ kubectl kudo install kafka --instance=my-kafka-name -p STORAGE_CLASS=<STORAGE_CLASS_NAME>
 ```
 
 ##### Deploying an ephemeral Kafka cluster without persistence
 
 ```
-kubectl kudo install kafka --instance=my-kafka-name -p PERSISTENT_STORAGE=false
+$ kubectl kudo install kafka --instance=my-kafka-name -p PERSISTENT_STORAGE=false
 ```
 
 Having `PERSISTENT_STORAGE` value `false` means that any data or logs inside the brokers will be lost after a pod restart or rescheduling.
@@ -75,7 +75,7 @@ You can install the KUDO Zookeeper or you can use any other Zookeeper cluster yo
 You can configure KUDO Kafka to use Zookeeper using the parameter `ZOOKEEPER_URI`
 Let's see this with an example:
 ```
-kubectl kudo install kafka --instance=my-kafka-cluster \
+$ kubectl kudo install kafka --instance=my-kafka-name \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
 ```
 In the above example KUDO Kafka cluster will connect to the Zookeeper cluster available via following DNS names `zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181`
@@ -87,7 +87,7 @@ To avoid this to happen, KUDO Kafka persists its cluster topology in zk node wit
 
 Let's for example see what will the zk path look like in the above example where we just configured `ZOOKEEPER_URI`:
 ```
-kubectl kudo install kafka --instance=my-kafka-cluster \
+$ kubectl kudo install kafka --instance=my-kafka-name \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
 ```
 
@@ -99,7 +99,7 @@ will create a Zookeeper node in path `/my-kafka-cluster`.
 You can also decide to chose a custom Zookeeper node path, using the KUDO Kafka parameter `ZOOKEEPER_PATH`
 Let's see this with an example:
 ```
-kubectl kudo install kafka --instance=my-kafka-name \
+$ kubectl kudo install kafka --instance=my-kafka-name \
   -p ZOOKEEPER_URI=zk-zookeeper-0.zk-hs:2181,zk-zookeeper-1.zk-hs:2181,zk-zookeeper-2.zk-hs:2181 \
   -p ZOOKEEPER_PATH=/custom-path
 ```
@@ -108,4 +108,4 @@ will create a Zookeeper node in path `/custom-path`.
 
 ##### Docker image
 
-The Dockerfile used to build the KUDO Kafka operator is hosted in the [dcos-kafka-service](https://github.com/mesosphere/kudo-kafka-operator/blob/master/images/Dockerfile) repo
+The Dockerfile used to build the KUDO Kafka operator is hosted in the [kudo-kafka-operator](https://github.com/mesosphere/kudo-kafka-operator/blob/master/images/kafka/Dockerfile) repo

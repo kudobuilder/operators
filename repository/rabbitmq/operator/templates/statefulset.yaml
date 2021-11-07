@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: {{ .Name }}-{{ .OperatorName }}
+  namespace: {{ .Namespace }}
+  labels:
+    rabbitmq: {{ .OperatorName }}
+    app: rabbitmq
+  annotations:
+    reloader.kudo.dev/auto: "true"
+spec:
+  selector:
+    matchLabels:
+      app: rabbitmq
+      rabbitmq: {{ .OperatorName }}
+  serviceName: {{ .Name }}-svc
+  replicas: {{ .Params.NODE_COUNT }}
+  template:
+    metadata:
+      labels:
+        app: rabbitmq
+        rabbitmq: {{ .OperatorName }}
+    spec:
+      serviceAccountName: {{ .Name }}-{{ .OperatorName }}
+      terminationGracePeriodSeconds: 300
+      containers:
+        - name: rabbitmq-node
+          image: rabbitmq:3.8
+          resources:
+            requests:
+              memory: {{ .Params.MEMORY }}
+              cpu: {{ .Params.CPUS }}
+            limits:
+              memory: {{ .Params.MEM_LIMIT }}
+              cpu: {{ .Params.CPUS_LIMIT }}
+          ports:
+            - containerPort: {{ .Params.AMQP_PORT }}
+              name: amqp
+            - containerPort: {{ .Params.MANAGEMENT_PORT }}
+              name: management
+          env:
+            - name: MY_POD_NAME
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.name
+            - name: MY_POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: RABBITMQ_USE_LONGNAME
+              value: "true"
+            # See a note on cluster_formation.k8s.address_type in the config file section
+            - name: K8S_SERVICE_NAME
+              value: {{ .Name }}-svc
+            - name: RABBITMQ_NODENAME
+              value: rabbit@$(MY_POD_NAME).$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+            - name: K8S_HOSTNAME_SUFFIX
+              value: .$(K8S_SERVICE_NAME).$(MY_POD_NAMESPACE).svc.cluster.local
+            - name: RABBITMQ_ERLANG_COOKIE
+              value: "mycookie"
+          volumeMounts:
+            - name: data
+              mountPath: /var/lib/rabbitmq
+            - name: config-volume
+              mountPath: /etc/rabbitmq
+      volumes:
+        - name: config-volume
+          configMap:
+            name: rabbitmq-config
+            items:
+            - key: rabbitmq.conf
+              path: rabbitmq.conf
+            - key: enabled_plugins
+              path: enabled_plugins
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Params.DISK_SIZE }}

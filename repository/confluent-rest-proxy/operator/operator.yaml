@@ -1,0 +1,31 @@
+apiVersion: kudo.dev/v1beta1
+name: "confluent-rest-proxy"
+operatorVersion: "0.3.0"
+kudoVersion: 0.10.0
+kubernetesVersion: 1.15.0
+appVersion: 5.3.2
+maintainers:
+  - name: Vibhu Jain
+    email: vjain.c@d2iq.com
+  - name: Shubhanil Bag
+    email: sbag.c@d2iq.com
+url: https://www.confluent.io/
+tasks:
+  - name: deploy
+    kind: Apply
+    spec:
+      resources:
+        - service.yaml
+        - bootstrap.yaml
+        - deployment.yaml
+        - enable-tls.yaml
+plans:
+  deploy:
+    strategy: serial
+    phases:
+      - name: deploy
+        strategy: serial
+        steps:
+          - name: deploy
+            tasks:
+              - deploy

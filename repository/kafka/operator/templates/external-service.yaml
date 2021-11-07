@@ -1,0 +1,24 @@
+{{ range $i, $v := until (int .Params.BROKER_COUNT) }}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ $.Name }}-kafka-{{ $v }}-external
+  namespace: {{ $.Namespace }}
+spec:
+  type: {{ $.Params.EXTERNAL_ADVERTISED_LISTENER_TYPE }}
+  externalTrafficPolicy: Local
+  selector:
+    statefulset.kubernetes.io/pod-name: {{ $.Name }}-kafka-{{ $v }}
+  ports:
+  - protocol: TCP
+    {{ if eq  $.Params.EXTERNAL_ADVERTISED_LISTENER_TYPE "LoadBalancer" }}
+    port: {{ $.Params.EXTERNAL_ADVERTISED_LISTENER_PORT }}
+    targetPort: {{ $.Params.EXTERNAL_ADVERTISED_LISTENER_PORT }}
+    {{ end }}
+    {{ if eq  $.Params.EXTERNAL_ADVERTISED_LISTENER_TYPE "NodePort" }}
+    port: {{ add (int $.Params.EXTERNAL_NODE_PORT) $v }}
+    targetPort: {{ add (int $.Params.EXTERNAL_NODE_PORT) $v }}
+    nodePort: {{ add (int $.Params.EXTERNAL_NODE_PORT) $v }}
+    {{ end }}
+{{ end }}

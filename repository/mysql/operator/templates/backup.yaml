@@ -1,8 +1,8 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  namespace: default
   name: {{ .PlanName }}-job
+  namespace: {{ .Namespace }}
 spec:
   template:
     metadata:
@@ -10,13 +10,13 @@ spec:
     spec:
       restartPolicy: OnFailure
       containers:
-      - name: bb
+      - name: {{ .PlanName }}
         image: mysql:5.7
         imagePullPolicy: IfNotPresent
         command:
         - /bin/sh
         - -c
-        - "mysqldump -u root -h {{ .Name }}-mysql -p{{ .Params.PASSWORD }} kudo > /backups/{{ .Params.BACKUP_FILE }}"
+        - "mysqldump -u root -h {{ .Name }}-svc -p{{ .Params.PASSWORD }} kudo > /backups/{{ .Params.BACKUP_FILE }}"
         volumeMounts:
         - name: backup-pv
           mountPath: /backups

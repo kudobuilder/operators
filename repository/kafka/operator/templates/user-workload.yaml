@@ -1,5 +1,4 @@
-{{ if eq .Params.RUN_USER_WORKLOAD "true" }}
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-user-workload-producer
@@ -8,9 +7,9 @@ metadata:
     app: kafka-user-workload
 spec:
   replicas: 1
-  namespaceSelector:
-    matchNames:
-    - {{ .Namespace }}
+  selector:
+    matchLabels:
+      name: kafka-user-workload
   template:
     metadata:
       labels:
@@ -45,7 +44,7 @@ spec:
   strategy:
     type: Recreate
 ---
-apiVersion: extensions/v1beta1
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ .Name }}-user-workload-consumer
@@ -54,9 +53,9 @@ metadata:
     app: kafka-user-workload
 spec:
   replicas: 1
-  namespaceSelector:
-    matchNames:
-    - {{ .Namespace }}
+  selector:
+    matchLabels:
+      name: kafka-user-workload
   template:
     metadata:
       labels:
@@ -86,4 +85,3 @@ spec:
             memory: 512Mi
   strategy:
     type: Recreate
-{{ end }}

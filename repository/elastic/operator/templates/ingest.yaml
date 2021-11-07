@@ -1,7 +1,7 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: ingest
+  name: {{ .Name }}-ingest
   namespace: {{ .Namespace }}
 spec:
   selector:
@@ -63,3 +63,6 @@ spec:
         resources:
           requests:
             storage: {{ .Params.INGEST_DISK }}
+        {{ if .Params.STORAGE_CLASS }}
+        storageClassName: {{ .Params.STORAGE_CLASS }}
+        {{ end }}

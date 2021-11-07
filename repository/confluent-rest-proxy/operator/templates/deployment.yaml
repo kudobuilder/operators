@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Name }}
+  namespace: {{ .Namespace }}
+  labels:
+    app: confluent-rest-proxy
+spec:
+  replicas: {{ .Params.NODE_COUNT }}
+  selector:
+    matchLabels:
+      app: confluent-rest-proxy
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: confluent-rest-proxy
+    spec:
+      containers:
+      - name: confluent-rest-proxy
+        image: confluentinc/cp-kafka-rest:5.3.2
+        command:
+          - bash
+          - -c
+        args:
+          - /bootstrap/bootstrap.sh;
+        resources:
+          requests:
+            memory: {{ .Params.MEMORY }}
+            cpu: {{ .Params.CPUS }}
+          limits:
+            memory: {{ .Params.MEM_LIMIT }}
+            cpu: {{ .Params.CPUS_LIMIT }}
+        ports:
+        - containerPort: {{ .Params.REST_PROXY_PORT }}
+          name: rp-port
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+        - containerPort: {{ .Params.REST_PROXY_PORT_TLS }}
+          name: rp-port-tls
+        {{ end }}
+        env:
+        - name: KAFKA_REST_SCHEMA_REGISTRY_URL 
+          value: {{ .Params.SCHEMA_REGISTRY_URL }}
+        - name: KAFKA_REST_HOST_NAME
+          value: {{ .Params.HOST_NAME }}
+        - name: KAFKA_REST_BOOTSTRAP_SERVERS
+          value: {{ .Params.KAFKA_BOOTSTRAP_SERVERS }}
+        volumeMounts:
+        - name: bootstrap
+          mountPath: /bootstrap
+        {{ if .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          mountPath: /custom-configuration
+        {{ end }}
+        {{ if or (eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true") (eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true") }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        - name: confluent-rest-proxy-tls
+          mountPath: /etc/tls/certs
+        {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+        - name: confluent-rest-proxy-client-tls
+          mountPath: /etc/tls/client-certs
+        {{ end }}
+        - name: enable-tls
+          mountPath: /etc/tls/bin
+        {{ end }}
+        livenessProbe:
+          initialDelaySeconds: {{ .Params.LIVENESS_INITIAL_DELAY_SECONDS }}
+          periodSeconds: {{ .Params.LIVENESS_PERIOD_SECONDS }}
+          timeoutSeconds: {{ .Params.LIVENESS_TIMEOUT_SECONDS }}
+          tcpSocket:
+            {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+            port: {{ .Params.REST_PROXY_PORT_TLS }}
+            {{ else }}
+            port: {{ .Params.REST_PROXY_PORT }}
+            {{ end }}
+      volumes:
+        - name: bootstrap
+          configMap:
+            name: {{ .Name }}-bootstrap
+            defaultMode: 0755
+        {{ if .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        - name: custom-configuration
+          configMap:
+            name: {{ .Params.CUSTOM_RP_PROPERTIES_CM_NAME }}
+        {{ end }}
+        {{ if or (eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true") (eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true") }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_ENABLED "true" }}
+        - name: confluent-rest-proxy-tls
+          secret:
+            secretName: {{ .Params.TLS_SECRET_NAME }}
+        {{ end }}
+        {{ if eq .Params.TRANSPORT_ENCRYPTION_CLIENT_ENABLED "true" }}
+        - name: confluent-rest-proxy-client-tls
+          secret:
+            secretName: {{ .Params.TLS_CLIENT_SECRET_NAME }}
+        {{ end }}
+        - name: enable-tls
+          configMap:
+            name:  {{ .Name }}-enable-tls
+            defaultMode: 0755
+        {{ end }}

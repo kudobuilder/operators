@@ -1,7 +1,7 @@
 kind: StatefulSet
 apiVersion: apps/v1
 metadata:
-  name: master
+  name: {{ .Name }}-master
   namespace: {{ .Namespace }}
 spec:
   selector:
@@ -65,3 +65,6 @@ spec:
         resources:
           requests:
             storage: {{ .Params.MASTER_DISK }}
+        {{ if .Params.STORAGE_CLASS }}
+        storageClassName: {{ .Params.STORAGE_CLASS }}
+        {{ end }}
