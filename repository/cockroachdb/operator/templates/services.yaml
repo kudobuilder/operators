@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Params.publicServiceName }}
+  namespace: {{ .Params.namespace }}
+  labels:
+    app: cockroachdb
+spec:
+  ports:
+  - port: {{ .Params.grpcPort }}
+    targetPort: 26257
+    name: {{ .Params.grpcPortDNSSuffix }}
+  - port: {{ .Params.httpPort }}
+    targetPort: 8080
+    name: {{ .Params.httpPortDNSSuffix }}
+  selector:
+    app: cockroachdb
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Params.serviceName }}
+  namespace: {{ .Params.namespace }}
+  labels:
+    app: cockroachdb
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+    prometheus.io/scrape: "true"
+    prometheus.io/path: "_status/vars"
+    prometheus.io/port: "8080"
+spec:
+  ports:
+  - port: {{ .Params.publicGrpcPort }}
+    targetPort: 26257
+    name: {{ .Params.publicGrpcPortDNSSuffix }}
+  - port: {{ .Params.publicHttpPort }}
+    targetPort: 8080
+    name: {{ .Params.publicHttpPortDNSSuffix }}
+  publishNotReadyAddresses: true
+  clusterIP: None
+  selector:
+    app: cockroachdb
